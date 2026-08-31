@@ -1,0 +1,217 @@
+# General application
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+  max-http-request-header-size: 16KB
+
+  servlet:
+    session:
+      cookie:
+        same-site: lax
+        secure: true
+        http-only: true
+
+spring:
+  application:
+    name: demo-blocks-backend
+  web:
+    error:
+      include-message: never
+      include-binding-errors: never
+      include-stacktrace: never
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+# security:
+#   oauth2:
+#     resourceserver:
+#       jwt:
+#         jwk-set-uri: https://cognito-idp.${COGNITO_REGION:region}.amazonaws.com/${COGNITO_USER_POOL:usrpool}/.well-known/jwks.json
+#         issuer-uri: https://cognito-idp.${COGNITO_REGION:region}.amazonaws.com/${COGNITO_USER_POOL:usrpool}
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:postgres}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:default}
+    hikari:
+      driver-class-name: org.postgresql.Driver
+      jdbcUrl: ${spring.datasource.url}
+      username: ${spring.datasource.username}
+      password: ${spring.datasource.password}
+      auto-commit: false
+      connectionTimeout: 30000 # 30 seconds
+      idleTimeout: 60000 # 1 minute
+      maxLifetime: 180000 # 3 minutes
+      keepaliveTime: 60000 # 1 minute
+      poolName: HrsPostgresConnPool
+      minimumIdle: 1
+      maximumPoolSize: 3
+      leakDetectionThreshold: 60000
+      connection-test-query: SELECT 1
+  flyway:
+    schemas: pgcj
+    default-schema: pgcj
+    baseline-on-migrate: true
+  jpa:
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        boot.allow_jdbc_metadata_access: false
+  mvc:
+    problemdetails:
+      enabled: true
+  sleuth:
+    propagation-keys:
+      - X-TRACE-ID
+      - X-USER
+    baggage-keys:
+      - X-TRACE-ID
+      - X-USER
+    log:
+      slf4j:
+        whitelisted-mdc-keys:
+          - X-TRACE-ID
+          - X-USER
+
+# Actuator and ops
+management:
+  enable-native-support: true
+  endpoint:
+    health:
+      show-details: when_authorized
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      base-path: /actuator
+      path-mapping:
+        prometheus: metrics
+      exposure:
+        include: health,prometheus
+  httpexchanges:
+    recording:
+      include: principal,request-headers,response-headers,cookie-headers,time-taken,authorization-header,remote-address,session-id
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  observations:
+    annotations:
+      enabled: true
+    key-values:
+      zone: ${APP_ZONE:local}
+      name: ${spring.application.name}
+  tracing:
+    export:
+      enabled: true
+    propagation:
+      type: B3
+    sampling:
+      probability: 0.7
+    baggage:
+      enabled: true
+      correlation:
+        enabled: true
+        fields:
+          - X-B3-TraceId
+          - X-B3-SpanId
+        remote-fields:
+          - X-B3-TraceId
+          - X-B3-SpanId
+  otlp:
+    metrics:
+      export:
+        enabled: false
+    tracing:
+      export:
+        enabled: false
+    logging:
+      export:
+        enabled: false
+
+
+# Certificate for the Database
+io:
+  github:
+    paulushcgcj:
+      spat:
+        self-uri: ${SELF_URI:http://localhost:8080}
+        cognito:
+          userinfo-uri: https://${COGNITO_DOMAIN:pool-domain}.auth.${COGNITO_REGION:region}.amazoncognito.com/oauth2/userInfo
+          identity-ttl: ${COGNITO_IDENTITY_TTL:24h}
+        frontend:
+          url: ${FRONTEND_URL:http://localhost:3000}
+          cors:
+            headers:
+              - x-requested-with
+              - X-REQUESTED-WITH
+              - authorization
+              - Authorization
+              - Content-Type
+              - content-type
+              - credential
+              - CREDENTIAL
+              - X-XSRF-TOKEN
+              - access-control-allow-origin
+              - Access-Control-Allow-Origin
+              - DNT
+              - Keep-Alive,
+              - User-Agent,
+              - X-Requested-With,
+              - If-Modified-Since,
+              - Cache-Control,
+              - Content-Range,
+              - Range
+              - Location
+              - location
+              - X-B3-TraceId
+              - x-b3-traceid
+              - X-B3-TRACEID
+              - X-B3-SpanId
+              - x-b3-spanid
+              - X-B3-SPANID
+            methods:
+              - OPTIONS
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            age: 5m
+            origins: []
+
+info:
+  app:
+    name: ${spring.application.name}
+    zone: ${APP_ZONE:local}
+    version: ${APP_VERSION:0.0.1-SNAPSHOT}
+# Logging
+logging:
+  level:
+    ca.bc.gov.nrs.waste: ${LOGGING_LEVEL:INFO}
+  pattern:
+    correlation: "[${spring.application.name:},%X{${X-B3-TraceId:traceId}:-},%X{${X-B3-SpanId:spanId}:-}] "
+
+# Profile Specific Properties
+---
+spring:
+  config:
+    activate:
+      on-profile: container
+  sleuth:
+    propagation-keys:
+      - X-TRACE-ID
+      - X-USER
+    baggage-keys:
+      - X-TRACE-ID
+      - X-USER
+    log:
+      slf4j:
+        whitelisted-mdc-keys:
+          - X-TRACE-ID
+          - X-USER
+
+logging:
+  pattern:
+    console: '{"time": "%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}", "level": "${LOG_LEVEL:%5p}", "app":"${spring.application.name:-}", "traceId":"%X{${X-B3-TraceId:traceId}:-}", "spanId":"%X{${X-B3-SpanId:spanId}:-}", "pid": "${PID: }", "thread": "%t", "source": "%logger{63}:%L", "message": "%m", "exception":"${LOG_EXCEPTION_CONVERSION_WORD:%wEx}"}%n'
