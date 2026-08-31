@@ -1,0 +1,68 @@
+{
+  "realm": "forest",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "roles": {
+    "realm": [
+      { "name": "ADMIN", "description": "Full access within a tenant" },
+      { "name": "MEMBER", "description": "Standard access within a tenant" }
+    ]
+  },
+  "users": [
+    {
+      "username": "alice",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "alice@example.test",
+      "credentials": [{ "type": "password", "value": "changeme", "temporary": true }],
+      "realmRoles": ["ADMIN"],
+      "attributes": { "tenant_id": ["1"] }
+    },
+    {
+      "username": "bob",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "bob@example.test",
+      "credentials": [{ "type": "password", "value": "changeme", "temporary": true }],
+      "realmRoles": ["MEMBER"],
+      "attributes": { "tenant_id": ["1"] }
+    },
+    {
+      "username": "carol",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "carol@example.test",
+      "credentials": [{ "type": "password", "value": "changeme", "temporary": true }],
+      "realmRoles": ["MEMBER"],
+      "attributes": { "tenant_id": ["2"] }
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "frontend-app",
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:5173/*"],
+      "webOrigins": ["http://localhost:5173"],
+      "attributes": { "pkce.code.challenge.method": "S256" },
+      "protocolMappers": [
+        {
+          "name": "tenant_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "tenant_id",
+            "claim.name": "tenant_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ]
+}
