@@ -24,12 +24,11 @@ spring:
       charset: UTF-8
       enabled: true
       force: true
-# security:
-#   oauth2:
-#     resourceserver:
-#       jwt:
-#         jwk-set-uri: https://cognito-idp.${COGNITO_REGION:region}.amazonaws.com/${COGNITO_USER_POOL:usrpool}/.well-known/jwks.json
-#         issuer-uri: https://cognito-idp.${COGNITO_REGION:region}.amazonaws.com/${COGNITO_USER_POOL:usrpool}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:${KEYCLOAK_PORT:8081}/realms/forest
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:postgres}
     username: ${POSTGRES_USER:postgres}
@@ -142,7 +141,7 @@ io:
           userinfo-uri: https://${COGNITO_DOMAIN:pool-domain}.auth.${COGNITO_REGION:region}.amazoncognito.com/oauth2/userInfo
           identity-ttl: ${COGNITO_IDENTITY_TTL:24h}
         frontend:
-          url: ${FRONTEND_URL:http://localhost:3000}
+          url: ${FRONTEND_URL:http://localhost:5173}
           cors:
             headers:
               - x-requested-with
@@ -179,7 +178,8 @@ io:
               - PUT
               - DELETE
             age: 5m
-            origins: []
+            origins:
+              - http://localhost:5173
 
 info:
   app:
