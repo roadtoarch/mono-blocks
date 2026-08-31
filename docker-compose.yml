@@ -31,12 +31,15 @@ services:
     ports:
       - "${KEYCLOAK_PORT:-8081}:8080"
     volumes:
+      - keycloak_data:/opt/keycloak/data
       - ./keycloak/import:/opt/keycloak/data/import
     networks:
       - app-network
 
 volumes:
   postgres_data:
+  keycloak_data:
+    name: keycloak_data
 
 networks:
   app-network:
