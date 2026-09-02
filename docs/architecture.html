@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mono-blocks — Application Architecture</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: #2a2d3a;
+    --text: #e4e4e7;
+    --text-muted: #9ca3af;
+    --accent-blue: #60a5fa;
+    --accent-green: #34d399;
+    --accent-amber: #fbbf24;
+    --accent-purple: #a78bfa;
+    --accent-rose: #fb7185;
+    --accent-cyan: #22d3ee;
+    --accent-orange: #fb923c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+  }
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+    color: #fff;
+  }
+  .subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+  }
+  .diagram-wrap {
+    width: 100%;
+    max-width: 1200px;
+    overflow-x: auto;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  svg text {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+    justify-content: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .legend-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+  }
+  .flow-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-top: 0.75rem;
+    justify-content: center;
+  }
+  .flow-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .flow-line {
+    width: 24px;
+    height: 2px;
+  }
+</style>
+</head>
+<body>
+<h1>mono-blocks — Application Architecture</h1>
+<p class="subtitle">Tenant-aware React + Spring Boot starter with Keycloak OIDC</p>
+
+<div class="diagram-wrap">
+<svg viewBox="0 0 1200 820" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arr-blue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#60a5fa"/>
+    </marker>
+    <marker id="arr-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#34d399"/>
+    </marker>
+    <marker id="arr-amber" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#fbbf24"/>
+    </marker>
+    <marker id="arr-purple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#a78bfa"/>
+    </marker>
+    <marker id="arr-rose" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#fb7185"/>
+    </marker>
+    <marker id="arr-cyan" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#22d3ee"/>
+    </marker>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- GROUP: Browser Zone                                     -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <rect x="440" y="12" width="320" height="70" rx="12" fill="none" stroke="#2a2d3a" stroke-width="1" stroke-dasharray="6,4"/>
+  <text x="600" y="32" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600" letter-spacing="0.08em">BROWSER</text>
+
+  <!-- Node: User -->
+  <rect x="490" y="42" width="100" height="32" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="540" y="63" text-anchor="middle" fill="#e4e4e7" font-size="12" font-weight="600">User</text>
+
+  <!-- Node: OIDC Redirect -->
+  <rect x="610" y="42" width="130" height="32" rx="8" fill="#1e293b" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="675" y="63" text-anchor="middle" fill="#e4e4e7" font-size="11" font-weight="500">OIDC Redirect</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- GROUP: Frontend                                         -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <rect x="30" y="110" width="540" height="280" rx="14" fill="#111827" stroke="#34d399" stroke-width="1.5" opacity="0.9"/>
+  <text x="50" y="135" fill="#34d399" font-size="11" font-weight="700" letter-spacing="0.08em">FRONTEND</text>
+  <text x="50" y="150" fill="#9ca3af" font-size="9">React 19.2 · Vite 8 · TypeScript 6 · Carbon Design</text>
+
+  <!-- Node: Tenant Resolver -->
+  <rect x="55" y="168" width="155" height="56" rx="8" fill="#1a2332" stroke="#22d3ee" stroke-width="1.2"/>
+  <text x="132" y="190" text-anchor="middle" fill="#22d3ee" font-size="11" font-weight="600">Tenant Resolver</text>
+  <text x="132" y="206" text-anchor="middle" fill="#9ca3af" font-size="9">subdomain → manifest</text>
+  <text x="132" y="218" text-anchor="middle" fill="#9ca3af" font-size="9">theme + typography</text>
+
+  <!-- Node: OIDC Client -->
+  <rect x="225" y="168" width="155" height="56" rx="8" fill="#1a2332" stroke="#fbbf24" stroke-width="1.2"/>
+  <text x="302" y="190" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">OIDC Client</text>
+  <text x="302" y="206" text-anchor="middle" fill="#9ca3af" font-size="9">react-oidc-context</text>
+  <text x="302" y="218" text-anchor="middle" fill="#9ca3af" font-size="9">PKCE S256 · silent renewal</text>
+
+  <!-- Node: TanStack Router -->
+  <rect x="395" y="168" width="155" height="56" rx="8" fill="#1a2332" stroke="#a78bfa" stroke-width="1.2"/>
+  <text x="472" y="190" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="600">TanStack Router</text>
+  <text x="472" y="206" text-anchor="middle" fill="#9ca3af" font-size="9">file-based routing</text>
+  <text x="472" y="218" text-anchor="middle" fill="#9ca3af" font-size="9">auto-generated tree</text>
+
+  <!-- Node: API Client -->
+  <rect x="55" y="240" width="155" height="56" rx="8" fill="#1a2332" stroke="#60a5fa" stroke-width="1.2"/>
+  <text x="132" y="262" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="600">API Client</text>
+  <text x="132" y="278" text-anchor="middle" fill="#9ca3af" font-size="9">fetch + Bearer token</text>
+  <text x="132" y="290" text-anchor="middle" fill="#9ca3af" font-size="9">GET / POST / PATCH</text>
+
+  <!-- Node: React Query -->
+  <rect x="225" y="240" width="155" height="56" rx="8" fill="#1a2332" stroke="#60a5fa" stroke-width="1.2"/>
+  <text x="302" y="262" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="600">React Query</text>
+  <text x="302" y="278" text-anchor="middle" fill="#9ca3af" font-size="9">@tanstack/react-query</text>
+  <text x="302" y="290" text-anchor="middle" fill="#9ca3af" font-size="9">cache + refetch</text>
+
+  <!-- Node: AppShell / Routes -->
+  <rect x="395" y="240" width="155" height="56" rx="8" fill="#1a2332" stroke="#60a5fa" stroke-width="1.2"/>
+  <text x="472" y="262" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="600">AppShell + Routes</text>
+  <text x="472" y="278" text-anchor="middle" fill="#9ca3af" font-size="9">Dashboard · Users</text>
+  <text x="472" y="290" text-anchor="middle" fill="#9ca3af" font-size="9">Invite · Protected layout</text>
+
+  <!-- Node: TenantProvider -->
+  <rect x="140" y="312" width="320" height="50" rx="8" fill="#0f1a2e" stroke="#22d3ee" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="300" y="335" text-anchor="middle" fill="#22d3ee" font-size="10" font-weight="500">Provider Tree: TenantProvider → AuthProvider → QueryClientProvider → RouterProvider</text>
+  <text x="300" y="350" text-anchor="middle" fill="#9ca3af" font-size="9">Tenant context available from first render</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- GROUP: Keycloak (Identity)                              -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <rect x="620" y="110" width="260" height="280" rx="14" fill="#111827" stroke="#fbbf24" stroke-width="1.5" opacity="0.9"/>
+  <text x="640" y="135" fill="#fbbf24" font-size="11" font-weight="700" letter-spacing="0.08em">IDENTITY</text>
+  <text x="640" y="150" fill="#9ca3af" font-size="9">Keycloak 26.7.2</text>
+
+  <!-- Node: forest realm -->
+  <rect x="645" y="168" width="210" height="56" rx="8" fill="#1e2318" stroke="#fbbf24" stroke-width="1.2"/>
+  <text x="750" y="190" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">forest realm</text>
+  <text x="750" y="206" text-anchor="middle" fill="#9ca3af" font-size="9">OIDC auth code + PKCE</text>
+  <text x="750" y="218" text-anchor="middle" fill="#9ca3af" font-size="9">ID token + access token</text>
+
+  <!-- Node: tenant_id claim -->
+  <rect x="645" y="240" width="210" height="44" rx="8" fill="#1e2318" stroke="#fb7185" stroke-width="1.2"/>
+  <text x="750" y="260" text-anchor="middle" fill="#fb7185" font-size="11" font-weight="600">tenant_id claim</text>
+  <text x="750" y="276" text-anchor="middle" fill="#9ca3af" font-size="9">embedded in JWT access token</text>
+
+  <!-- Node: Users / Roles -->
+  <rect x="645" y="300" width="210" height="44" rx="8" fill="#1e2318" stroke="#fbbf24" stroke-width="1.2"/>
+  <text x="750" y="320" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">Users &amp; Roles</text>
+  <text x="750" y="336" text-anchor="middle" fill="#9ca3af" font-size="9">ADMIN · MEMBER · per-tenant</text>
+
+  <!-- Demo credentials card -->
+  <rect x="645" y="356" width="210" height="24" rx="6" fill="#1a1d27" stroke="#2a2d3a" stroke-width="0.8"/>
+  <text x="750" y="372" text-anchor="middle" fill="#9ca3af" font-size="9">alice (ADMIN, t1) · bob (MEMBER, t1) · carol (MEMBER, t2)</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- GROUP: Backend API                                      -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <rect x="30" y="420" width="770" height="250" rx="14" fill="#111827" stroke="#a78bfa" stroke-width="1.5" opacity="0.9"/>
+  <text x="50" y="445" fill="#a78bfa" font-size="11" font-weight="700" letter-spacing="0.08em">BACKEND API</text>
+  <text x="50" y="460" fill="#9ca3af" font-size="9">Spring Boot 4.1 · Java 21 · Spring Security · JPA · Flyway</text>
+
+  <!-- Node: SecurityConfig -->
+  <rect x="55" y="478" width="170" height="56" rx="8" fill="#1a1832" stroke="#fb7185" stroke-width="1.2"/>
+  <text x="140" y="500" text-anchor="middle" fill="#fb7185" font-size="11" font-weight="600">SecurityConfig</text>
+  <text x="140" y="516" text-anchor="middle" fill="#9ca3af" font-size="9">OAuth2 resource server</text>
+  <text x="140" y="528" text-anchor="middle" fill="#9ca3af" font-size="9">JWT validation</text>
+
+  <!-- Node: TenantFilter -->
+  <rect x="240" y="478" width="170" height="56" rx="8" fill="#1a1832" stroke="#fb7185" stroke-width="1.2"/>
+  <text x="325" y="500" text-anchor="middle" fill="#fb7185" font-size="11" font-weight="600">TenantFilter</text>
+  <text x="325" y="516" text-anchor="middle" fill="#9ca3af" font-size="9">JWT → tenant_id</text>
+  <text x="325" y="528" text-anchor="middle" fill="#9ca3af" font-size="9">ThreadLocal context</text>
+
+  <!-- Node: Controllers -->
+  <rect x="425" y="478" width="170" height="56" rx="8" fill="#1a1832" stroke="#a78bfa" stroke-width="1.2"/>
+  <text x="510" y="500" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="600">Controllers</text>
+  <text x="510" y="516" text-anchor="middle" fill="#9ca3af" font-size="9">MeController · UserController</text>
+  <text x="510" y="528" text-anchor="middle" fill="#9ca3af" font-size="9">/api/me · /api/users/*</text>
+
+  <!-- Node: UserService -->
+  <rect x="610" y="478" width="170" height="56" rx="8" fill="#1a1832" stroke="#a78bfa" stroke-width="1.2"/>
+  <text x="695" y="500" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="600">UserService</text>
+  <text x="695" y="516" text-anchor="middle" fill="#9ca3af" font-size="9">invite · roles · status</text>
+  <text x="695" y="528" text-anchor="middle" fill="#9ca3af" font-size="9">tenant isolation</text>
+
+  <!-- Node: KeycloakAdminClient -->
+  <rect x="610" y="550" width="170" height="44" rx="8" fill="#1a1832" stroke="#fbbf24" stroke-width="1.2"/>
+  <text x="695" y="570" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">KeycloakAdminClient</text>
+  <text x="695" y="586" text-anchor="middle" fill="#9ca3af" font-size="9">REST proxy to Keycloak</text>
+
+  <!-- Node: JPA / Flyway -->
+  <rect x="55" y="550" width="170" height="44" rx="8" fill="#1a1832" stroke="#34d399" stroke-width="1.2"/>
+  <text x="140" y="570" text-anchor="middle" fill="#34d399" font-size="11" font-weight="600">JPA + Flyway</text>
+  <text x="140" y="586" text-anchor="middle" fill="#9ca3af" font-size="9">migrations · entities</text>
+
+  <!-- Node: Observability -->
+  <rect x="240" y="550" width="170" height="44" rx="8" fill="#1a1832" stroke="#60a5fa" stroke-width="1.2"/>
+  <text x="325" y="570" text-anchor="middle" fill="#60a5fa" font-size="11" font-weight="600">Observability</text>
+  <text x="325" y="586" text-anchor="middle" fill="#9ca3af" font-size="9">Actuator · Micrometer · OTel</text>
+
+  <!-- Node: JwtClaimUtil -->
+  <rect x="425" y="550" width="170" height="44" rx="8" fill="#1a1832" stroke="#fb7185" stroke-width="1"/>
+  <text x="510" y="570" text-anchor="middle" fill="#fb7185" font-size="10" font-weight="500">JwtClaimUtil</text>
+  <text x="510" y="586" text-anchor="middle" fill="#9ca3af" font-size="9">extract claims from JWT</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- GROUP: Database                                         -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <rect x="30" y="700" width="300" height="100" rx="14" fill="#111827" stroke="#34d399" stroke-width="1.5" opacity="0.9"/>
+  <text x="50" y="725" fill="#34d399" font-size="11" font-weight="700" letter-spacing="0.08em">DATA</text>
+
+  <!-- Node: PostgreSQL -->
+  <rect x="55" y="738" width="250" height="48" rx="8" fill="#0f2318" stroke="#34d399" stroke-width="1.2"/>
+  <text x="180" y="758" text-anchor="middle" fill="#34d399" font-size="12" font-weight="600">PostgreSQL 16 + PostGIS 3.4</text>
+  <text x="180" y="776" text-anchor="middle" fill="#9ca3af" font-size="9">appdb · spatial extensions · persistent volume</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- Node: Sampler                                           -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <rect x="860" y="700" width="300" height="100" rx="14" fill="#111827" stroke="#fb923c" stroke-width="1.5" opacity="0.9"/>
+  <text x="880" y="725" fill="#fb923c" font-size="11" font-weight="700" letter-spacing="0.08em">TEST DATA</text>
+
+  <rect x="885" y="738" width="250" height="48" rx="8" fill="#1e1a10" stroke="#fb923c" stroke-width="1.2"/>
+  <text x="1010" y="758" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="600">Sampler</text>
+  <text x="1010" y="776" text-anchor="middle" fill="#9ca3af" font-size="9">uv + Python · YAML config · Faker SQL</text>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- FLOWS / EDGES                                           -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+
+  <!-- User → OIDC Redirect (browser internal) -->
+  <line x1="590" y1="58" x2="610" y2="58" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+
+  <!-- OIDC Redirect → Keycloak (step 1: browser redirects) -->
+  <path d="M 740,58 L 860,58 L 860,196 L 855,196" fill="none" stroke="#fbbf24" stroke-width="1.8" marker-end="url(#arr-amber)" stroke-dasharray="6,3"/>
+  <text x="870" y="130" fill="#fbbf24" font-size="9" font-weight="500">1 auth redirect</text>
+
+  <!-- Keycloak → OIDC Client (step 2: tokens) -->
+  <path d="M 645,196 L 460,196" fill="none" stroke="#fbbf24" stroke-width="1.8" marker-end="url(#arr-amber)"/>
+  <text x="555" y="188" fill="#fbbf24" font-size="9" font-weight="500">2 ID + access tokens</text>
+
+  <!-- OIDC Client → API Client (token available) -->
+  <line x1="302" y1="224" x2="210" y2="240" stroke="#fbbf24" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#arr-amber)"/>
+
+  <!-- API Client → SecurityConfig (step 3: Bearer token) -->
+  <path d="M 132,296 L 132,420 L 140,478" fill="none" stroke="#60a5fa" stroke-width="1.8" marker-end="url(#arr-blue)"/>
+  <text x="68" y="390" fill="#60a5fa" font-size="9" font-weight="500">3 Bearer token</text>
+
+  <!-- SecurityConfig → TenantFilter (JWT validated) -->
+  <line x1="225" y1="506" x2="240" y2="506" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arr-rose)"/>
+
+  <!-- TenantFilter → Controllers (tenant context set) -->
+  <line x1="410" y1="506" x2="425" y2="506" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arr-rose)"/>
+
+  <!-- Controllers → UserService -->
+  <line x1="595" y1="506" x2="610" y2="506" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arr-purple)"/>
+
+  <!-- UserService → KeycloakAdminClient -->
+  <line x1="695" y1="534" x2="695" y2="550" stroke="#a78bfa" stroke-width="1.2" marker-end="url(#arr-purple)"/>
+
+  <!-- KeycloakAdminClient → Keycloak (admin API) -->
+  <path d="M 780,572 L 840,572 L 840,322 L 855,322" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-amber)"/>
+  <text x="850" y="460" fill="#fbbf24" font-size="9" font-weight="500">admin API</text>
+
+  <!-- JPA/Flyway → PostgreSQL -->
+  <path d="M 140,594 L 140,700 L 180,738" fill="none" stroke="#34d399" stroke-width="1.8" marker-end="url(#arr-green)"/>
+  <text x="82" y="660" fill="#34d399" font-size="9" font-weight="500">JPA queries</text>
+
+  <!-- Sampler → PostgreSQL -->
+  <path d="M 885,762 L 305,762" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-amber)"/>
+  <text x="600" y="755" fill="#fb923c" font-size="9" font-weight="500">generated SQL</text>
+
+  <!-- Tenant Resolver → /tenants.json (static asset) -->
+  <path d="M 55,196 L 42,196 L 42,100 L 300,100 L 300,108" fill="none" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <text x="155" y="96" fill="#22d3ee" font-size="9">/tenants.json</text>
+
+  <!-- Observability endpoint indicator -->
+  <rect x="425" y="616" width="170" height="30" rx="6" fill="#111827" stroke="#2a2d3a" stroke-width="0.8"/>
+  <text x="510" y="635" text-anchor="middle" fill="#9ca3af" font-size="9">/actuator/health · /metrics</text>
+
+  <!-- Docker Compose boundary -->
+  <rect x="20" y="690" width="1150" height="120" rx="16" fill="none" stroke="#2a2d3a" stroke-width="1" stroke-dasharray="8,4"/>
+  <text x="1140" y="708" text-anchor="end" fill="#9ca3af" font-size="9" font-weight="500">docker compose</text>
+
+</svg>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-swatch" style="background:#34d399"></div> Frontend / Data</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#fbbf24"></div> Identity (Keycloak)</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#a78bfa"></div> Backend API</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#fb7185"></div> Security boundary</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#22d3ee"></div> Tenant resolution</div>
+  <div class="legend-item"><div class="legend-swatch" style="background:#fb923c"></div> Test data</div>
+</div>
+
+<div class="flow-legend">
+  <div class="flow-legend-item"><div class="flow-line" style="background:#60a5fa"></div> API request</div>
+  <div class="flow-legend-item"><div class="flow-line" style="background:#fbbf24"></div> OIDC / admin</div>
+  <div class="flow-legend-item"><div class="flow-line" style="background:#fb7185"></div> JWT / tenant context</div>
+  <div class="flow-legend-item"><div class="flow-line" style="background:#34d399"></div> Database</div>
+  <div class="flow-legend-item"><svg width="24" height="4"><line x1="0" y1="2" x2="24" y2="2" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4,3"/></svg> Indirect / async</div>
+</div>
+
+</body>
+</html>

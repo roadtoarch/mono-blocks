@@ -6,6 +6,10 @@
   <img src="https://raw.githubusercontent.com/roadtoarch/mono-blocks/HEAD/docs/architecture-flow.svg" alt="Architecture flow from the React browser client through Keycloak and the Spring Boot API to PostgreSQL, including the tenant_id claim." width="100%">
 </p>
 
+<p align="center">
+  <a href="docs/architecture.html">Interactive architecture diagram</a> — full component map with OIDC flow, tenant resolution, and security boundaries
+</p>
+
 The first useful loop is already in place: sign in from the browser, receive an OIDC token, call a protected API, validate the JWT, and carry `tenant_id` through the request. The domain is intentionally empty so you can add your own entities, routes, and business rules without dismantling a demo application first.
 
 ## At A Glance

@@ -519,43 +519,6 @@
     "realmRoles" : [ "MEMBER", "default-roles-forest" ],
     "notBefore" : 0,
     "groups" : [ ]
-  }, {
-    "id" : "b1a2c3d4-e5f6-7890-abcd-ef1234567891",
-    "username" : "service-account-backend-admin",
-    "emailVerified" : false,
-    "enabled" : true,
-    "createdTimestamp" : 1788151867000,
-    "totp" : false,
-    "attributes" : {
-      "clientAccountHost" : [ "http://localhost:8080" ],
-      "clientId" : [ "b1a2c3d4-e5f6-7890-abcd-ef1234567890" ]
-    },
-    "serviceAccountClientLink" : "b1a2c3d4-e5f6-7890-abcd-ef1234567890",
-    "disableableCredentialTypes" : [ ],
-    "requiredActions" : [ ],
-    "clientRoleMappings" : {
-      "realm-management" : [ {
-        "id" : "19800528-494e-4caa-b19a-bb5d9b471a3d",
-        "name" : "manage-users",
-        "composite" : false,
-        "clientRole" : true,
-        "containerId" : "2ae627fc-7049-4a32-8c00-f9e302bd5c82"
-      }, {
-        "id" : "e2676830-8b4a-469b-9cf6-9496a38b860c",
-        "name" : "view-users",
-        "composite" : true,
-        "clientRole" : true,
-        "containerId" : "2ae627fc-7049-4a32-8c00-f9e302bd5c82"
-      }, {
-        "id" : "c5084d03-6502-4f51-876c-bb7d50c82827",
-        "name" : "query-users",
-        "composite" : false,
-        "clientRole" : true,
-        "containerId" : "2ae627fc-7049-4a32-8c00-f9e302bd5c82"
-      } ]
-    },
-    "notBefore" : 0,
-    "groups" : [ ]
   } ],
   "scopeMappings" : [ {
     "clientScope" : "offline_access",
