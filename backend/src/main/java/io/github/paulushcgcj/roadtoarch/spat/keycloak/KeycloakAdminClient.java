@@ -2,7 +2,7 @@ package io.github.paulushcgcj.roadtoarch.spat.keycloak;
 
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
-import io.github.paulushcgcj.roadtoarch.spat.config.KeycloakAdminProperties;
+import io.github.paulushcgcj.roadtoarch.spat.configuration.KeycloakAdminProperties;
 import io.github.paulushcgcj.roadtoarch.spat.dto.KeycloakRoleMapping;
 import io.github.paulushcgcj.roadtoarch.spat.dto.KeycloakUser;
 import io.github.paulushcgcj.roadtoarch.spat.dto.KeycloakUserCreate;
