@@ -28,6 +28,8 @@ services:
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME:-admin}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD:-admin}
+      # Workaround for JDK 21 SIGSEGV in StringUTF16.compress on Apple Silicon Docker
+      JAVA_OPTS_APPEND: "-XX:TieredStopAtLevel=1"
     ports:
       - "${KEYCLOAK_PORT:-8081}:8080"
     volumes:
