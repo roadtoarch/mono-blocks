@@ -1,13 +1,14 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AuthProvider } from 'react-oidc-context';
 
 import './index.css';
 import './styles.scss';
-import App from './App.tsx';
 import { createOidcConfig } from './auth/createOidcConfig';
-import { applyTenantTheme } from './tenant/applyTheme';
+import { createAppRouter } from './router';
+import { applyTenantTheme, applyTenantTypography } from './tenant/applyTheme';
 import { resolveTenant } from './tenant/resolveTenant';
 import TenantProvider from './tenant/TenantProvider';
 
@@ -25,16 +26,18 @@ void (async () => {
 
   const tenant = await resolveTenant();
   applyTenantTheme(tenant.theme);
+  applyTenantTypography(tenant.typography);
   document.title = tenant.displayName;
 
   const oidcConfig = createOidcConfig(tenant);
+  const router = createAppRouter();
 
   createRoot(rootElement).render(
     <StrictMode>
       <TenantProvider value={tenant}>
         <AuthProvider {...oidcConfig}>
           <QueryClientProvider client={queryClient}>
-            <App />
+            <RouterProvider router={router} />
           </QueryClientProvider>
         </AuthProvider>
       </TenantProvider>

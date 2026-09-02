@@ -1,0 +1,23 @@
+package io.github.paulushcgcj.roadtoarch.spat.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+/**
+ * Thrown when an authenticated user attempts to access resources belonging to a
+ * different tenant. The {@link ResponseStatus} annotation causes Spring MVC to
+ * translate this exception into an HTTP {@code 403 Forbidden} response (rendered
+ * as an RFC 7807 {@code ProblemDetail} when {@code spring.mvc.problemdetails.enabled}
+ * is {@code true}).
+ */
+@ResponseStatus(HttpStatus.FORBIDDEN)
+public class TenantIsolationException extends RuntimeException {
+
+	public TenantIsolationException(String message) {
+		super(message);
+	}
+
+	public TenantIsolationException(String message, Throwable cause) {
+		super(message, cause);
+	}
+}

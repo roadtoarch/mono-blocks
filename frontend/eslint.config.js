@@ -6,13 +6,14 @@ import reactX from 'eslint-plugin-react-x'
 import reactDom from 'eslint-plugin-react-dom'
 import importX from 'eslint-plugin-import-x'
 import tanstackQuery from '@tanstack/eslint-plugin-query'
+import tanstackRouter from '@tanstack/eslint-plugin-router'
 import tseslint from 'typescript-eslint'
 import prettierPlugin from 'eslint-plugin-prettier'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'src/routeTree.gen.ts']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -23,11 +24,13 @@ export default defineConfig([
       reactRefresh.configs.vite,
       reactX.configs['recommended-typescript'],
       reactDom.configs.recommended,
+      ...tanstackRouter.configs['flat/recommended'],
       eslintConfigPrettier,
     ],
     plugins: {
       'import-x': importX,
       '@tanstack/query': tanstackQuery,
+      '@tanstack/router': tanstackRouter,
       prettier: prettierPlugin,
     },
     rules: {

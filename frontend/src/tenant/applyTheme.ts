@@ -1,4 +1,19 @@
-import type { TenantTheme } from './tenant.types';
+import type { TenantTheme, TenantTypography } from './tenant.types';
+
+/**
+ * Curated list of font families available for tenant typography.
+ * Fonts are loaded from Google Fonts CDN at runtime.
+ */
+export const CURATED_FONT_FAMILIES: readonly string[] = [
+  'Inter',
+  'Roboto',
+  'Open Sans',
+  'Lato',
+  'Source Sans Pro',
+  'Poppins',
+] as const;
+
+const GOOGLE_FONT_LINK_ID = 'tenant-google-font';
 
 export function applyTenantTheme(theme: TenantTheme): void {
   const root = document.documentElement;
@@ -17,6 +32,58 @@ export function applyTenantTheme(theme: TenantTheme): void {
   if (favicon) {
     favicon.href = theme.faviconUrl;
   }
+}
+
+/**
+ * Applies the tenant's typography configuration:
+ * - Sets Carbon v11 `--cds-body-font-family` and `--cds-heading-font-family` CSS custom properties on `:root`.
+ * - Injects a `<link rel="stylesheet">` tag in `<head>` for Google Fonts.
+ *
+ * If the font family is not in {@link CURATED_FONT_FAMILIES}, or if `typography`
+ * is `undefined`, no changes are applied (Carbon defaults are used).
+ */
+export function applyTenantTypography(typography: TenantTypography | undefined): void {
+  if (!typography) {
+    return;
+  }
+
+  const { fontFamily } = typography;
+  if (!CURATED_FONT_FAMILIES.includes(fontFamily)) {
+    return;
+  }
+
+  const root = document.documentElement;
+  root.style.setProperty('--cds-body-font-family', fontFamily);
+  root.style.setProperty('--cds-heading-font-family', fontFamily);
+
+  injectGoogleFontLink(fontFamily);
+}
+
+/**
+ * Injects (or updates) a `<link rel="stylesheet">` element in `<head>` that
+ * loads the given font family from Google Fonts CDN.
+ */
+function injectGoogleFontLink(fontFamily: string): void {
+  const existing = document.getElementById(GOOGLE_FONT_LINK_ID);
+  const href = buildGoogleFontsUrl(fontFamily);
+
+  if (existing instanceof HTMLLinkElement) {
+    if (existing.href !== href) {
+      existing.href = href;
+    }
+    return;
+  }
+
+  const link = document.createElement('link');
+  link.id = GOOGLE_FONT_LINK_ID;
+  link.rel = 'stylesheet';
+  link.href = href;
+  document.head.appendChild(link);
+}
+
+function buildGoogleFontsUrl(fontFamily: string): string {
+  const familyParam = encodeURIComponent(fontFamily).replace(/%20/g, '+');
+  return `https://fonts.googleapis.com/css2?family=${familyParam}:wght@400;600;700&display=swap`;
 }
 
 function hexToRgb(hex: string): [number, number, number] {

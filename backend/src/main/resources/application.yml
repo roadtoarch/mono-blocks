@@ -145,6 +145,12 @@ io:
         cognito:
           userinfo-uri: https://${COGNITO_DOMAIN:pool-domain}.auth.${COGNITO_REGION:region}.amazoncognito.com/oauth2/userInfo
           identity-ttl: ${COGNITO_IDENTITY_TTL:24h}
+        keycloak:
+          admin:
+            realm: forest
+            client-id: backend-admin
+            client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:changeme}
+            auth-server-url: http://localhost:${KEYCLOAK_PORT:8081}
         frontend:
           url: ${FRONTEND_URL:http://localhost:5173}
           cors:

@@ -12,7 +12,19 @@
         "headerText": "#ffffff",
         "logoUrl": "/tenants/acme/logo.svg",
         "faviconUrl": "/tenants/acme/favicon.ico"
-      }
+      },
+      "typography": {
+        "fontFamily": "Inter"
+      },
+      "content": {
+        "welcomeHeading": "Welcome to ACME Corp",
+        "welcomeBody": "Your partner in explosives management.",
+        "footerText": "\u00a9 ACME Corp"
+      },
+      "features": {
+        "userManagement": true
+      },
+      "layout": "top-nav"
     },
     {
       "subdomain": "northpac",
@@ -26,7 +38,19 @@
         "headerText": "#ffffff",
         "logoUrl": "/tenants/northpac/logo.svg",
         "faviconUrl": "/tenants/northpac/favicon.ico"
-      }
+      },
+      "typography": {
+        "fontFamily": "Source Sans Pro"
+      },
+      "content": {
+        "welcomeHeading": "Welcome to NorthPac Resources",
+        "welcomeBody": "Northern resource management solutions.",
+        "footerText": "\u00a9 NorthPac Resources"
+      },
+      "features": {
+        "userManagement": false
+      },
+      "layout": "side-nav"
     }
   ],
   "default": "acme"
