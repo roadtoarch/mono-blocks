@@ -1,28 +1,31 @@
-import { WebStorageStateStore } from 'oidc-client-ts';
+import { createOidcConfig } from './createOidcConfig';
 
-import type { AuthProviderProps } from 'react-oidc-context';
-
-const redirectUri = 'http://localhost:5173';
+import type { TenantConfig } from '../tenant/tenant.types';
 
 /**
- * OIDC configuration for the `react-oidc-context` {@link AuthProvider}.
- *
- * Points at the Keycloak `forest` realm and relies on Keycloak's hosted login
- * page (no custom form). The client is public with PKCE S256; the token
- * session is persisted in `localStorage` so it survives page reloads.
+ * Fallback tenant config used when a component needs an OIDC config outside
+ * the normal tenant-resolution flow (e.g. tests or standalone usage).
  */
-export const oidcConfig: AuthProviderProps = {
-  authority: 'http://localhost:8081/realms/forest',
-  client_id: 'frontend-app',
-  redirect_uri: redirectUri,
-  post_logout_redirect_uri: redirectUri,
-  scope: 'openid profile email',
-  loadUserInfo: true,
-  automaticSilentRenew: true,
-  userStore: new WebStorageStateStore({ store: globalThis.localStorage }),
-  onSigninCallback: () => {
-    // Strip the OIDC `code`/`state` query params left by the authorization
-    // redirect so they do not linger in the address bar.
-    globalThis.history.replaceState({}, document.title, globalThis.location.pathname);
+const fallbackTenant: TenantConfig = {
+  subdomain: 'acme',
+  tenantId: '1',
+  displayName: 'ACME Corp',
+  keycloakClientId: 'frontend-app',
+  theme: {
+    primary: '#1192e6',
+    primaryText: '#ffffff',
+    headerBackground: '#1192e6',
+    headerText: '#ffffff',
+    logoUrl: '/tenants/acme/logo.svg',
+    faviconUrl: '/tenants/acme/favicon.ico',
   },
 };
+
+/**
+ * Default OIDC configuration — delegates to {@link createOidcConfig} with a
+ * fallback tenant. Prefer the dynamic path in `main.tsx` which resolves the
+ * real tenant from the manifest.
+ *
+ * @deprecated Use `createOidcConfig(tenant)` with the resolved tenant instead.
+ */
+export const oidcConfig = createOidcConfig(fallbackTenant);

@@ -1,0 +1,38 @@
+:root {
+  --kc-primary: #198038;
+  --kc-primary-dark: #0f5925;
+  --kc-text-on-primary: #ffffff;
+}
+
+.login-pf body {
+  background: linear-gradient(135deg, var(--kc-primary) 0%, #0a3d18 100%);
+}
+
+.login-pf header .navbar-brand {
+  background-image: url('../img/logo.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 48px;
+  width: 180px;
+}
+
+#kc-header-wrapper {
+  color: var(--kc-text-on-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background-color: var(--kc-primary) !important;
+  border-color: var(--kc-primary-dark) !important;
+  color: var(--kc-text-on-primary) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--kc-primary-dark) !important;
+}
+
+a {
+  color: var(--kc-primary);
+}

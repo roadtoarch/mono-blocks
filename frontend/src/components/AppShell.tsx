@@ -7,8 +7,11 @@ import {
   HeaderName,
   HeaderPanel,
 } from '@carbon/react';
+import { useEffect } from 'react';
 import { useState } from 'react';
 import { useAuth } from 'react-oidc-context';
+
+import { useTenant } from '../tenant/useTenant';
 
 import type { FC, ReactNode } from 'react';
 
@@ -17,13 +20,28 @@ interface AppShellProps {
 }
 
 /**
- * Application shell — Carbon {@link Header} with the app name and a
+ * Application shell — Carbon {@link Header} with tenant branding and a
  * {@link HeaderPanel} that displays the user's name, email, tenant id,
  * and a log-out button.
  */
 const AppShell: FC<AppShellProps> = ({ children }) => {
   const auth = useAuth();
+  const tenant = useTenant();
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  /* Apply tenant theme to the Carbon <header> element via CSS custom
+     properties. Carbon's `.cds--header` reads `--cds-background` for
+     background and `--cds-text-primary` for text color; setting these on
+     the element itself overrides the global token values and cascades to
+     child elements that reference the same properties. */
+  useEffect(() => {
+    const header = document.querySelector<HTMLElement>('.cds--header');
+    if (header) {
+      header.style.setProperty('--cds-background', tenant.theme.headerBackground);
+      header.style.setProperty('--cds-text-primary', tenant.theme.headerText);
+      header.style.setProperty('--cds-border-subtle', 'transparent');
+    }
+  }, [tenant.theme.headerBackground, tenant.theme.headerText]);
 
   const profile = auth.user?.profile;
   const displayName = profile?.name ?? 'Unknown';
@@ -32,8 +50,19 @@ const AppShell: FC<AppShellProps> = ({ children }) => {
 
   return (
     <>
-      <Header aria-label="Forest application shell">
-        <HeaderName prefix="BCGov">Forest</HeaderName>
+      <Header aria-label={`${tenant.displayName} application shell`}>
+        {tenant.theme.logoUrl !== '' && (
+          <img
+            src={tenant.theme.logoUrl}
+            alt=""
+            style={{
+              height: '1.25rem',
+              marginLeft: '1rem',
+              verticalAlign: 'middle',
+            }}
+          />
+        )}
+        <HeaderName prefix="BCGov">{tenant.displayName}</HeaderName>
         <HeaderGlobalBar>
           <HeaderGlobalAction
             aria-label="User profile"

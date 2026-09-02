@@ -185,6 +185,8 @@ io:
             age: 5m
             origins:
               - http://localhost:5173
+              - http://acme.localhost:5173
+              - http://northpac.localhost:5173
 
 info:
   app:

@@ -43,6 +43,15 @@ class SecurityIntegrationTest {
 			.andExpect(jsonPath("$.email").value("test@example.com"));
 	}
 
+	@Test
+	void protectedEndpoint_withBearerTokenMissingTenantId_returns401() throws Exception {
+		// The mock JwtDecoder below returns a Jwt with only "sub", so the
+		// tenant-aware converter rejects the token and the filter returns 401.
+		mockMvc.perform(get("/api/me")
+				.header("Authorization", "Bearer any-token-value"))
+			.andExpect(status().isUnauthorized());
+	}
+
 	@TestConfiguration(proxyBeanMethods = false)
 	static class MockJwtDecoderConfig {
 

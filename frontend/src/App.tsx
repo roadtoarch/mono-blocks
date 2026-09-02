@@ -5,7 +5,9 @@ import { useAuth } from 'react-oidc-context';
 import { useMeQuery } from './api/me.ts';
 import AppShell from './components/AppShell.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
+import { useTenant } from './tenant/useTenant';
 
+import type { TenantConfig } from './tenant/tenant.types';
 import type { FC } from 'react';
 
 /** Reads the `tenant_id` claim off the OIDC user profile if present. */
@@ -47,19 +49,32 @@ const AuthenticatedContent: FC = () => {
   );
 };
 
-/** Unauthenticated landing page with a Carbon-styled sign-in button. */
-const LandingPage: FC<{ readonly onSignIn: () => void }> = ({ onSignIn }) => (
+interface LandingPageProps {
+  readonly onSignIn: () => void;
+  readonly tenant: TenantConfig;
+}
+
+/** Unauthenticated landing page with tenant branding and a Carbon-styled sign-in button. */
+const LandingPage: FC<LandingPageProps> = ({ onSignIn, tenant }) => (
   <div
     style={{
       display: 'flex',
+      flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: '100vh',
       padding: '2rem',
     }}
   >
+    {tenant.theme.logoUrl !== '' && (
+      <img
+        src={tenant.theme.logoUrl}
+        alt={`${tenant.displayName} logo`}
+        style={{ maxHeight: '4rem', marginBottom: '1rem' }}
+      />
+    )}
     <Tile style={{ maxWidth: '32rem', textAlign: 'center' }}>
-      <h1 style={{ marginBottom: '0.5rem' }}>Forest</h1>
+      <h1 style={{ marginBottom: '0.5rem' }}>{tenant.displayName}</h1>
       <p style={{ marginBottom: '1.5rem' }}>Sign in with your Keycloak account to continue.</p>
       <Button kind="primary" onClick={onSignIn}>
         Sign in
@@ -70,6 +85,7 @@ const LandingPage: FC<{ readonly onSignIn: () => void }> = ({ onSignIn }) => (
 
 const App: FC = () => {
   const auth = useAuth();
+  const tenant = useTenant();
 
   /* Redirect to Keycloak when a 401 is received from the API. */
   useEffect(() => {
@@ -106,7 +122,7 @@ const App: FC = () => {
   }
 
   if (!auth.isAuthenticated) {
-    return <LandingPage onSignIn={() => void auth.signinRedirect()} />;
+    return <LandingPage onSignIn={() => void auth.signinRedirect()} tenant={tenant} />;
   }
 
   return (

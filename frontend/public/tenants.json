@@ -1,0 +1,33 @@
+{
+  "tenants": [
+    {
+      "subdomain": "acme",
+      "tenantId": "1",
+      "displayName": "ACME Corp",
+      "keycloakClientId": "acme-app",
+      "theme": {
+        "primary": "#1192e6",
+        "primaryText": "#ffffff",
+        "headerBackground": "#1192e6",
+        "headerText": "#ffffff",
+        "logoUrl": "/tenants/acme/logo.svg",
+        "faviconUrl": "/tenants/acme/favicon.ico"
+      }
+    },
+    {
+      "subdomain": "northpac",
+      "tenantId": "2",
+      "displayName": "NorthPac Resources",
+      "keycloakClientId": "northpac-app",
+      "theme": {
+        "primary": "#198038",
+        "primaryText": "#ffffff",
+        "headerBackground": "#198038",
+        "headerText": "#ffffff",
+        "logoUrl": "/tenants/northpac/logo.svg",
+        "faviconUrl": "/tenants/northpac/favicon.ico"
+      }
+    }
+  ],
+  "default": "acme"
+}
