@@ -80,6 +80,11 @@ management:
   endpoint:
     health:
       show-details: when_authorized
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState,db
     prometheus:
       enabled: true
   endpoints:

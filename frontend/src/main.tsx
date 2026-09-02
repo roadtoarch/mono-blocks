@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { AuthProvider } from 'react-oidc-context';
 
 import './index.css';
+import './styles.scss';
 import App from './App.tsx';
 import { oidcConfig } from './auth/oidcConfig';
 
