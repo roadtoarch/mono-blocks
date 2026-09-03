@@ -57,10 +57,13 @@ The API listens on `http://localhost:8080`.
 In a third terminal:
 
 ```bash
+cp frontend/.env.example frontend/.env
 cd frontend
 npm install
 npm run dev
 ```
+
+The frontend reads `VITE_API_URL` and `VITE_KEYCLOAK_URL` from `frontend/.env` via a Zod-validated `src/env.ts`. Defaults are `http://localhost:8080` and `http://localhost:8081`.
 
 Open `http://localhost:5173`, choose **Sign in**, and use one of the demo accounts below.
 

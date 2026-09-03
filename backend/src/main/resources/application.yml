@@ -1,6 +1,6 @@
 # General application
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT:9000}
   shutdown: graceful
   max-http-request-header-size: 16KB
 
@@ -28,7 +28,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:${KEYCLOAK_PORT:8081}/realms/forest
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8081}/realms/forest
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:postgres}
     username: ${POSTGRES_USER:postgres}
@@ -150,7 +150,7 @@ io:
             realm: forest
             client-id: backend-admin
             client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:changeme}
-            auth-server-url: http://localhost:${KEYCLOAK_PORT:8081}
+            auth-server-url: ${KEYCLOAK_URL:http://localhost:8081}
         frontend:
           url: ${FRONTEND_URL:http://localhost:5173}
           cors:

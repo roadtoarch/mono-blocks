@@ -1,5 +1,7 @@
 import { WebStorageStateStore } from 'oidc-client-ts';
 
+import { env } from '../env';
+
 import type { TenantConfig } from '../tenant/tenant.types';
 import type { AuthProviderProps } from 'react-oidc-context';
 
@@ -13,8 +15,9 @@ import type { AuthProviderProps } from 'react-oidc-context';
  */
 export function createOidcConfig(tenant: TenantConfig): AuthProviderProps {
   const origin = globalThis.location.origin;
+  const keycloakBase = env.VITE_KEYCLOAK_URL.replace(/\/$/, '');
   return {
-    authority: 'http://localhost:8081/realms/forest',
+    authority: `${keycloakBase}/realms/forest`,
     client_id: tenant.keycloakClientId,
     redirect_uri: origin,
     post_logout_redirect_uri: origin,

@@ -1,5 +1,7 @@
-/** Base URL of the resource server, overridable via `VITE_API_URL`. */
-export const API_BASE_URL: string = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
+import { env } from '../env';
+
+/** Base URL of the resource server, validated via env module. */
+export const API_BASE_URL: string = env.VITE_API_URL;
 
 /**
  * Fires a custom event that the app shell catches to force a login redirect
