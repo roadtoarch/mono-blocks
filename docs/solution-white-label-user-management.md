@@ -187,7 +187,7 @@ Then there is no "Users" link (feature flag userManagement is gated by ADMIN rol
 | AC-008 | Given an ADMIN calls `PATCH /api/users/{userId}/status` with `enabled: false`, the target user's Keycloak account has `enabled: false` | Keycloak admin console inspection |
 | AC-009 | Given an ADMIN calls `PATCH /api/users/{userId}/roles` with a new role, the target user's realm roles in Keycloak match the updated set | Keycloak admin console inspection |
 | AC-010 | Given alice (t1) targets carol's UUID in any user management endpoint, the response is 403 Forbidden | API test with cross-tenant UUID |
-| AC-011 | `npm run lint && npm run build` passes after every slice | CI pipeline |
+| AC-011 | `yarn lint && yarn build` passes after every slice | CI pipeline |
 | AC-012 | `mvn test` passes after every slice; existing `SecurityIntegrationTest` tests remain green | Maven build |
 | AC-013 | The Keycloak realm export imports cleanly with the new service-account client | `docker-compose down -v && docker-compose up` — Keycloak starts |
 

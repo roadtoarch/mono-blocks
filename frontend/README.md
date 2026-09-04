@@ -14,10 +14,10 @@
 ## Available scripts
 
 ```bash
-npm run dev      # Vite dev server with HMR
-npm run build    # tsc -b && vite build (typecheck + production build)
-npm run lint     # ESLint with strict type-checked rules, React DOM/X, import order, Prettier, @tanstack/query rules
-npm run preview  # Preview production build
+yarn dev      # Vite dev server with HMR
+yarn build    # tsc -b && vite build (typecheck + production build)
+yarn lint     # ESLint with strict type-checked rules, React DOM/X, import order, Prettier, @tanstack/query rules
+yarn preview  # Preview production build
 ```
 
 ## Lint / code quality
@@ -28,7 +28,7 @@ npm run preview  # Preview production build
 - `eslint-plugin-import-x` import ordering (builtin / external / internal / parent / sibling / index)
 - `prettier` run via `eslint-plugin-prettier` (singleQuote, trailingComma all, printWidth 100, semi)
 - `.editorconfig` enforces LF, 2-space indent, final newline
-- `.npmrc` – `engine-strict=true`; node `>=22.19.0` required
+- `.yarnrc.yml` – `nodeLinker: node-modules`; node `>=22.19.0` required
 
 ## Deferred / future add-ons (planned)
 
@@ -37,6 +37,6 @@ Unit testing with **Vitest + Testing Library**, coverage, Playwright E2E, access
 ## Gotchas
 
 - No test runner configured yet.
-- `npm run build` doubles as the TypeScript type-check.
+- `yarn build` doubles as the TypeScript type-check.
 - Build artifacts: `dist/` (ignored by Prettier).
 - Keep imports grouped per `import-x/order` — empty line between groups enforced.

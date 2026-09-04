@@ -59,8 +59,8 @@ In a third terminal:
 ```bash
 cp frontend/.env.example frontend/.env
 cd frontend
-npm install
-npm run dev
+yarn install
+yarn dev
 ```
 
 The frontend reads `VITE_API_URL` and `VITE_KEYCLOAK_URL` from `frontend/.env` via a Zod-validated `src/env.ts`. Defaults are `http://localhost:8080` and `http://localhost:8081`.
@@ -186,8 +186,8 @@ Typical next steps are:
 Frontend checks run from `frontend/`:
 
 ```bash
-npm run lint
-npm run build
+yarn lint
+yarn build
 ```
 
 Backend checks run from `backend/`:
