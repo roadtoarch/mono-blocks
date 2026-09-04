@@ -1,4 +1,4 @@
-package io.github.paulushcgcj.roadtoarch.spat.user;
+package io.github.paulushcgcj.roadtoarch.spat.services.users;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,17 +10,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import io.github.paulushcgcj.roadtoarch.spat.dto.KeycloakRoleMapping;
-import io.github.paulushcgcj.roadtoarch.spat.dto.KeycloakUser;
-import io.github.paulushcgcj.roadtoarch.spat.dto.KeycloakUserCreate;
-import io.github.paulushcgcj.roadtoarch.spat.exception.TenantIsolationException;
+import io.github.paulushcgcj.roadtoarch.spat.dtos.keycloak.KeycloakRoleMapping;
+import io.github.paulushcgcj.roadtoarch.spat.dtos.keycloak.KeycloakUser;
+import io.github.paulushcgcj.roadtoarch.spat.dtos.keycloak.KeycloakUserCreate;
+import io.github.paulushcgcj.roadtoarch.spat.exceptions.TenantIsolationException;
 import io.github.paulushcgcj.roadtoarch.spat.keycloak.KeycloakAdminClient;
-import io.github.paulushcgcj.roadtoarch.spat.user.dto.InviteUserRequest;
-import io.github.paulushcgcj.roadtoarch.spat.user.dto.UpdateUserRolesRequest;
-import io.github.paulushcgcj.roadtoarch.spat.user.dto.UpdateUserStatusRequest;
-import io.github.paulushcgcj.roadtoarch.spat.user.dto.UserSummary;
+import io.github.paulushcgcj.roadtoarch.spat.dtos.users.InviteUserRequest;
+import io.github.paulushcgcj.roadtoarch.spat.dtos.users.UpdateUserRolesRequest;
+import io.github.paulushcgcj.roadtoarch.spat.dtos.users.UpdateUserStatusRequest;
+import io.github.paulushcgcj.roadtoarch.spat.dtos.users.UserSummary;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

@@ -3,7 +3,8 @@ package io.github.paulushcgcj.roadtoarch.spat.exception;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.github.paulushcgcj.roadtoarch.spat.util.TenantIsolationUtil;
+import io.github.paulushcgcj.roadtoarch.spat.exceptions.TenantIsolationException;
+import io.github.paulushcgcj.roadtoarch.spat.utils.TenantIsolationUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

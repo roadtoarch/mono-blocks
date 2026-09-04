@@ -1,4 +1,4 @@
-package io.github.paulushcgcj.roadtoarch.spat.user.dto;
+package io.github.paulushcgcj.roadtoarch.spat.dtos.users;
 
 /**
  * Request body for inviting a new user to the caller's tenant.

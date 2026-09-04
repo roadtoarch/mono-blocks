@@ -1,5 +1,6 @@
 package io.github.paulushcgcj.roadtoarch.spat;
 
+import io.github.paulushcgcj.roadtoarch.spat.extensions.TestcontainersConfiguration;
 import org.springframework.boot.SpringApplication;
 
 public class TestSpatApplication {

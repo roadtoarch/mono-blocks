@@ -1,6 +1,6 @@
-package io.github.paulushcgcj.roadtoarch.spat.api;
+package io.github.paulushcgcj.roadtoarch.spat.controllers;
 
-import io.github.paulushcgcj.roadtoarch.spat.util.JwtClaimUtil;
+import io.github.paulushcgcj.roadtoarch.spat.utils.JwtClaimUtil;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
  * confirm the end-to-end JWT flow and tenant resolution.
  */
 @RestController
-@RequestMapping("/api")
-public class MeController {
+@RequestMapping("/api/me")
+public class SelfController {
 
-	@GetMapping("/me")
-	Map<String, Object> me(@AuthenticationPrincipal Jwt jwt) {
+	@GetMapping
+	Map<String, Object> getMyData(@AuthenticationPrincipal Jwt jwt) {
 		Map<String, Object> result = new LinkedHashMap<>();
 		result.put("username", jwt.getClaimAsString("preferred_username"));
 		result.put("email", jwt.getClaimAsString("email"));

@@ -1,4 +1,4 @@
-package io.github.paulushcgcj.roadtoarch.spat.util;
+package io.github.paulushcgcj.roadtoarch.spat.utils;
 
 import java.util.Optional;
 import lombok.AccessLevel;

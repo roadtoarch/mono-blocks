@@ -1,7 +1,8 @@
-package io.github.paulushcgcj.roadtoarch.spat.exception;
+package io.github.paulushcgcj.roadtoarch.spat.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Thrown when an authenticated user attempts to access resources belonging to a
@@ -11,13 +12,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * is {@code true}).
  */
 @ResponseStatus(HttpStatus.FORBIDDEN)
-public class TenantIsolationException extends RuntimeException {
+public class TenantIsolationException extends ResponseStatusException {
 
 	public TenantIsolationException(String message) {
-		super(message);
+		super(HttpStatus.FORBIDDEN, message);
 	}
 
 	public TenantIsolationException(String message, Throwable cause) {
-		super(message, cause);
+		super(HttpStatus.FORBIDDEN, message, cause);
 	}
 }

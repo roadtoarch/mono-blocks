@@ -1,4 +1,4 @@
-package io.github.paulushcgcj.roadtoarch.spat.dto;
+package io.github.paulushcgcj.roadtoarch.spat.dtos.keycloak;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

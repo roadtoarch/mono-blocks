@@ -1,4 +1,4 @@
-package io.github.paulushcgcj.roadtoarch.spat.dto;
+package io.github.paulushcgcj.roadtoarch.spat.dtos.keycloak;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,11 +11,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Subset of user fields accepted by the Keycloak Admin REST API
- * {@code POST /users} endpoint for creating a new user.
+ * Full user representation as returned by the Keycloak Admin REST API.
  *
- * <p>Includes optional {@link KeycloakCredential} list so an initial password
- * can be set at creation time.
+ * <p>Used for GET responses and PATCH request bodies. Unknown fields are ignored
+ * during deserialization for forward compatibility with newer Keycloak versions.
  */
 @Builder
 @Getter
@@ -24,7 +23,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class KeycloakUserCreate {
+public class KeycloakUser {
+
+	private String id;
 
 	private String username;
 
@@ -34,11 +35,13 @@ public class KeycloakUserCreate {
 
 	private String email;
 
+	private Boolean emailVerified;
+
 	private Boolean enabled;
 
 	private Map<String, List<String>> attributes;
 
 	private List<String> requiredActions;
 
-	private List<KeycloakCredential> credentials;
+	private List<String> realmRoles;
 }

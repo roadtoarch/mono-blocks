@@ -1,11 +1,11 @@
-package io.github.paulushcgcj.roadtoarch.spat.api;
+package io.github.paulushcgcj.roadtoarch.spat.controllers;
 
-import io.github.paulushcgcj.roadtoarch.spat.user.UserService;
-import io.github.paulushcgcj.roadtoarch.spat.user.dto.InviteUserRequest;
-import io.github.paulushcgcj.roadtoarch.spat.user.dto.UpdateUserRolesRequest;
-import io.github.paulushcgcj.roadtoarch.spat.user.dto.UpdateUserStatusRequest;
-import io.github.paulushcgcj.roadtoarch.spat.user.dto.UserSummary;
-import io.github.paulushcgcj.roadtoarch.spat.util.JwtClaimUtil;
+import io.github.paulushcgcj.roadtoarch.spat.services.users.UserService;
+import io.github.paulushcgcj.roadtoarch.spat.dtos.users.InviteUserRequest;
+import io.github.paulushcgcj.roadtoarch.spat.dtos.users.UpdateUserRolesRequest;
+import io.github.paulushcgcj.roadtoarch.spat.dtos.users.UpdateUserStatusRequest;
+import io.github.paulushcgcj.roadtoarch.spat.dtos.users.UserSummary;
+import io.github.paulushcgcj.roadtoarch.spat.utils.JwtClaimUtil;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;

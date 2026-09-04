@@ -1,6 +1,6 @@
-package io.github.paulushcgcj.roadtoarch.spat.util;
+package io.github.paulushcgcj.roadtoarch.spat.utils;
 
-import io.github.paulushcgcj.roadtoarch.spat.exception.TenantIsolationException;
+import io.github.paulushcgcj.roadtoarch.spat.exceptions.TenantIsolationException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -22,7 +22,7 @@ public final class TenantIsolationUtil {
 	 * @throws TenantIsolationException if the IDs differ or the target has no tenant
 	 */
 	public static void assertTenantMatch(String jwtTenantId, String targetUserTenantId) {
-		if (targetUserTenantId == null || !jwtTenantId.equals(targetUserTenantId)) {
+		if (!jwtTenantId.equals(targetUserTenantId)) {
 			throw new TenantIsolationException("Cross-tenant access denied");
 		}
 	}
