@@ -21,7 +21,7 @@ const allowedRuntimeEnvConfigSchema = z
 /**
  * Final merged env contract consumed by the application.
  */
-const appEnvSchema = z.looseObject({
+const appEnvSchema = z.object({
   VITE_API_URL: z.string().min(1).default('http://localhost:8080'),
   VITE_KEYCLOAK_URL: z.string().min(1).default('http://localhost:8081'),
   VITE_FRONTEND_URL: z.string().min(1).optional(),
@@ -34,7 +34,7 @@ const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   if (typeof value !== 'object' || value == null || Array.isArray(value)) {
     return false;
   }
-  const prototype = Object.getPrototypeOf(value);
+  const prototype: object | null = Object.getPrototypeOf(value) as object | null;
   return prototype === Object.prototype || prototype === null;
 };
 
@@ -69,11 +69,11 @@ const getValidatedAppEnv = (config: Record<string, string>): AppEnv => {
       .join('; ');
     throw new TypeError(`Invalid application env: ${issues}`);
   }
-  return parsed.data as AppEnv;
+  return parsed.data;
 };
 
-const viteEnv = getStringEnvEntries(import.meta.env as Record<string, unknown>);
-const runtimeEnv = getValidatedRuntimeConfig(globalThis.window?.config);
+const viteEnv = getStringEnvEntries(import.meta.env);
+const runtimeEnv = getValidatedRuntimeConfig(window.config);
 
 export const env: AppEnv = getValidatedAppEnv({
   ...viteEnv,
