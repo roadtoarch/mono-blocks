@@ -33,7 +33,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class UserService {
 
-	private static final Set<String> ALLOWED_ROLES = Set.of("ADMIN", "MEMBER");
+	private static final Set<String> ALLOWED_ROLES = Set.of("ADMIN", "VIEWER", "AUDITOR", "SUBMITTER");
 
 	private static final int USER_SEARCH_MAX = 1000;
 

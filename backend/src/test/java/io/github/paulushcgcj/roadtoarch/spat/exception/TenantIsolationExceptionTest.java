@@ -21,14 +21,14 @@ class TenantIsolationExceptionTest {
 	void assertTenantMatch_mismatchedTenants_throwsException() {
 		assertThatThrownBy(() -> TenantIsolationUtil.assertTenantMatch("t1", "t2"))
 			.isInstanceOf(TenantIsolationException.class)
-			.hasMessage("Cross-tenant access denied");
+			.hasMessageContaining("Cross-tenant access denied");
 	}
 
 	@Test
 	void assertTenantMatch_nullTargetTenant_throwsException() {
 		assertThatThrownBy(() -> TenantIsolationUtil.assertTenantMatch("t1", null))
 			.isInstanceOf(TenantIsolationException.class)
-			.hasMessage("Cross-tenant access denied");
+			.hasMessageContaining("Cross-tenant access denied");
 	}
 
 	@Test

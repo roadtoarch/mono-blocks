@@ -8,12 +8,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -46,11 +49,49 @@ class SecurityIntegrationTest {
 
 	@Test
 	void protectedEndpoint_withBearerTokenMissingTenantId_returns401() throws Exception {
-		// The mock JwtDecoder below returns a Jwt with only "sub", so the
-		// tenant-aware converter rejects the token and the filter returns 401.
 		mockMvc.perform(get("/api/me")
 				.header("Authorization", "Bearer any-token-value"))
 			.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void usersEndpoint_withoutAuthorization_returns401() throws Exception {
+		mockMvc.perform(get("/api/users"))
+			.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void adminEndpoint_withNonAdminRole_returns403() throws Exception {
+		mockMvc.perform(post("/api/users/invite")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("""
+					{"email":"new@example.test","firstName":"New","lastName":"User","role":"VIEWER"}
+					""")
+				.with(jwt().authorities(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_VIEWER"))
+					.jwt(j -> j.claim("tenant_id", "1"))))
+			.andExpect(status().isForbidden());
+	}
+
+	@Test
+	void adminEndpoint_withoutAuthorization_returns401() throws Exception {
+		mockMvc.perform(post("/api/users/invite")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("""
+					{"email":"new@example.test","firstName":"New","lastName":"User","role":"VIEWER"}
+					"""))
+			.andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void adminPatchStatusEndpoint_withNonAdminRole_returns403() throws Exception {
+		mockMvc.perform(patch("/api/users/some-user-id/status")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("""
+					{"enabled":false}
+					""")
+				.with(jwt().authorities(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_VIEWER"))
+					.jwt(j -> j.claim("tenant_id", "1"))))
+			.andExpect(status().isForbidden());
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)

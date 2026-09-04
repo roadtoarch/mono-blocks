@@ -6,10 +6,10 @@ import io.github.paulushcgcj.roadtoarch.spat.dtos.users.UpdateUserRolesRequest;
 import io.github.paulushcgcj.roadtoarch.spat.dtos.users.UpdateUserStatusRequest;
 import io.github.paulushcgcj.roadtoarch.spat.dtos.users.UserSummary;
 import io.github.paulushcgcj.roadtoarch.spat.utils.JwtClaimUtil;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+
 
 /**
  * REST endpoints for user management within the caller's tenant.
@@ -71,8 +71,8 @@ public class UserController {
 	 */
 	@PostMapping("/invite")
 	@ResponseStatus(HttpStatus.CREATED)
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public String inviteUser(@AuthenticationPrincipal Jwt jwt, @RequestBody InviteUserRequest request) {
-		requireAdmin(jwt);
 		String tenantId = JwtClaimUtil.getTenantId(jwt);
 		return userService.inviteUser(tenantId, request);
 	}
@@ -86,11 +86,11 @@ public class UserController {
 	 * @return {@code 200 OK} on success
 	 */
 	@PatchMapping("/{userId}/status")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<Void> updateUserStatus(
 			@AuthenticationPrincipal Jwt jwt,
 			@PathVariable String userId,
 			@RequestBody UpdateUserStatusRequest request) {
-		requireAdmin(jwt);
 		String tenantId = JwtClaimUtil.getTenantId(jwt);
 		userService.updateUserStatus(tenantId, userId, request);
 		return ResponseEntity.ok().build();
@@ -105,25 +105,13 @@ public class UserController {
 	 * @return {@code 200 OK} on success
 	 */
 	@PatchMapping("/{userId}/roles")
+	@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 	public ResponseEntity<Void> updateUserRoles(
 			@AuthenticationPrincipal Jwt jwt,
 			@PathVariable String userId,
 			@RequestBody UpdateUserRolesRequest request) {
-		requireAdmin(jwt);
 		String tenantId = JwtClaimUtil.getTenantId(jwt);
 		userService.updateUserRoles(tenantId, userId, request);
 		return ResponseEntity.ok().build();
-	}
-
-	/**
-	 * Asserts that the JWT carries the {@code ADMIN} realm role.
-	 *
-	 * @throws ResponseStatusException with {@code 403 Forbidden} if not an admin
-	 */
-	private static void requireAdmin(Jwt jwt) {
-		List<String> roles = jwt.getClaimAsStringList("realm_access.roles");
-		if (roles == null || !roles.contains("ADMIN")) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admin role required");
-		}
 	}
 }

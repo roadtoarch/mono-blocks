@@ -164,11 +164,11 @@ class UserServiceTest {
 		@Test
 		void createsUserAndAssignsRequestedRole() {
 			InviteUserRequest request = new InviteUserRequest(
-				"jane@example.com", "Jane", "Doe", "MEMBER");
+				"jane@example.com", "Jane", "Doe", "VIEWER");
 
-			KeycloakRoleMapping memberRole = KeycloakRoleMapping.builder()
-				.id("role-member")
-				.name("MEMBER")
+			KeycloakRoleMapping viewerRole = KeycloakRoleMapping.builder()
+				.id("role-viewer")
+				.name("VIEWER")
 				.clientRole(false)
 				.containerId("forest")
 				.build();
@@ -176,7 +176,7 @@ class UserServiceTest {
 			when(keycloakAdminClient.createUser(any(KeycloakUserCreate.class)))
 				.thenReturn("new-user-id");
 			when(keycloakAdminClient.getAvailableRealmRoles())
-				.thenReturn(List.of(memberRole));
+				.thenReturn(List.of(viewerRole));
 
 			String userId = userService.inviteUser(TENANT_ID, request);
 
@@ -195,7 +195,7 @@ class UserServiceTest {
 			assertThat(captured.getRequiredActions()).containsExactly("UPDATE_PASSWORD");
 
 			verify(keycloakAdminClient).addUserRoleMappings(
-				eq("new-user-id"), eq(List.of(memberRole)));
+				eq("new-user-id"), eq(List.of(viewerRole)));
 		}
 
 		@Test
@@ -279,9 +279,9 @@ class UserServiceTest {
 			.containerId("forest")
 			.build();
 
-		private final KeycloakRoleMapping memberRole = KeycloakRoleMapping.builder()
-			.id("role-member")
-			.name("MEMBER")
+		private final KeycloakRoleMapping viewerRole = KeycloakRoleMapping.builder()
+			.id("role-viewer")
+			.name("VIEWER")
 			.clientRole(false)
 			.containerId("forest")
 			.build();
@@ -306,14 +306,14 @@ class UserServiceTest {
 			when(keycloakAdminClient.getUserRoleMappings("target-1"))
 				.thenReturn(List.of(currentAdmin));
 			when(keycloakAdminClient.getAvailableRealmRoles())
-				.thenReturn(List.of(adminRole, memberRole));
+				.thenReturn(List.of(adminRole, viewerRole));
 
-			// Desired state: only MEMBER (remove ADMIN, add MEMBER)
-			UpdateUserRolesRequest request = new UpdateUserRolesRequest(List.of("MEMBER"));
+			// Desired state: only VIEWER (remove ADMIN, add VIEWER)
+			UpdateUserRolesRequest request = new UpdateUserRolesRequest(List.of("VIEWER"));
 			userService.updateUserRoles(TENANT_ID, "target-1", request);
 
 			verify(keycloakAdminClient).addUserRoleMappings(
-				eq("target-1"), eq(List.of(memberRole)));
+				eq("target-1"), eq(List.of(viewerRole)));
 			verify(keycloakAdminClient).removeUserRoleMappings(
 				eq("target-1"), eq(List.of(adminRole)));
 		}
@@ -326,18 +326,18 @@ class UserServiceTest {
 				.attributes(Map.of("tenant_id", List.of(TENANT_ID)))
 				.build();
 
-			KeycloakRoleMapping currentMember = KeycloakRoleMapping.builder()
-				.id("role-member")
-				.name("MEMBER")
+			KeycloakRoleMapping currentViewer = KeycloakRoleMapping.builder()
+				.id("role-viewer")
+				.name("VIEWER")
 				.clientRole(false)
 				.build();
 
 			when(keycloakAdminClient.getUsers(TENANT_ID, 0, 1000))
 				.thenReturn(List.of(target));
 			when(keycloakAdminClient.getUserRoleMappings("target-1"))
-				.thenReturn(List.of(currentMember));
+				.thenReturn(List.of(currentViewer));
 
-			UpdateUserRolesRequest request = new UpdateUserRolesRequest(List.of("MEMBER"));
+			UpdateUserRolesRequest request = new UpdateUserRolesRequest(List.of("VIEWER"));
 			userService.updateUserRoles(TENANT_ID, "target-1", request);
 
 			verify(keycloakAdminClient, never()).addUserRoleMappings(any(), any());
