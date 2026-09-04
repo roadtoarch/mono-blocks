@@ -1,0 +1,332 @@
+// ==========================================================================
+// SPAT Design Tokens — OKLCH Color System
+// Source: DESIGN.md v1.0.0
+//
+// Architecture:
+//   1. Primitive palette (OKLCH) — raw color scales, not tied to usage
+//   2. Spacing / radius / motion tokens — structural design decisions
+//   3. Semantic mapping → Carbon v11 `--cds-*` custom properties
+//   4. Light/dark mode via [data-theme] + prefers-color-scheme fallback
+//
+// Interaction with applyTheme.ts:
+//   - This file sets BASE defaults for all tokens (neutral palette + primary)
+//   - applyTheme.ts OVERRIDES interactive/primary --cds-* tokens per tenant
+//   - Cascade order: Carbon defaults → this file → applyTheme.ts inline styles
+// ==========================================================================
+
+// ---------------------------------------------------------------------------
+// 1. PRIMITIVE PALETTES
+// ---------------------------------------------------------------------------
+
+:root {
+  // Enables OS-level dark mode for form controls and scrollbars
+  color-scheme: light dark;
+
+  // -- Primary palette (hue 250°) -------------------------------------------
+  // Used for interactive elements. Tenants override the hue at runtime via
+  // applyTheme.ts; these OKLCH values serve as the design-system default.
+  --color-primary-50: oklch(0.97 0.04 250);
+  --color-primary-100: oklch(0.93 0.07 250);
+  --color-primary-200: oklch(0.87 0.12 250);
+  --color-primary-300: oklch(0.79 0.15 250);
+  --color-primary-400: oklch(0.7 0.18 250);
+  --color-primary-500: oklch(0.62 0.2 250);
+  --color-primary-600: oklch(0.53 0.2 250); // base interactive
+  --color-primary-700: oklch(0.45 0.18 250); // hover
+  --color-primary-800: oklch(0.36 0.14 250); // active
+  --color-primary-900: oklch(0.28 0.1 250);
+  --color-primary-950: oklch(0.2 0.06 250);
+
+  // -- Neutral palette (hue 260° blue-gray) ---------------------------------
+  // Used for surfaces, text, and borders. Stable hue avoids the purple shift
+  // common in HSL ramps. Same palette is used in both light and dark mode —
+  // the semantic mapping reverses direction between modes.
+  --color-neutral-50: oklch(0.985 0.002 260); // lightest surface
+  --color-neutral-100: oklch(0.965 0.003 260);
+  --color-neutral-200: oklch(0.925 0.005 260);
+  --color-neutral-300: oklch(0.875 0.007 260);
+  --color-neutral-400: oklch(0.71 0.01 260);
+  --color-neutral-500: oklch(0.55 0.012 260); // mid gray
+  --color-neutral-600: oklch(0.45 0.015 260);
+  --color-neutral-700: oklch(0.37 0.018 260);
+  --color-neutral-800: oklch(0.27 0.02 260);
+  --color-neutral-900: oklch(0.21 0.022 260);
+  --color-neutral-950: oklch(0.15 0.025 260); // darkest surface
+
+  // -- Spacing scale (4px base) ---------------------------------------------
+  --space-0: 0;
+  --space-1: 0.25rem; // 4px
+  --space-2: 0.5rem; // 8px
+  --space-3: 0.75rem; // 12px
+  --space-4: 1rem; // 16px
+  --space-5: 1.25rem; // 20px
+  --space-6: 1.5rem; // 24px
+  --space-8: 2rem; // 32px
+  --space-10: 2.5rem; // 40px
+  --space-12: 3rem; // 48px
+  --space-16: 4rem; // 64px
+  --space-20: 5rem; // 80px
+
+  // -- Border radius (concentric: outer = inner + padding) ------------------
+  --radius-none: 0;
+  --radius-sm: 0.125rem; // 2px — badges, tags
+  --radius-md: 0.25rem; // 4px — buttons, inputs
+  --radius-lg: 0.5rem; // 8px — cards, panels
+  --radius-xl: 0.75rem; // 12px — modals, large containers
+  --radius-full: 9999px; // pill buttons, avatars
+
+  // -- Motion tokens --------------------------------------------------------
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+
+  // -- Elevation (layered transparent shadows) ------------------------------
+  // Light mode: 3-layer diffuse shadow. Dark mode: single ring (see below).
+  --shadow-sm:
+    0 1px 2px oklch(0 0 0 / 0.05),
+    0 2px 4px oklch(0 0 0 / 0.05),
+    0 4px 8px oklch(0 0 0 / 0.05);
+  --shadow-md:
+    0 2px 4px oklch(0 0 0 / 0.06),
+    0 4px 8px oklch(0 0 0 / 0.06),
+    0 8px 16px oklch(0 0 0 / 0.06);
+  --shadow-lg:
+    0 4px 8px oklch(0 0 0 / 0.08),
+    0 8px 16px oklch(0 0 0 / 0.08),
+    0 16px 32px oklch(0 0 0 / 0.08);
+}
+
+// ---------------------------------------------------------------------------
+// 2. SEMANTIC TOKENS → CARBON --cds-* MAPPING (LIGHT MODE)
+// ---------------------------------------------------------------------------
+// Light mode maps: neutral 0–50 for surfaces, neutral 800–950 for text.
+// This block provides defaults; applyTheme.ts overrides interactive tokens
+// per tenant at runtime.
+
+:root,
+[data-theme='light'] {
+  // -- Backgrounds & surfaces -----------------------------------------------
+  --cds-background: var(--color-neutral-50);
+  --cds-layer-01: var(--color-neutral-100);
+  --cds-layer-02: var(--color-neutral-50);
+  --cds-layer-03: var(--color-neutral-100);
+  --cds-layer-accent-01: var(--color-neutral-200);
+  --cds-layer-accent-02: var(--color-neutral-200);
+  --cds-layer-active-01: var(--color-neutral-200);
+  --cds-layer-hover-01: var(--color-neutral-200);
+  --cds-field-01: var(--color-neutral-100);
+  --cds-field-02: var(--color-neutral-50);
+
+  // -- Text -----------------------------------------------------------------
+  --cds-text-primary: var(--color-neutral-950);
+  --cds-text-secondary: var(--color-neutral-700);
+  --cds-text-placeholder: var(--color-neutral-400);
+  --cds-text-disabled: var(--color-neutral-400);
+  --cds-text-on-color: var(--color-neutral-50);
+  --cds-text-helper: var(--color-neutral-600);
+  --cds-text-error: var(--color-neutral-950);
+  --cds-text-inverse: var(--color-neutral-50);
+
+  // -- Icons ----------------------------------------------------------------
+  --cds-icon-primary: var(--color-neutral-950);
+  --cds-icon-secondary: var(--color-neutral-700);
+  --cds-icon-disabled: var(--color-neutral-400);
+  --cds-icon-on-color: var(--color-neutral-50);
+  --cds-icon-interactive: var(--color-primary-600);
+
+  // -- Borders --------------------------------------------------------------
+  --cds-border-subtle-00: var(--color-neutral-200);
+  --cds-border-subtle-01: var(--color-neutral-200);
+  --cds-border-subtle-02: var(--color-neutral-200);
+  --cds-border-strong-01: var(--color-neutral-500);
+  --cds-border-strong-02: var(--color-neutral-500);
+  --cds-border-inverse: var(--color-neutral-950);
+  --cds-border-interactive: var(--color-primary-600);
+
+  // -- Interactive (overridden per tenant by applyTheme.ts) -----------------
+  --cds-interactive: var(--color-primary-600);
+  --cds-focus: var(--color-primary-600);
+  --cds-highlight: var(--color-primary-100);
+  --cds-button-primary: var(--color-primary-600);
+  --cds-button-primary-hover: var(--color-primary-700);
+  --cds-button-primary-active: var(--color-primary-800);
+  --cds-link-primary: var(--color-primary-600);
+  --cds-link-primary-hover: var(--color-primary-700);
+  --cds-link-visited: var(--color-primary-800);
+
+  // -- Elevation (light mode: 3-layer shadow) -------------------------------
+  --cds-elevation-0: none;
+  --cds-elevation-1: var(--shadow-sm);
+  --cds-elevation-2: var(--shadow-md);
+  --cds-elevation-3: var(--shadow-lg);
+
+  // -- Support (semantic feedback colors) -----------------------------------
+  // These use the primary palette for info; extend with dedicated hues for
+  // success/warning/error as the design system matures.
+  --cds-support-success: oklch(0.55 0.16 155);
+  --cds-support-warning: oklch(0.78 0.16 80);
+  --cds-support-error: oklch(0.55 0.2 25);
+  --cds-support-info: var(--color-primary-600);
+}
+
+// ---------------------------------------------------------------------------
+// 3. DARK MODE OVERRIDES
+// ---------------------------------------------------------------------------
+// Dark mode reverses the neutral palette mapping: 900–950 for surfaces,
+// 0–100 for text. Interactive tokens stay on the primary palette.
+// Applied via [data-theme="dark"] attribute on <html>.
+
+[data-theme='dark'] {
+  // -- Backgrounds & surfaces -----------------------------------------------
+  --cds-background: var(--color-neutral-950);
+  --cds-layer-01: var(--color-neutral-900);
+  --cds-layer-02: var(--color-neutral-950);
+  --cds-layer-03: var(--color-neutral-900);
+  --cds-layer-accent-01: var(--color-neutral-800);
+  --cds-layer-accent-02: var(--color-neutral-800);
+  --cds-layer-active-01: var(--color-neutral-800);
+  --cds-layer-hover-01: var(--color-neutral-800);
+  --cds-field-01: var(--color-neutral-900);
+  --cds-field-02: var(--color-neutral-950);
+
+  // -- Text -----------------------------------------------------------------
+  --cds-text-primary: var(--color-neutral-50);
+  --cds-text-secondary: var(--color-neutral-300);
+  --cds-text-placeholder: var(--color-neutral-600);
+  --cds-text-disabled: var(--color-neutral-600);
+  --cds-text-on-color: var(--color-neutral-950);
+  --cds-text-helper: var(--color-neutral-400);
+  --cds-text-error: var(--color-neutral-50);
+  --cds-text-inverse: var(--color-neutral-950);
+
+  // -- Icons ----------------------------------------------------------------
+  --cds-icon-primary: var(--color-neutral-50);
+  --cds-icon-secondary: var(--color-neutral-300);
+  --cds-icon-disabled: var(--color-neutral-600);
+  --cds-icon-on-color: var(--color-neutral-950);
+  --cds-icon-interactive: var(--color-primary-400);
+
+  // -- Borders --------------------------------------------------------------
+  --cds-border-subtle-00: var(--color-neutral-800);
+  --cds-border-subtle-01: var(--color-neutral-800);
+  --cds-border-subtle-02: var(--color-neutral-800);
+  --cds-border-strong-01: var(--color-neutral-500);
+  --cds-border-strong-02: var(--color-neutral-500);
+  --cds-border-inverse: var(--color-neutral-50);
+  --cds-border-interactive: var(--color-primary-400);
+
+  // -- Interactive ----------------------------------------------------------
+  --cds-interactive: var(--color-primary-600);
+  --cds-focus: var(--color-primary-400);
+  --cds-highlight: var(--color-primary-800);
+  --cds-button-primary: var(--color-primary-600);
+  --cds-button-primary-hover: var(--color-primary-500);
+  --cds-button-primary-active: var(--color-primary-400);
+  --cds-link-primary: var(--color-primary-400);
+  --cds-link-primary-hover: var(--color-primary-300);
+  --cds-link-visited: var(--color-primary-300);
+
+  // -- Elevation (dark mode: single-ring border glow) -----------------------
+  --cds-elevation-0: none;
+  --cds-elevation-1: 0 0 0 1px oklch(1 0 0 / 0.1);
+  --cds-elevation-2: 0 0 0 1px oklch(1 0 0 / 0.15);
+  --cds-elevation-3: 0 0 0 1px oklch(1 0 0 / 0.2);
+
+  // -- Support (adjusted for dark backgrounds) ------------------------------
+  --cds-support-success: oklch(0.7 0.17 155);
+  --cds-support-warning: oklch(0.82 0.16 80);
+  --cds-support-error: oklch(0.68 0.2 25);
+  --cds-support-info: var(--color-primary-400);
+}
+
+// ---------------------------------------------------------------------------
+// 4. SYSTEM PREFERENCE FALLBACK
+// ---------------------------------------------------------------------------
+// When no explicit data-theme is set, follow the OS preference.
+// The :not([data-theme="light"]) guard prevents clobbering an explicit
+// user choice stored in localStorage.
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    // -- Backgrounds & surfaces ---------------------------------------------
+    --cds-background: var(--color-neutral-950);
+    --cds-layer-01: var(--color-neutral-900);
+    --cds-layer-02: var(--color-neutral-950);
+    --cds-layer-03: var(--color-neutral-900);
+    --cds-layer-accent-01: var(--color-neutral-800);
+    --cds-layer-accent-02: var(--color-neutral-800);
+    --cds-layer-active-01: var(--color-neutral-800);
+    --cds-layer-hover-01: var(--color-neutral-800);
+    --cds-field-01: var(--color-neutral-900);
+    --cds-field-02: var(--color-neutral-950);
+
+    // -- Text ---------------------------------------------------------------
+    --cds-text-primary: var(--color-neutral-50);
+    --cds-text-secondary: var(--color-neutral-300);
+    --cds-text-placeholder: var(--color-neutral-600);
+    --cds-text-disabled: var(--color-neutral-600);
+    --cds-text-on-color: var(--color-neutral-950);
+    --cds-text-helper: var(--color-neutral-400);
+    --cds-text-error: var(--color-neutral-50);
+    --cds-text-inverse: var(--color-neutral-950);
+
+    // -- Icons --------------------------------------------------------------
+    --cds-icon-primary: var(--color-neutral-50);
+    --cds-icon-secondary: var(--color-neutral-300);
+    --cds-icon-disabled: var(--color-neutral-600);
+    --cds-icon-on-color: var(--color-neutral-950);
+    --cds-icon-interactive: var(--color-primary-400);
+
+    // -- Borders ------------------------------------------------------------
+    --cds-border-subtle-00: var(--color-neutral-800);
+    --cds-border-subtle-01: var(--color-neutral-800);
+    --cds-border-subtle-02: var(--color-neutral-800);
+    --cds-border-strong-01: var(--color-neutral-500);
+    --cds-border-strong-02: var(--color-neutral-500);
+    --cds-border-inverse: var(--color-neutral-50);
+    --cds-border-interactive: var(--color-primary-400);
+
+    // -- Interactive --------------------------------------------------------
+    --cds-interactive: var(--color-primary-600);
+    --cds-focus: var(--color-primary-400);
+    --cds-highlight: var(--color-primary-800);
+    --cds-button-primary: var(--color-primary-600);
+    --cds-button-primary-hover: var(--color-primary-500);
+    --cds-button-primary-active: var(--color-primary-400);
+    --cds-link-primary: var(--color-primary-400);
+    --cds-link-primary-hover: var(--color-primary-300);
+    --cds-link-visited: var(--color-primary-300);
+
+    // -- Elevation ----------------------------------------------------------
+    --cds-elevation-0: none;
+    --cds-elevation-1: 0 0 0 1px oklch(1 0 0 / 0.1);
+    --cds-elevation-2: 0 0 0 1px oklch(1 0 0 / 0.15);
+    --cds-elevation-3: 0 0 0 1px oklch(1 0 0 / 0.2);
+
+    // -- Support ------------------------------------------------------------
+    --cds-support-success: oklch(0.7 0.17 155);
+    --cds-support-warning: oklch(0.82 0.16 80);
+    --cds-support-error: oklch(0.68 0.2 25);
+    --cds-support-info: var(--color-primary-400);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. REDUCED MOTION
+// ---------------------------------------------------------------------------
+// Zero out all animation and transition durations when the user prefers
+// reduced motion. Named properties only — no transition: all.
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

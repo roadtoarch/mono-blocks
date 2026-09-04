@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { useAuth } from 'react-oidc-context';
 
 import { useTenant } from '../../tenant/useTenant';
+import { ThemeToggle } from '../ThemeToggle';
 
 import { useHeaderTheme } from './useHeaderTheme';
 
@@ -54,8 +55,9 @@ const TopNavLayout: FC<TopNavLayoutProps> = ({ children }) => {
             }}
           />
         )}
-        <HeaderName prefix="BCGov">{tenant.displayName}</HeaderName>
+        <HeaderName>{tenant.displayName}</HeaderName>
         <HeaderGlobalBar>
+          <ThemeToggle />
           <HeaderGlobalAction
             aria-label="User profile"
             isActive={isPanelOpen}

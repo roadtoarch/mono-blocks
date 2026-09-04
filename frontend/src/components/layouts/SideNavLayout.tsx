@@ -18,6 +18,7 @@ import { useAuth } from 'react-oidc-context';
 import { FEATURES } from '../../tenant/features';
 import { useFeature } from '../../tenant/useFeature';
 import { useTenant } from '../../tenant/useTenant';
+import { ThemeToggle } from '../ThemeToggle';
 
 import { useHeaderTheme } from './useHeaderTheme';
 
@@ -75,8 +76,9 @@ const SideNavLayout: FC<SideNavLayoutProps> = ({ children }) => {
             }}
           />
         )}
-        <HeaderName prefix="BCGov">{tenant.displayName}</HeaderName>
+        <HeaderName>{tenant.displayName}</HeaderName>
         <HeaderGlobalBar>
+          <ThemeToggle />
           <HeaderGlobalAction
             aria-label="User profile"
             isActive={isPanelOpen}

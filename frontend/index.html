@@ -5,6 +5,24 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>frontend</title>
+
+    <!-- Preconnect to Google Fonts CDN so the tenant-specific stylesheet
+         (injected at runtime by applyTenantTypography) resolves faster. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Inline script: restore saved colour-mode before first paint to
+         avoid a flash of wrong-theme content. -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme-preference');
+          if (t === 'light' || t === 'dark') {
+            document.documentElement.dataset.theme = t;
+          }
+        } catch (_) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

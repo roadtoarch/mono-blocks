@@ -1,1 +1,9 @@
+// Carbon v11 base styles (grid, components, default white theme)
 @use '@carbon/react';
+
+// SPAT design tokens: OKLCH primitives + semantic → --cds-* mapping.
+// Loaded AFTER Carbon so our custom property definitions override Carbon's
+// default theme values via the CSS cascade (later definition wins at
+// equal specificity). applyTheme.ts then overrides interactive tokens
+// per tenant at runtime via inline styles (highest specificity).
+@use './styles/tokens';
