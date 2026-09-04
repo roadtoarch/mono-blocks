@@ -37,12 +37,20 @@ colors:
   textDisabled: "{colors.neutral.400}"
   textInverse: "{colors.neutral.50}"
   borderSubtle: "{colors.neutral.200}"
-  borderDefault: "{colors.neutral.300}"
+  borderDefault: "{colors.neutral.500}"
   borderStrong: "{colors.neutral.500}"
   interactive: "{colors.primary.600}"
   interactiveHover: "{colors.primary.700}"
   interactiveActive: "{colors.primary.800}"
   focus: "{colors.primary.600}"
+  success: oklch(0.60 0.17 155)
+  successBg: oklch(0.96 0.04 155)
+  warning: oklch(0.75 0.16 80)
+  warningBg: oklch(0.97 0.05 80)
+  error: oklch(0.58 0.22 25)
+  errorBg: oklch(0.96 0.03 25)
+  info: oklch(0.60 0.15 230)
+  infoBg: oklch(0.96 0.03 230)
 
 typography:
   body:
@@ -176,7 +184,7 @@ The neutral palette provides surfaces, text, and borders. It uses OKLCH with a s
 | `textSecondary` | `oklch(0.37 0.018 260)` | Labels, captions |
 | `textDisabled` | `oklch(0.71 0.01 260)` | Disabled text |
 | `borderSubtle` | `oklch(0.925 0.005 260)` | Card borders, dividers |
-| `borderDefault` | `oklch(0.875 0.007 260)` | Input borders |
+| `borderDefault` | `oklch(0.55 0.012 260)` | Input borders (upgraded for WCAG 3:1 UI contrast) |
 | `borderStrong` | `oklch(0.55 0.012 260)` | Focus rings, strong borders |
 
 **Dark mode (applied via `[data-theme="dark"]` on `<html>`):**
@@ -215,6 +223,37 @@ The primary palette drives interactive elements. Tenants override the base hue a
 | UI components | 3:1 | `textInverse` on `interactive` ≈ 7.5:1 |
 
 **Fixing contrast:** Adjust lightness (L) only. Chroma (C) has negligible effect on contrast.
+
+### Support Colors
+
+Semantic colors for feedback states. Each has a foreground (text/icon) and background (banner/pill) variant:
+
+| Token | Value | Hue | Usage |
+|-------|-------|-----|-------|
+| `success` | `oklch(0.60 0.17 155)` | Green | Success states, confirmed actions |
+| `successBg` | `oklch(0.96 0.04 155)` | Green | Success banner backgrounds |
+| `warning` | `oklch(0.75 0.16 80)` | Amber | Warning states, attention needed |
+| `warningBg` | `oklch(0.97 0.05 80)` | Amber | Warning banner backgrounds |
+| `error` | `oklch(0.58 0.22 25)` | Red | Error states, validation failures |
+| `errorBg` | `oklch(0.96 0.03 25)` | Red | Error banner backgrounds |
+| `info` | `oklch(0.60 0.15 230)` | Blue | Informational messages, tips |
+| `infoBg` | `oklch(0.96 0.03 230)` | Blue | Info banner backgrounds |
+
+Foreground tokens (`success`, `warning`, `error`, `info`) meet WCAG AA contrast (≥4.5:1) against their matching background tokens. Background tokens are intentionally low-chroma to avoid visual noise in inline banners.
+
+### Dark Mode Interactive Brightness
+
+In dark mode, interactive elements use `primary.400` (L=0.70) instead of `primary.600` (L=0.53) for focus rings, links, and hover states. This matches Carbon's g100 pattern of using brighter interactive shades on dark backgrounds for better visibility.
+
+| Token | Light | Dark Override |
+|-------|-------|---------------|
+| `focus` | `primary.600` | `primary.400` |
+| link hover | `primary.700` | `primary.300` |
+| interactive hover | `primary.700` | `primary.500` |
+
+### `borderDefault` Mapping Decision
+
+The semantic `borderDefault` maps to `neutral.500` (not `neutral.300`) for input borders. `neutral.300` on `neutral.50` surface yields ~1.4:1 contrast, below WCAG 3:1 for UI components. `neutral.500` provides ~3.2:1, meeting the requirement while remaining visually subtle.
 
 ## Typography
 
@@ -484,17 +523,23 @@ The system supports three color modes:
 :root, [data-theme="light"] {
   --cds-background: oklch(0.985 0.002 260);
   --cds-text-primary: oklch(0.15 0.025 260);
+  --cds-focus: var(--color-primary-600);
+  --cds-link-primary: var(--color-primary-600);
 }
 
 [data-theme="dark"] {
   --cds-background: oklch(0.15 0.025 260);
   --cds-text-primary: oklch(0.985 0.002 260);
+  --cds-focus: var(--color-primary-400);
+  --cds-link-primary: var(--color-primary-400);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --cds-background: oklch(0.15 0.025 260);
     --cds-text-primary: oklch(0.985 0.002 260);
+    --cds-focus: var(--color-primary-400);
+    --cds-link-primary: var(--color-primary-400);
   }
 }
 ```

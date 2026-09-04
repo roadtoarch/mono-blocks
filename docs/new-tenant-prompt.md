@@ -107,3 +107,25 @@ Provide:
 - A summary of the visual identity (primary color in OKLCH + hex, font family, layout)
 - Instructions for testing (subdomain URL, logo placement)
 - Any follow-up tasks (logo generation, Keycloak client setup)
+
+## Phase 6: Prototype Update (Optional)
+
+If the new tenant's visual identity should be demonstrated in the design system prototype:
+
+### Update prototypes/design-system-prototype.html
+1. Add the new tenant to the `tenants` JavaScript object with:
+   - `name`: display name
+   - `primary`: OKLCH primary color (hue from Phase 2)
+   - `primaryHover`: OKLCH hover shade (darker)
+   - `primaryActive`: OKLCH active shade (darker still)
+   - `fontFamily`: selected font family
+   - `primaryPalette`: 10-step OKLCH palette (50→900)
+
+2. Add a tenant selector button in the header:
+   ```html
+   <button class="tenant-btn" data-tenant="<slug>"><DisplayName></button>
+   ```
+
+3. Test by opening `prototypes/design-system-prototype.html` and switching to the new tenant.
+
+**Note:** This step is optional. The prototype is for design exploration; the actual tenant configuration in `tenants.json` is what matters for production.

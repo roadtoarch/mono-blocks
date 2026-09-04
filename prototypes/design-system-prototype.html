@@ -17,7 +17,7 @@
       --text-disabled: oklch(0.71 0.01 260);
       --text-inverse: oklch(0.985 0.002 260);
       --border-subtle: oklch(0.925 0.005 260);
-      --border-default: oklch(0.875 0.007 260);
+      --border-default: oklch(0.55 0.012 260);
       --border-strong: oklch(0.55 0.012 260);
       
       /* Tenant colors - overridden by JavaScript */
@@ -26,6 +26,19 @@
       --primary-active: oklch(0.36 0.14 250);
       --primary-text: oklch(0.985 0.002 260);
       
+      /* Support colors */
+      --success: oklch(0.60 0.17 155);
+      --success-bg: oklch(0.96 0.04 155);
+      --warning: oklch(0.75 0.16 80);
+      --warning-bg: oklch(0.97 0.05 80);
+      --error: oklch(0.58 0.22 25);
+      --error-bg: oklch(0.96 0.03 25);
+      --info: oklch(0.60 0.15 230);
+      --info-bg: oklch(0.96 0.03 230);
+
+      /* Dark mode interactive brightness override */
+      --primary-focus: var(--primary);
+
       --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.05), 0 2px 4px oklch(0 0 0 / 0.05);
       --shadow-md: 0 2px 4px oklch(0 0 0 / 0.08), 0 4px 8px oklch(0 0 0 / 0.08);
       --shadow-lg: 0 4px 8px oklch(0 0 0 / 0.1), 0 8px 16px oklch(0 0 0 / 0.1);
@@ -40,6 +53,9 @@
       --text-disabled: oklch(0.45 0.015 260);
       --border-subtle: oklch(0.27 0.02 260);
       --border-default: oklch(0.37 0.018 260);
+      /* Brighter interactive for dark mode (primary-400 brightness) */
+      --primary-focus: oklch(0.70 0.18 250);
+
       --shadow-sm: 0 0 0 1px oklch(1 0 0 / 0.1);
       --shadow-md: 0 0 0 1px oklch(1 0 0 / 0.15);
       --shadow-lg: 0 0 0 1px oklch(1 0 0 / 0.2);
@@ -210,7 +226,7 @@
     .input:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 2px oklch(0.53 0.2 250 / 0.2);
+      box-shadow: 0 0 0 2px color-mix(in oklch, var(--primary-focus) 20%, transparent);
     }
 
     .input::placeholder {
@@ -305,6 +321,27 @@
       font-family: 'IBM Plex Mono', monospace;
     }
 
+    /* Support banners */
+    .banner {
+      padding: 0.75rem 1rem;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .banner-success { background-color: var(--success-bg); color: var(--success); }
+    .banner-warning { background-color: var(--warning-bg); color: var(--warning); }
+    .banner-error   { background-color: var(--error-bg); color: var(--error); }
+    .banner-info    { background-color: var(--info-bg); color: var(--info); }
+
+    .banner-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      flex-shrink: 0;
+    }
+
     /* Spacing scale */
     .spacing-item {
       display: flex;
@@ -376,7 +413,7 @@
       <div class="grid grid-4" id="neutralPalette"></div>
       
       <h3 class="section-subtitle" style="margin-top: 2rem;">Semantic Colors</h3>
-      <div class="grid grid-3">
+      <div class="grid grid-4">
         <div class="swatch">
           <div class="swatch-color" style="background-color: var(--background);"></div>
           <div class="swatch-label">background</div>
@@ -388,6 +425,50 @@
         <div class="swatch">
           <div class="swatch-color" style="background-color: var(--text-primary);"></div>
           <div class="swatch-label">text-primary</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background-color: var(--border-default);"></div>
+          <div class="swatch-label">border-default (neutral-500)</div>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle" style="margin-top: 2rem;">Support Colors</h3>
+      <div class="grid grid-4" style="margin-bottom: 1.5rem;">
+        <div class="swatch">
+          <div class="swatch-color" style="background-color: var(--success);"></div>
+          <div class="swatch-label">success oklch(0.60 0.17 155)</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background-color: var(--warning);"></div>
+          <div class="swatch-label">warning oklch(0.75 0.16 80)</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background-color: var(--error);"></div>
+          <div class="swatch-label">error oklch(0.58 0.22 25)</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background-color: var(--info);"></div>
+          <div class="swatch-label">info oklch(0.60 0.15 230)</div>
+        </div>
+      </div>
+
+      <h3 class="section-subtitle">Support Banners</h3>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <div class="banner banner-success">
+          <svg class="banner-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          Assessment submitted successfully.
+        </div>
+        <div class="banner banner-warning">
+          <svg class="banner-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+          This report is pending review. Please verify the data before submission.
+        </div>
+        <div class="banner banner-error">
+          <svg class="banner-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+          Failed to save changes. Please check your connection and try again.
+        </div>
+        <div class="banner banner-info">
+          <svg class="banner-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+          Tip: You can export this data as CSV using the toolbar above.
         </div>
       </div>
     </section>
@@ -619,6 +700,9 @@
       document.documentElement.style.setProperty('--primary-hover', tenant.primaryHover);
       document.documentElement.style.setProperty('--primary-active', tenant.primaryActive);
       document.documentElement.style.setProperty('--font-family', tenant.fontFamily);
+      // Dark mode: brighter focus shade (primary-400 equivalent)
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      document.documentElement.style.setProperty('--primary-focus', isDark ? tenant.primaryPalette[4].color : tenant.primary);
       
       document.getElementById('tenantName').textContent = tenant.name;
       
@@ -655,6 +739,10 @@
       const newTheme = currentTheme === 'light' ? 'dark' : 'light';
       html.setAttribute('data-theme', newTheme);
       document.getElementById('themeToggle').textContent = newTheme === 'light' ? 'Dark Mode' : 'Light Mode';
+      // Update focus brightness per tenant + mode
+      const tenant = tenants[currentTenant];
+      const isDark = newTheme === 'dark';
+      document.documentElement.style.setProperty('--primary-focus', isDark ? tenant.primaryPalette[4].color : tenant.primary);
     });
 
     // Tenant selector
