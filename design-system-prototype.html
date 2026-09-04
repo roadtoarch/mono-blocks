@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPAT Design System Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* CSS Custom Properties - Light Mode */
+    :root, [data-theme="light"] {
+      --background: oklch(0.985 0.002 260);
+      --surface: oklch(0.965 0.003 260);
+      --text-primary: oklch(0.15 0.025 260);
+      --text-secondary: oklch(0.37 0.018 260);
+      --text-disabled: oklch(0.71 0.01 260);
+      --text-inverse: oklch(0.985 0.002 260);
+      --border-subtle: oklch(0.925 0.005 260);
+      --border-default: oklch(0.875 0.007 260);
+      --border-strong: oklch(0.55 0.012 260);
+      
+      /* Tenant colors - overridden by JavaScript */
+      --primary: oklch(0.53 0.2 250);
+      --primary-hover: oklch(0.45 0.18 250);
+      --primary-active: oklch(0.36 0.14 250);
+      --primary-text: oklch(0.985 0.002 260);
+      
+      --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.05), 0 2px 4px oklch(0 0 0 / 0.05);
+      --shadow-md: 0 2px 4px oklch(0 0 0 / 0.08), 0 4px 8px oklch(0 0 0 / 0.08);
+      --shadow-lg: 0 4px 8px oklch(0 0 0 / 0.1), 0 8px 16px oklch(0 0 0 / 0.1);
+    }
+
+    /* Dark Mode */
+    [data-theme="dark"] {
+      --background: oklch(0.15 0.025 260);
+      --surface: oklch(0.21 0.022 260);
+      --text-primary: oklch(0.985 0.002 260);
+      --text-secondary: oklch(0.875 0.007 260);
+      --text-disabled: oklch(0.45 0.015 260);
+      --border-subtle: oklch(0.27 0.02 260);
+      --border-default: oklch(0.37 0.018 260);
+      --shadow-sm: 0 0 0 1px oklch(1 0 0 / 0.1);
+      --shadow-md: 0 0 0 1px oklch(1 0 0 / 0.15);
+      --shadow-lg: 0 0 0 1px oklch(1 0 0 / 0.2);
+    }
+
+    /* Reset and base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family, 'Inter', system-ui, -apple-system, sans-serif);
+      font-size: 1rem;
+      line-height: 1.5;
+      color: var(--text-primary);
+      background-color: var(--background);
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Typography scale */
+    .caption { font-size: 0.75rem; line-height: 1.5; }
+    .label { font-size: 0.875rem; line-height: 1.5; }
+    .body { font-size: 1rem; line-height: 1.5; }
+    .heading-xs { font-size: 1rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
+    .heading-sm { font-size: 1.25rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
+    .heading-md { font-size: 1.5rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.015em; }
+    .heading-lg { font-size: 2rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; }
+    .heading-xl { font-size: 2.5rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 0.875rem; }
+
+    /* Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .section {
+      padding: 3rem 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .section:last-child {
+      border-bottom: none;
+    }
+
+    .grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+    /* Header */
+    .header {
+      background-color: var(--primary);
+      color: var(--primary-text);
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      padding: 0 1.5rem;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header-logo {
+      font-weight: 700;
+      font-size: 1.125rem;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.15s ease, transform 0.1s ease;
+      height: 2.5rem;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: var(--primary-text);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-primary:active {
+      background-color: var(--primary-active);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--primary);
+      color: var(--primary-text);
+    }
+
+    /* Cards */
+    .card {
+      background-color: var(--surface);
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-text {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    /* Inputs */
+    .input {
+      background-color: var(--background);
+      border: 1px solid var(--border-default);
+      border-radius: 0.25rem;
+      padding: 0.5rem 0.75rem;
+      height: 2.5rem;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      width: 100%;
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px oklch(0.53 0.2 250 / 0.2);
+    }
+
+    .input::placeholder {
+      color: var(--text-disabled);
+    }
+
+    /* Color swatches */
+    .swatch {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .swatch-color {
+      width: 100%;
+      height: 80px;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .swatch-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid var(--primary-text);
+      color: var(--primary-text);
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .theme-toggle:hover {
+      background-color: oklch(1 0 0 / 0.1);
+    }
+
+    /* Tenant selector */
+    .tenant-selector {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .tenant-btn {
+      background: transparent;
+      border: 1px solid var(--primary-text);
+      color: var(--primary-text);
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .tenant-btn.active {
+      background-color: var(--primary-text);
+      color: var(--primary);
+    }
+
+    /* Section titles */
+    .section-title {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+    }
+
+    /* Typography showcase */
+    .type-sample {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background-color: var(--surface);
+      border-radius: 0.5rem;
+    }
+
+    .type-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* Spacing scale */
+    .spacing-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .spacing-box {
+      background-color: var(--primary);
+      opacity: 0.3;
+      border-radius: 0.25rem;
+    }
+
+    .spacing-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-family: 'IBM Plex Mono', monospace;
+      min-width: 120px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <div class="header-logo" id="tenantName">ACME Corp</div>
+      <div class="header-controls">
+        <div class="tenant-selector">
+          <button class="tenant-btn active" data-tenant="acme">ACME</button>
+          <button class="tenant-btn" data-tenant="northpac">NorthPac</button>
+        </div>
+        <button class="theme-toggle" id="themeToggle">Dark Mode</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Colors Section -->
+    <section class="section">
+      <h2 class="section-title">Color Palette</h2>
+      <p class="body" style="margin-bottom: 2rem; color: var(--text-secondary);">
+        OKLCH color space with stable hue across lightness levels. Primary color changes per tenant.
+      </p>
+      
+      <h3 class="section-subtitle">Primary Palette (Tenant-Specific)</h3>
+      <div class="grid grid-4" id="primaryPalette"></div>
+      
+      <h3 class="section-subtitle" style="margin-top: 2rem;">Neutral Palette</h3>
+      <div class="grid grid-4" id="neutralPalette"></div>
+      
+      <h3 class="section-subtitle" style="margin-top: 2rem;">Semantic Colors</h3>
+      <div class="grid grid-3">
+        <div class="swatch">
+          <div class="swatch-color" style="background-color: var(--background);"></div>
+          <div class="swatch-label">background</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background-color: var(--surface);"></div>
+          <div class="swatch-label">surface</div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background-color: var(--text-primary);"></div>
+          <div class="swatch-label">text-primary</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Typography Section -->
+    <section class="section">
+      <h2 class="section-title">Typography</h2>
+      <p class="body" style="margin-bottom: 2rem; color: var(--text-secondary);">
+        Semantic type scale with Inter (ACME) or Source Sans Pro (NorthPac) font families.
+      </p>
+      
+      <div class="type-sample">
+        <div class="type-label">heading-xl (2.5rem)</div>
+        <div class="heading-xl">The quick brown fox</div>
+      </div>
+      
+      <div class="type-sample">
+        <div class="type-label">heading-lg (2rem)</div>
+        <div class="heading-lg">The quick brown fox</div>
+      </div>
+      
+      <div class="type-sample">
+        <div class="type-label">heading-md (1.5rem)</div>
+        <div class="heading-md">The quick brown fox</div>
+      </div>
+      
+      <div class="type-sample">
+        <div class="type-label">heading-sm (1.25rem)</div>
+        <div class="heading-sm">The quick brown fox</div>
+      </div>
+      
+      <div class="type-sample">
+        <div class="type-label">body (1rem)</div>
+        <div class="body">The quick brown fox jumps over the lazy dog. This is body text at 1rem with 1.5 line height.</div>
+      </div>
+      
+      <div class="type-sample">
+        <div class="type-label">label (0.875rem)</div>
+        <div class="label">Form label or badge text</div>
+      </div>
+      
+      <div class="type-sample">
+        <div class="type-label">caption (0.75rem)</div>
+        <div class="caption">Helper text, timestamps, metadata</div>
+      </div>
+      
+      <div class="type-sample">
+        <div class="type-label">mono (0.875rem)</div>
+        <div class="mono">const value = oklch(0.53 0.2 250);</div>
+      </div>
+    </section>
+
+    <!-- Components Section -->
+    <section class="section">
+      <h2 class="section-title">Components</h2>
+      
+      <h3 class="section-subtitle">Buttons</h3>
+      <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+        <button class="btn btn-primary">Primary Button</button>
+        <button class="btn btn-secondary">Secondary Button</button>
+        <button class="btn btn-primary" disabled style="opacity: 0.5; cursor: not-allowed;">Disabled</button>
+      </div>
+      
+      <h3 class="section-subtitle">Inputs</h3>
+      <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+        <input type="text" class="input" placeholder="Text input" style="max-width: 300px;">
+        <input type="email" class="input" placeholder="Email input" style="max-width: 300px;">
+      </div>
+      
+      <h3 class="section-subtitle">Cards</h3>
+      <div class="grid grid-3">
+        <div class="card">
+          <div class="card-title">Card Title</div>
+          <div class="card-text">This is a card component with surface background, subtle border, and layered shadow.</div>
+          <button class="btn btn-primary">Action</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Another Card</div>
+          <div class="card-text">Cards use the surface color token and adapt to light/dark mode automatically.</div>
+          <button class="btn btn-secondary">Learn More</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Third Card</div>
+          <div class="card-text">Concentric border radius: outer 0.5rem, inner elements 0.25rem.</div>
+          <button class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Spacing Section -->
+    <section class="section">
+      <h2 class="section-title">Spacing Scale</h2>
+      <p class="body" style="margin-bottom: 2rem; color: var(--text-secondary);">
+        4px-based spacing scale for visual rhythm and consistency.
+      </p>
+      
+      <div class="spacing-item">
+        <div class="spacing-box" style="width: 4px; height: 24px;"></div>
+        <div class="spacing-label">spacing.1 (4px)</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-box" style="width: 8px; height: 24px;"></div>
+        <div class="spacing-label">spacing.2 (8px)</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-box" style="width: 12px; height: 24px;"></div>
+        <div class="spacing-label">spacing.3 (12px)</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-box" style="width: 16px; height: 24px;"></div>
+        <div class="spacing-label">spacing.4 (16px)</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-box" style="width: 24px; height: 24px;"></div>
+        <div class="spacing-label">spacing.6 (24px)</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-box" style="width: 32px; height: 24px;"></div>
+        <div class="spacing-label">spacing.8 (32px)</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-box" style="width: 48px; height: 24px;"></div>
+        <div class="spacing-label">spacing.12 (48px)</div>
+      </div>
+      <div class="spacing-item">
+        <div class="spacing-box" style="width: 64px; height: 24px;"></div>
+        <div class="spacing-label">spacing.16 (64px)</div>
+      </div>
+    </section>
+
+    <!-- Design Principles -->
+    <section class="section">
+      <h2 class="section-title">Design Principles</h2>
+      
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-title">✅ Per-Tenant Flexibility</div>
+          <div class="card-text">Each tenant defines their own primary color, logo, font family, and content without code changes.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">✅ Perceptual Color</div>
+          <div class="card-text">OKLCH color space ensures stable hue across lightness levels and predictable contrast.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">✅ Carbon v11 Integration</div>
+          <div class="card-text">Design tokens map to Carbon's --cds-* CSS custom properties for runtime theme switching.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">✅ Light/Dark Mode</div>
+          <div class="card-text">Automatic via prefers-color-scheme or manual toggle. Neutral palette reverses in dark mode.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">✅ Accessibility First</div>
+          <div class="card-text">All text/background pairs meet WCAG AA contrast (4.5:1 for normal text, 3:1 for large text).</div>
+        </div>
+        <div class="card">
+          <div class="card-title">✅ Concentric Radius</div>
+          <div class="card-text">outerRadius = innerRadius + padding for nested elements creates visual harmony.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Tenant configurations
+    const tenants = {
+      acme: {
+        name: 'ACME Corp',
+        primary: 'oklch(0.53 0.2 250)', // Blue
+        primaryHover: 'oklch(0.45 0.18 250)',
+        primaryActive: 'oklch(0.36 0.14 250)',
+        fontFamily: 'Inter, system-ui, sans-serif',
+        primaryPalette: [
+          { label: '50', color: 'oklch(0.97 0.04 250)' },
+          { label: '100', color: 'oklch(0.93 0.07 250)' },
+          { label: '200', color: 'oklch(0.87 0.12 250)' },
+          { label: '300', color: 'oklch(0.79 0.15 250)' },
+          { label: '400', color: 'oklch(0.7 0.18 250)' },
+          { label: '500', color: 'oklch(0.62 0.2 250)' },
+          { label: '600', color: 'oklch(0.53 0.2 250)' },
+          { label: '700', color: 'oklch(0.45 0.18 250)' },
+          { label: '800', color: 'oklch(0.36 0.14 250)' },
+          { label: '900', color: 'oklch(0.28 0.1 250)' },
+        ],
+      },
+      northpac: {
+        name: 'NorthPac Resources',
+        primary: 'oklch(0.55 0.15 145)', // Green
+        primaryHover: 'oklch(0.47 0.13 145)',
+        primaryActive: 'oklch(0.38 0.11 145)',
+        fontFamily: 'Source Sans Pro, system-ui, sans-serif',
+        primaryPalette: [
+          { label: '50', color: 'oklch(0.97 0.03 145)' },
+          { label: '100', color: 'oklch(0.93 0.06 145)' },
+          { label: '200', color: 'oklch(0.87 0.1 145)' },
+          { label: '300', color: 'oklch(0.79 0.12 145)' },
+          { label: '400', color: 'oklch(0.7 0.14 145)' },
+          { label: '500', color: 'oklch(0.62 0.15 145)' },
+          { label: '600', color: 'oklch(0.55 0.15 145)' },
+          { label: '700', color: 'oklch(0.47 0.13 145)' },
+          { label: '800', color: 'oklch(0.38 0.11 145)' },
+          { label: '900', color: 'oklch(0.28 0.08 145)' },
+        ],
+      },
+    };
+
+    const neutralPalette = [
+      { label: '50', color: 'oklch(0.985 0.002 260)' },
+      { label: '100', color: 'oklch(0.965 0.003 260)' },
+      { label: '200', color: 'oklch(0.925 0.005 260)' },
+      { label: '300', color: 'oklch(0.875 0.007 260)' },
+      { label: '400', color: 'oklch(0.71 0.01 260)' },
+      { label: '500', color: 'oklch(0.55 0.012 260)' },
+      { label: '600', color: 'oklch(0.45 0.015 260)' },
+      { label: '700', color: 'oklch(0.37 0.018 260)' },
+      { label: '800', color: 'oklch(0.27 0.02 260)' },
+      { label: '900', color: 'oklch(0.21 0.022 260)' },
+      { label: '950', color: 'oklch(0.15 0.025 260)' },
+    ];
+
+    let currentTenant = 'acme';
+
+    // Apply tenant theme
+    function applyTenant(tenantKey) {
+      const tenant = tenants[tenantKey];
+      currentTenant = tenantKey;
+      
+      document.documentElement.style.setProperty('--primary', tenant.primary);
+      document.documentElement.style.setProperty('--primary-hover', tenant.primaryHover);
+      document.documentElement.style.setProperty('--primary-active', tenant.primaryActive);
+      document.documentElement.style.setProperty('--font-family', tenant.fontFamily);
+      
+      document.getElementById('tenantName').textContent = tenant.name;
+      
+      // Update primary palette display
+      const primaryPaletteEl = document.getElementById('primaryPalette');
+      primaryPaletteEl.innerHTML = tenant.primaryPalette.map(swatch => `
+        <div class="swatch">
+          <div class="swatch-color" style="background-color: ${swatch.color};"></div>
+          <div class="swatch-label">primary.${swatch.label}</div>
+        </div>
+      `).join('');
+      
+      // Update tenant button states
+      document.querySelectorAll('.tenant-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tenant === tenantKey);
+      });
+    }
+
+    // Render neutral palette
+    function renderNeutralPalette() {
+      const neutralPaletteEl = document.getElementById('neutralPalette');
+      neutralPaletteEl.innerHTML = neutralPalette.map(swatch => `
+        <div class="swatch">
+          <div class="swatch-color" style="background-color: ${swatch.color};"></div>
+          <div class="swatch-label">neutral.${swatch.label}</div>
+        </div>
+      `).join('');
+    }
+
+    // Theme toggle
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      html.setAttribute('data-theme', newTheme);
+      document.getElementById('themeToggle').textContent = newTheme === 'light' ? 'Dark Mode' : 'Light Mode';
+    });
+
+    // Tenant selector
+    document.querySelectorAll('.tenant-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        applyTenant(btn.dataset.tenant);
+      });
+    });
+
+    // Initialize
+    renderNeutralPalette();
+    applyTenant('acme');
+  </script>
+</body>
+</html>
