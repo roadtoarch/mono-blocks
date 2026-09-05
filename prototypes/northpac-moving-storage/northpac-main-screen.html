@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NorthPac Moving & Storage — Dashboard Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Primary palette — hue 156 */
+      --color-primary: oklch(0.383 0.083 156.3);
+      --color-primary-hover: oklch(0.340 0.090 156.3);
+      --color-primary-light: oklch(0.92 0.04 156);
+      --color-primary-muted: oklch(0.70 0.08 156);
+
+      /* Neutral palette — hue 260 */
+      --color-text: oklch(0.22 0.02 260);
+      --color-text-secondary: oklch(0.45 0.02 260);
+      --color-border: oklch(0.88 0.01 260);
+      --color-divider: oklch(0.92 0.005 260);
+
+      /* Semantic */
+      --color-success: oklch(0.62 0.14 155);
+      --color-warning: oklch(0.75 0.15 75);
+      --color-danger: oklch(0.58 0.18 25);
+      --color-info: oklch(0.60 0.10 240);
+
+      /* Spacing */
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+
+      /* Border radius */
+      --radius-sm: 2px;
+      --radius-md: 4px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      --radius-full: 999px;
+
+      /* Shadows — light mode 3-layer */
+      --shadow-sm: 0 1px 2px oklch(0.2 0.02 260 / 0.06);
+      --shadow-md: 0 2px 8px oklch(0.2 0.02 260 / 0.08), 0 1px 2px oklch(0.2 0.02 260 / 0.04);
+      --shadow-lg: 0 4px 16px oklch(0.2 0.02 260 / 0.10), 0 2px 4px oklch(0.2 0.02 260 / 0.06), 0 1px 2px oklch(0.2 0.02 260 / 0.04);
+
+      /* Layout */
+      --header-height: 3rem;
+      --sidebar-width: 16rem;
+      --sidebar-collapsed-width: 3.5rem;
+
+      /* Typography */
+      --font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-size-xs: 0.75rem;
+      --font-size-sm: 0.875rem;
+      --font-size-base: 1rem;
+      --font-size-lg: 1.125rem;
+      --font-size-xl: 1.25rem;
+      --font-size-2xl: 1.5rem;
+      --font-size-3xl: 2rem;
+      --font-size-4xl: 2.5rem;
+      --line-height-tight: 1.2;
+      --line-height-normal: 1.5;
+      --line-height-relaxed: 1.65;
+    }
+
+    /* Light theme */
+    [data-theme="light"] {
+      --bg: oklch(0.966 0.007 160.1);
+      --surface: oklch(0.945 0.014 162.5);
+      --surface-raised: oklch(1.0 0 0);
+      --surface-overlay: oklch(0.960 0.010 160.1);
+      --header-bg: oklch(1.0 0 0);
+      --sidebar-bg: oklch(0.955 0.010 160.1);
+      --text-primary: oklch(0.18 0.02 160);
+      --text-secondary: oklch(0.42 0.02 160);
+      --text-tertiary: oklch(0.58 0.015 160);
+      --border-color: oklch(0.90 0.008 160);
+      --border-subtle: oklch(0.93 0.005 160);
+      --hover-bg: oklch(0.95 0.005 160);
+      --active-bg: oklch(0.92 0.008 160);
+      --focus-ring: oklch(0.383 0.083 156.3 / 0.35);
+      --nav-active-bg: oklch(0.92 0.04 156);
+      --nav-active-text: oklch(0.40 0.12 156);
+      --badge-bg: oklch(0.93 0.03 156);
+      --badge-text: oklch(0.40 0.12 156);
+      --scrollbar-track: oklch(0.95 0.003 160);
+      --scrollbar-thumb: oklch(0.85 0.01 160);
+    }
+
+    /* Dark theme */
+    [data-theme="dark"] {
+      --bg: oklch(0.205 0.020 160.1);
+      --surface: oklch(0.248 0.024 172.7);
+      --surface-raised: oklch(0.28 0.022 160);
+      --surface-overlay: oklch(0.22 0.022 160);
+      --header-bg: oklch(0.22 0.022 160);
+      --sidebar-bg: oklch(0.21 0.024 160);
+      --text-primary: oklch(0.92 0.005 160);
+      --text-secondary: oklch(0.72 0.012 160);
+      --text-tertiary: oklch(0.55 0.015 160);
+      --border-color: oklch(0.30 0.018 160);
+      --border-subtle: oklch(0.26 0.015 160);
+      --hover-bg: oklch(0.26 0.020 160);
+      --active-bg: oklch(0.30 0.022 160);
+      --focus-ring: oklch(0.383 0.083 156.3 / 0.5);
+      --nav-active-bg: oklch(0.25 0.06 156);
+      --nav-active-text: oklch(0.75 0.12 156);
+      --badge-bg: oklch(0.25 0.06 156);
+      --badge-text: oklch(0.78 0.12 156);
+      --shadow-sm: none;
+      --shadow-md: 0 0 0 1px oklch(0.35 0.015 160);
+      --shadow-lg: 0 0 0 1px oklch(0.32 0.015 160);
+      --scrollbar-track: oklch(0.20 0.02 160);
+      --scrollbar-thumb: oklch(0.30 0.018 160);
+    }
+
+    html {
+      font-family: var(--font-family);
+      font-size: 16px;
+      line-height: var(--line-height-normal);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      color: var(--text-primary);
+      background: var(--bg);
+    }
+
+    body { min-height: 100vh; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: var(--radius-full); }
+
+    /* ─── Layout shell ─── */
+    .shell { display: flex; min-height: 100vh; }
+
+    /* ─── Sidebar ─── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: width 200ms ease-out, transform 200ms ease-out;
+      overflow: hidden;
+    }
+    .sidebar.collapsed { width: var(--sidebar-collapsed-width); }
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      height: var(--header-height);
+      padding: 0 var(--space-4);
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+    .sidebar-brand-icon {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-md);
+      flex-shrink: 0;
+    }
+    .sidebar-brand-icon svg { width: 16px; height: 16px; fill: oklch(1.0 0 0); }
+    .sidebar-brand-text {
+      font-weight: 700;
+      font-size: var(--font-size-sm);
+      white-space: nowrap;
+      overflow: hidden;
+      transition: opacity 150ms ease-out;
+    }
+    .sidebar.collapsed .sidebar-brand-text { opacity: 0; width: 0; }
+
+    .sidebar-nav { flex: 1; padding: var(--space-3) var(--space-2); overflow-y: auto; }
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 120ms ease-out, color 120ms ease-out;
+      white-space: nowrap;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .sidebar-nav-item:hover { background: var(--hover-bg); color: var(--text-primary); }
+    .sidebar-nav-item.active { background: var(--nav-active-bg); color: var(--nav-active-text); }
+    .sidebar-nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .sidebar-nav-item-label { overflow: hidden; transition: opacity 150ms ease-out; }
+    .sidebar.collapsed .sidebar-nav-item-label { opacity: 0; width: 0; }
+
+    .sidebar-section-label {
+      font-size: var(--font-size-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      padding: var(--space-4) var(--space-3) var(--space-2);
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .sidebar.collapsed .sidebar-section-label { opacity: 0; }
+
+    .sidebar-footer {
+      padding: var(--space-3);
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* ─── Main wrapper ─── */
+    .main-wrapper {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: margin-left 200ms ease-out;
+    }
+    .sidebar.collapsed ~ .main-wrapper { margin-left: var(--sidebar-collapsed-width); }
+
+    /* ─── Header ─── */
+    .header {
+      position: sticky;
+      top: 0;
+      height: var(--header-height);
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--space-6);
+      gap: var(--space-4);
+      z-index: 90;
+      box-shadow: var(--shadow-sm);
+    }
+    .header-hamburger {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px;
+      border: none; background: none;
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 120ms ease-out;
+    }
+    .header-hamburger:hover { background: var(--hover-bg); }
+    .header-hamburger svg { width: 20px; height: 20px; }
+
+    .header-title {
+      font-size: var(--font-size-base);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .header-spacer { flex: 1; }
+
+    .header-actions { display: flex; align-items: center; gap: var(--space-2); }
+
+    .icon-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px;
+      border: none; background: none;
+      border-radius: var(--radius-full);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 120ms ease-out, color 120ms ease-out;
+    }
+    .icon-btn:hover { background: var(--hover-bg); color: var(--text-primary); }
+    .icon-btn:active { transform: scale(0.96); }
+    .icon-btn svg { width: 20px; height: 20px; }
+
+    .avatar {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      color: oklch(1.0 0 0);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ─── Content ─── */
+    .content {
+      flex: 1;
+      padding: var(--space-8);
+      max-width: 72ch;
+    }
+    .content-wide { max-width: none; }
+
+    /* ─── Typography ─── */
+    h1 { font-size: var(--font-size-3xl); font-weight: 700; line-height: var(--line-height-tight); color: var(--text-primary); }
+    h2 { font-size: var(--font-size-2xl); font-weight: 700; line-height: var(--line-height-tight); color: var(--text-primary); }
+    h3 { font-size: var(--font-size-xl); font-weight: 600; line-height: var(--line-height-tight); color: var(--text-primary); }
+    h4 { font-size: var(--font-size-lg); font-weight: 600; line-height: var(--line-height-tight); color: var(--text-primary); }
+    p { line-height: var(--line-height-relaxed); color: var(--text-secondary); max-width: 65ch; }
+
+    /* ─── Cards ─── */
+    .card {
+      background: var(--surface-raised);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 150ms ease-out, transform 150ms ease-out;
+    }
+    .card:hover { box-shadow: var(--shadow-md); }
+
+    /* ─── Badge ─── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+    }
+    .badge-success { background: oklch(0.90 0.05 155); color: oklch(0.38 0.12 155); }
+    .badge-warning { background: oklch(0.92 0.06 75); color: oklch(0.42 0.12 75); }
+    .badge-danger { background: oklch(0.90 0.06 25); color: oklch(0.45 0.14 25); }
+    .badge-info { background: oklch(0.90 0.04 240); color: oklch(0.42 0.10 240); }
+
+    /* ─── Button ─── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      height: 2.5rem;
+      padding: 0 var(--space-3);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 120ms ease-out, transform 100ms ease-out;
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn-primary { background: var(--color-primary); color: oklch(1.0 0 0); }
+    .btn-primary:hover { background: var(--color-primary-hover); }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--border-color); }
+    .btn-outline:hover { background: var(--hover-bg); }
+
+    /* ─── Grid helpers ─── */
+    .grid { display: grid; gap: var(--space-4); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    /* ─── Section ─── */
+    .section { margin-bottom: var(--space-8); }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+
+    /* ─── Footer ─── */
+    .footer {
+      padding: var(--space-4) var(--space-6);
+      border-top: 1px solid var(--border-color);
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      text-align: center;
+    }
+
+    /* ─── Status dot ─── */
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: var(--radius-full);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .status-dot-active { background: var(--color-success); }
+    .status-dot-pending { background: var(--color-warning); }
+    .status-dot-inactive { background: var(--text-tertiary); }
+
+    /* ─── Progress ring ─── */
+    .progress-ring { transform: rotate(-90deg); }
+    .progress-ring-bg { fill: none; stroke: var(--border-color); }
+    .progress-ring-fill { fill: none; stroke-linecap: round; transition: stroke-dashoffset 600ms ease-out; }
+
+    /* ─── Sparkline ─── */
+    .sparkline { display: block; }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); width: var(--sidebar-width); }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .main-wrapper { margin-left: 0 !important; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .content { padding: var(--space-4); }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ─── Variant-specific: Operations Grid ─── */
+    .ops-stat { text-align: left; }
+    .ops-stat-value { font-size: var(--font-size-2xl); font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+    .ops-stat-label { font-size: var(--font-size-xs); color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-top: var(--space-1); }
+    .ops-stat-change { font-size: var(--font-size-xs); font-weight: 600; margin-top: var(--space-1); }
+    .ops-stat-change.up { color: var(--color-success); }
+    .ops-stat-change.down { color: var(--color-danger); }
+
+    .ops-activity-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: var(--font-size-sm);
+    }
+    .ops-activity-row:last-child { border-bottom: none; }
+    .ops-activity-time { color: var(--text-tertiary); font-size: var(--font-size-xs); white-space: nowrap; min-width: 5rem; }
+    .ops-activity-text { color: var(--text-secondary); flex: 1; }
+
+    /* ─── Variant-specific: Field Report ─── */
+    .fr-stat-ring { display: flex; align-items: center; gap: var(--space-4); }
+    .fr-stat-info { display: flex; flex-direction: column; }
+    .fr-stat-value { font-size: var(--font-size-2xl); font-weight: 700; color: var(--text-primary); }
+    .fr-stat-label { font-size: var(--font-size-sm); color: var(--text-secondary); }
+
+    .fr-timeline { position: relative; padding-left: var(--space-6); }
+    .fr-timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px; top: 4px; bottom: 4px;
+      width: 2px;
+      background: var(--border-color);
+    }
+    .fr-timeline-item { position: relative; padding-bottom: var(--space-5); }
+    .fr-timeline-item:last-child { padding-bottom: 0; }
+    .fr-timeline-dot {
+      position: absolute;
+      left: calc(-1 * var(--space-6) + 3px);
+      top: 4px;
+      width: 10px; height: 10px;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--surface-raised);
+    }
+    .fr-timeline-dot-green { background: var(--color-success); }
+    .fr-timeline-dot-yellow { background: var(--color-warning); }
+    .fr-timeline-dot-blue { background: var(--color-info); }
+    .fr-timeline-time { font-size: var(--font-size-xs); color: var(--text-tertiary); }
+    .fr-timeline-text { font-size: var(--font-size-sm); color: var(--text-secondary); margin-top: var(--space-1); }
+
+    /* ─── Variant-specific: Analytics Overview ─── */
+    .ao-stat-number { font-size: var(--font-size-4xl); font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; line-height: 1; }
+    .ao-stat-meta { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-2); }
+    .ao-trend { display: inline-flex; align-items: center; gap: var(--space-1); font-size: var(--font-size-sm); font-weight: 600; }
+    .ao-trend.up { color: var(--color-success); }
+    .ao-trend.down { color: var(--color-danger); }
+    .ao-trend svg { width: 14px; height: 14px; }
+    .ao-stat-period { font-size: var(--font-size-xs); color: var(--text-tertiary); }
+
+    .ao-chart-bar {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 48px;
+    }
+    .ao-chart-bar-item {
+      flex: 1;
+      background: var(--color-primary-muted);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      min-height: 4px;
+      transition: background 120ms ease-out;
+    }
+    .ao-chart-bar-item:hover { background: var(--color-primary); }
+    .ao-chart-bar-item.highlight { background: var(--color-primary); }
+
+    .ao-activity-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .ao-activity-item:last-child { border-bottom: none; }
+    .ao-activity-bar { height: 4px; border-radius: var(--radius-full); background: var(--color-primary-muted); flex: 1; position: relative; overflow: hidden; }
+    .ao-activity-bar-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--color-primary); border-radius: var(--radius-full); }
+    .ao-activity-label { font-size: var(--font-size-sm); color: var(--text-secondary); min-width: 8rem; }
+    .ao-activity-value { font-size: var(--font-size-sm); font-weight: 600; color: var(--text-primary); min-width: 3rem; text-align: right; font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+
+<div id="stage"></div>
+
+<nav class="proto-picker" aria-label="Prototype variants">
+  <span class="proto-picker-highlight" aria-hidden="true"></span>
+  <button class="proto-picker-item" data-active aria-current="true">Operations Grid</button>
+  <button class="proto-picker-item">Field Report</button>
+  <button class="proto-picker-item">Analytics Overview</button>
+</nav>
+
+<script>
+const icons = {
+  home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  barChart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>`,
+  map: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>`,
+  fileText: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
+  menu: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
+  sun: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+  moon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
+  chevronUp: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>`,
+  chevronDown: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  leaf: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`
+};
+
+function shell(inner, opts = {}) {
+  const theme = document.documentElement.getAttribute('data-theme') || 'light';
+  const isDark = theme === 'dark';
+  const toggleIcon = isDark ? icons.sun : icons.moon;
+  const collapsed = opts.collapsed || false;
+  const collapsedClass = collapsed ? ' collapsed' : '';
+  const contentClass = opts.wide ? ' content content-wide' : ' content';
+
+  return `
+    <div class="sidebar${collapsedClass}" id="sidebar">
+      <div class="sidebar-brand">
+        <img src="northpac-logo.png" alt="NorthPac Moving & Storage" class="sidebar-brand-icon" style="width:28px;height:28px;border-radius:var(--radius-md);object-fit:contain;">
+        <span class="sidebar-brand-text">NorthPac Moving & Storage</span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Navigation</div>
+        <a class="sidebar-nav-item active" href="#" onclick="return false">
+          ${icons.home}
+          <span class="sidebar-nav-item-label">Dashboard</span>
+        </a>
+        <a class="sidebar-nav-item" href="#" onclick="return false">
+          ${icons.barChart}
+          <span class="sidebar-nav-item-label">Moves</span>
+        </a>
+        <a class="sidebar-nav-item" href="#" onclick="return false">
+          ${icons.map}
+          <span class="sidebar-nav-item-label">Storage</span>
+        </a>
+        <a class="sidebar-nav-item" href="#" onclick="return false">
+          ${icons.fileText}
+          <span class="sidebar-nav-item-label">Documents</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <a class="sidebar-nav-item" href="#" onclick="return false">
+          ${icons.barChart}
+          <span class="sidebar-nav-item-label">Settings</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="main-wrapper">
+      <header class="header">
+        <button class="header-hamburger" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+          ${icons.menu}
+        </button>
+        <span class="header-title">Dashboard</span>
+        <div class="header-spacer"></div>
+        <div class="header-actions">
+          <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+            ${toggleIcon}
+          </button>
+          <div class="avatar" title="User">JR</div>
+        </div>
+      </header>
+
+      <div class="${contentClass}">
+        ${inner}
+      </div>
+
+      <footer class="footer">
+        &copy; 2026 NorthPac Moving & Storage. All rights reserved.
+      </footer>
+    </div>`;
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  if (sb) sb.classList.toggle('collapsed');
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+}
+
+/* ═══════════════════════════════════════════
+   VARIANT 1 — Operations Grid
+   Dense data-table feel, compact cards,
+   industrial look, sidebar always visible.
+   ═══════════════════════════════════════════ */
+function variant1() {
+  const stats = [
+    { label: 'Active Moves', value: '247', change: '+12.3%', up: true },
+    { label: 'Storage Units', value: '184', change: '+5.1%', up: true },
+    { label: 'Completed', value: '1,203', change: '-2.4%', up: false },
+    { label: 'Fleet Utilization', value: '98.2%', change: '+0.8%', up: true }
+  ];
+
+  const activities = [
+    { time: '10:32 AM', text: 'Vehicle dispatched to downtown hub', badge: 'Dispatched', badgeClass: 'badge-success' },
+    { time: '09:15 AM', text: 'Storage unit A-12 inventory updated', badge: 'Updated', badgeClass: 'badge-warning' },
+    { time: '08:47 AM', text: 'New move request from commercial client', badge: 'New', badgeClass: 'badge-info' },
+    { time: 'Yesterday', text: 'Delivery confirmation: Residential Block 3', badge: 'Confirmed', badgeClass: 'badge-success' },
+    { time: 'Yesterday', text: 'Packing supplies restocked at warehouse', badge: 'Pending', badgeClass: 'badge-warning' },
+    { time: 'Sep 02', text: 'Monthly fleet maintenance completed', badge: 'Completed', badgeClass: 'badge-success' }
+  ];
+
+  const body = `
+    <div class="section">
+      <h1 style="font-size:var(--font-size-2xl);margin-bottom:var(--space-1)">Welcome back, Jordan</h1>
+      <p style="font-size:var(--font-size-sm)">Professional Moving & Storage Solutions. Here is your operations overview.</p>
+    </div>
+
+    <div class="section">
+      <div class="grid grid-4">
+        ${stats.map(s => `
+          <div class="card ops-stat" style="padding:var(--space-4) var(--space-5)">
+            <div class="ops-stat-label">${s.label}</div>
+            <div class="ops-stat-value">${s.value}</div>
+            <div class="ops-stat-change ${s.up ? 'up' : 'down'}">${s.change} this month</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3 style="font-size:var(--font-size-lg)">Recent Activity</h3>
+        <button class="btn btn-outline" style="height:2rem;font-size:var(--font-size-xs)">View All</button>
+      </div>
+      <div class="card" style="padding:var(--space-3) var(--space-5)">
+        ${activities.map(a => `
+          <div class="ops-activity-row">
+            <span class="ops-activity-time">${a.time}</span>
+            <span class="ops-activity-text">${a.text}</span>
+            <span class="badge ${a.badgeClass}">${a.badge}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3 style="font-size:var(--font-size-lg)">Quick Actions</h3>
+      </div>
+      <div style="display:flex;gap:var(--space-3);flex-wrap:wrap">
+        <button class="btn btn-primary">${icons.plus} New Move Request</button>
+        <button class="btn btn-outline">${icons.map} Check Inventory</button>
+        <button class="btn btn-outline">${icons.fileText} Schedule Pickup</button>
+      </div>
+    </div>`;
+
+  return shell(body, { wide: true });
+}
+
+/* ═══════════════════════════════════════════
+   VARIANT 2 — Field Report
+   Card-based status dashboard, larger status
+   indicators, color-coded badges, progress
+   rings, timeline activity.
+   ═══════════════════════════════════════════ */
+function variant2() {
+  const circumference = 2 * Math.PI * 36;
+
+  const stats = [
+    { label: 'Active Moves', value: '247', pct: 78, color: 'var(--color-primary)', change: '+12.3%' },
+    { label: 'Storage Units Occupied', value: '184', pct: 92, color: 'var(--color-success)', change: '+5.1%' },
+    { label: 'Moves Completed', value: '1,203', pct: 64, color: 'var(--color-info)', change: '-2.4%' }
+  ];
+
+  const timeline = [
+    { dot: 'fr-timeline-dot-green', time: 'Today, 10:32 AM', text: 'Vehicle dispatched to downtown hub. Driver en route.' },
+    { dot: 'fr-timeline-dot-yellow', time: 'Today, 09:15 AM', text: 'Storage unit A-12 inventory check in progress.' },
+    { dot: 'fr-timeline-dot-blue', time: 'Today, 08:47 AM', text: 'New commercial move request received. Awaiting assignment.' },
+    { dot: 'fr-timeline-dot-green', time: 'Yesterday, 04:20 PM', text: 'Delivery confirmed at Residential Block 3. Customer signed off.' },
+    { dot: 'fr-timeline-dot-yellow', time: 'Yesterday, 11:00 AM', text: 'Fleet maintenance scheduled for next week.' }
+  ];
+
+  const body = `
+    <div class="section">
+      <div style="display:flex;align-items:center;gap:var(--space-4);margin-bottom:var(--space-2)">
+        <h1 style="font-size:var(--font-size-2xl)">Welcome to NorthPac Moving & Storage</h1>
+        <span class="badge badge-success" style="font-size:var(--font-size-sm);padding:var(--space-2) var(--space-4)">All Systems Operational</span>
+      </div>
+      <p>Professional Moving & Storage Solutions. Your field operations at a glance.</p>
+    </div>
+
+    <div class="section">
+      <div class="grid grid-3">
+        ${stats.map(s => {
+          const offset = circumference - (s.pct / 100) * circumference;
+          return `
+            <div class="card">
+              <div class="fr-stat-ring">
+                <svg class="progress-ring" width="80" height="80" viewBox="0 0 80 80">
+                  <circle class="progress-ring-bg" cx="40" cy="40" r="36" stroke-width="5"/>
+                  <circle class="progress-ring-fill" cx="40" cy="40" r="36" stroke-width="5"
+                    stroke="${s.color}" stroke-dasharray="${circumference}"
+                    stroke-dashoffset="${offset}"/>
+                </svg>
+                <div class="fr-stat-info">
+                  <div class="fr-stat-value">${s.value}</div>
+                  <div class="fr-stat-label">${s.label}</div>
+                  <div style="font-size:var(--font-size-xs);color:var(--color-success);font-weight:600;margin-top:var(--space-1)">${s.change}</div>
+                </div>
+              </div>
+            </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3>Recent Activity</h3>
+      </div>
+      <div class="card">
+        <div class="fr-timeline">
+          ${timeline.map(t => `
+            <div class="fr-timeline-item">
+              <div class="fr-timeline-dot ${t.dot}"></div>
+              <div class="fr-timeline-time">${t.time}</div>
+              <div class="fr-timeline-text">${t.text}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3>Quick Actions</h3>
+      </div>
+      <div style="display:flex;gap:var(--space-3);flex-wrap:wrap">
+        <button class="btn btn-primary">${icons.plus} New Move Request</button>
+        <button class="btn btn-outline">${icons.map} Check Inventory</button>
+        <button class="btn btn-outline">${icons.fileText} Schedule Pickup</button>
+      </div>
+    </div>`;
+
+  return shell(body);
+}
+
+/* ═══════════════════════════════════════════
+   VARIANT 3 — Analytics Overview
+   Chart/metrics focused, large stat numbers
+   with sparkline decorations, visual data
+   emphasis, trend arrows, chart-like bars.
+   ═══════════════════════════════════════════ */
+function variant3() {
+  const trendUp = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`;
+  const trendDown = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>`;
+
+  const sparkData1 = [35, 42, 38, 55, 48, 62, 58, 71, 65, 80, 74, 89];
+  const sparkData2 = [20, 22, 18, 25, 23, 28, 26, 30, 29, 32, 31, 34];
+  const sparkData3 = [15, 12, 18, 14, 20, 16, 22, 19, 24, 21, 26, 23];
+
+  function sparkline(data, color) {
+    const w = 120, h = 32, max = Math.max(...data), min = Math.min(...data);
+    const range = max - min || 1;
+    const points = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`).join(' ');
+    return `<svg class="sparkline" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+      <polyline points="${points}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  }
+
+  const barHeights = [45, 62, 38, 71, 55, 80, 65, 89, 72, 95, 84, 68];
+  const barLabels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const maxBar = Math.max(...barHeights);
+
+  const activityBars = [
+    { label: 'Moves Completed', value: 847, max: 1000 },
+    { label: 'Storage Units', value: 184, max: 200 },
+    { label: 'Pickup Scheduled', value: 312, max: 400 },
+    { label: 'Deliveries Made', value: 1203, max: 1500 },
+    { label: 'Inventory Items', value: 4521, max: 5000 }
+  ];
+
+  const body = `
+    <div class="section">
+      <h1 style="font-size:var(--font-size-2xl);margin-bottom:var(--space-1)">Analytics Overview</h1>
+      <p style="font-size:var(--font-size-sm)">Professional Moving & Storage Solutions. Performance metrics and trends.</p>
+    </div>
+
+    <div class="section">
+      <div class="grid grid-3">
+        ${[
+          { label: 'Active Moves', value: '247', trend: '+12.3%', up: true, data: sparkData1 },
+          { label: 'Storage Units', value: '184', trend: '+5.1%', up: true, data: sparkData2 },
+          { label: 'Moves Completed', value: '1,203', trend: '-2.4%', up: false, data: sparkData3 }
+        ].map(s => `
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start">
+              <div>
+                <div style="font-size:var(--font-size-xs);color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;font-weight:600">${s.label}</div>
+                <div class="ao-stat-number" style="margin-top:var(--space-2)">${s.value}</div>
+              </div>
+              ${sparkline(s.data, s.up ? 'oklch(0.62 0.14 155)' : 'oklch(0.58 0.18 25)')}
+            </div>
+            <div class="ao-stat-meta" style="margin-top:var(--space-3)">
+              <span class="ao-trend ${s.up ? 'up' : 'down'}">${s.up ? trendUp : trendDown} ${s.trend}</span>
+              <span class="ao-stat-period">vs last month</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3>Monthly Trend</h3>
+        <span style="font-size:var(--font-size-xs);color:var(--text-tertiary)">2026</span>
+      </div>
+      <div class="card">
+        <div class="ao-chart-bar" style="height:80px">
+          ${barHeights.map((h, i) => `
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:var(--space-1)">
+              <div style="font-size:10px;color:var(--text-tertiary);font-variant-numeric:tabular-nums">${h}</div>
+              <div style="width:100%;height:${(h / maxBar) * 100}%;background:${i === 9 ? 'var(--color-primary)' : 'var(--color-primary-muted)'};border-radius:var(--radius-sm) var(--radius-sm) 0 0;min-height:4px;transition:background 120ms ease-out" onmouseenter="this.style.background='var(--color-primary)'" onmouseleave="this.style.background='${i === 9 ? 'var(--color-primary)' : 'var(--color-primary-muted)'}'"></div>
+              <div style="font-size:10px;color:var(--text-tertiary)">${barLabels[i].charAt(0)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3>Activity Breakdown</h3>
+      </div>
+      <div class="card">
+        ${activityBars.map(a => {
+          const pct = (a.value / a.max) * 100;
+          return `
+            <div class="ao-activity-item">
+              <span class="ao-activity-label">${a.label}</span>
+              <div class="ao-activity-bar">
+                <div class="ao-activity-bar-fill" style="width:${pct}%"></div>
+              </div>
+              <span class="ao-activity-value">${a.value.toLocaleString()}</span>
+            </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3>Quick Actions</h3>
+      </div>
+      <div style="display:flex;gap:var(--space-3);flex-wrap:wrap">
+        <button class="btn btn-primary">${icons.plus} New Move Request</button>
+        <button class="btn btn-outline">${icons.map} Check Inventory</button>
+        <button class="btn btn-outline">${icons.fileText} Schedule Pickup</button>
+      </div>
+    </div>`;
+
+  return shell(body, { wide: true });
+}
+
+/* ═══════════════════════════════════════════
+   PICKER WIRING
+   ═══════════════════════════════════════════ */
+const stage = document.getElementById('stage');
+const picker = document.querySelector('.proto-picker');
+const highlight = picker.querySelector('.proto-picker-highlight');
+const items = [...picker.querySelectorAll('.proto-picker-item:not(.proto-picker-replay)')];
+const replay = picker?.querySelector('.proto-picker-replay');
+let current = 0;
+
+const variants = [variant1, variant2, variant3];
+
+function moveHighlight() {
+  const el = items[current];
+  highlight.style.width = el.offsetWidth + 'px';
+  highlight.style.transform = `translateX(${el.offsetLeft}px)`;
+}
+
+function mount(i) {
+  stage.innerHTML = '';
+  requestAnimationFrame(() => { stage.innerHTML = variants[i](); });
+}
+
+function setActive(i) {
+  if (i < 0 || i >= variants.length) return;
+  current = i;
+  items.forEach((el, j) => {
+    el.toggleAttribute('data-active', j === i);
+    if (j === i) el.setAttribute('aria-current', 'true');
+    else el.removeAttribute('aria-current');
+  });
+  moveHighlight();
+  const url = new URL(location);
+  url.searchParams.set('v', i + 1);
+  history.replaceState(null, '', url);
+  mount(i);
+}
+
+items.forEach((el, i) => el.addEventListener('click', () => setActive(i)));
+replay?.addEventListener('click', () => mount(current));
+window.addEventListener('resize', moveHighlight);
+document.addEventListener('keydown', (e) => {
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable) return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const num = parseInt(e.key, 10);
+  if (num >= 1 && num <= variants.length) setActive(num - 1);
+  else if (e.key === 'ArrowRight') setActive((current + 1) % variants.length);
+  else if (e.key === 'ArrowLeft') setActive((current - 1 + variants.length) % variants.length);
+  else if (e.key === 'r' || e.key === 'R') mount(current);
+});
+
+setActive((parseInt(new URLSearchParams(location.search).get('v'), 10) || 1) - 1);
+requestAnimationFrame(() => requestAnimationFrame(() => picker.setAttribute('data-ready', '')));
+</script>
+
+</body>
+</html>

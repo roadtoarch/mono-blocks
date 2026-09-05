@@ -6,11 +6,11 @@
       "displayName": "ACME Corp",
       "keycloakClientId": "acme-app",
       "theme": {
-        "primary": "#1192e6",
+        "primary": "#7050a0",
         "primaryText": "#ffffff",
-        "headerBackground": "#1192e6",
+        "headerBackground": "#7050a0",
         "headerText": "#ffffff",
-        "logoUrl": "/tenants/acme/logo.svg",
+        "logoUrl": "/tenants/acme/logo.png",
         "faviconUrl": "/tenants/acme/favicon.ico"
       },
       "typography": {
@@ -29,28 +29,85 @@
     {
       "subdomain": "northpac",
       "tenantId": "2",
-      "displayName": "NorthPac Resources",
+      "displayName": "NorthPac Moving & Storage",
       "keycloakClientId": "northpac-app",
       "theme": {
-        "primary": "#198038",
+        "primary": "#105030",
         "primaryText": "#ffffff",
-        "headerBackground": "#198038",
+        "headerBackground": "#105030",
         "headerText": "#ffffff",
-        "logoUrl": "/tenants/northpac/logo.svg",
+        "logoUrl": "/tenants/northpac/logo.png",
         "faviconUrl": "/tenants/northpac/favicon.ico"
       },
       "typography": {
         "fontFamily": "Source Sans Pro"
       },
       "content": {
-        "welcomeHeading": "Welcome to NorthPac Resources",
-        "welcomeBody": "Northern resource management solutions.",
-        "footerText": "\u00a9 NorthPac Resources"
+        "welcomeHeading": "Welcome to NorthPac Moving & Storage",
+        "welcomeBody": "Professional Moving & Storage Solutions.",
+        "footerText": "\u00a9 NorthPac Moving & Storage"
       },
       "features": {
         "userManagement": false
       },
       "layout": "side-nav"
+    },
+    {
+      "subdomain": "pacifictimber",
+      "tenantId": "3",
+      "displayName": "Pacific Timber Co",
+      "keycloakClientId": "pacifictimber-app",
+      "theme": {
+        "primary": "#8B5E3C",
+        "primaryText": "#ffffff",
+        "headerBackground": "#6B4226",
+        "headerText": "#ffffff",
+        "logoUrl": "/tenants/pacifictimber/logo.png",
+        "faviconUrl": "/tenants/pacifictimber/favicon.ico"
+      },
+      "typography": {
+        "fontFamily": "Merriweather"
+      },
+      "content": {
+        "welcomeHeading": "Welcome to Pacific Timber Co",
+        "welcomeBody": "Full-service silviculture, logging, hauling & lumber milling.",
+        "footerText": "\u00a9 Pacific Timber Co"
+      },
+      "features": {
+        "userManagement": true,
+        "fleetTracking": true,
+        "timberBlocks": true
+      },
+      "layout": "side-nav"
+    },
+    {
+      "subdomain": "summitathletics",
+      "tenantId": "4",
+      "displayName": "Summit Athletics",
+      "keycloakClientId": "summitathletics-app",
+      "theme": {
+        "primary": "#0E8A7D",
+        "primaryText": "#ffffff",
+        "headerBackground": "#0E8A7D",
+        "headerText": "#ffffff",
+        "logoUrl": "/tenants/summitathletics/logo.png",
+        "faviconUrl": "/tenants/summitathletics/favicon.ico"
+      },
+      "typography": {
+        "fontFamily": "Outfit"
+      },
+      "content": {
+        "welcomeHeading": "Welcome to Summit Athletics",
+        "welcomeBody": "Your Strength. Our Community.",
+        "footerText": "\u00a9 Summit Athletics"
+      },
+      "features": {
+        "userManagement": true,
+        "classScheduling": true,
+        "workoutTracking": true,
+        "trainerBooking": true
+      },
+      "layout": "hybrid"
     }
   ],
   "default": "acme"

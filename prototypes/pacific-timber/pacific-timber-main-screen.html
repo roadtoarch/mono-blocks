@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pacific Timber Co — Dashboard Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --color-primary: oklch(0.50 0.10 55);
+      --color-primary-hover: oklch(0.45 0.11 55);
+      --color-primary-light: oklch(0.92 0.04 55);
+      --color-primary-muted: oklch(0.70 0.08 55);
+
+      --color-secondary: oklch(0.60 0.08 45);
+      --color-accent: oklch(0.55 0.09 50);
+
+      --color-success: oklch(0.62 0.14 155);
+      --color-warning: oklch(0.75 0.15 75);
+      --color-danger: oklch(0.58 0.18 25);
+      --color-info: oklch(0.60 0.10 240);
+
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+
+      --radius-sm: 2px;
+      --radius-md: 4px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      --radius-full: 999px;
+
+      --shadow-sm: 0 1px 2px oklch(0.2 0.03 50 / 0.06);
+      --shadow-md: 0 2px 8px oklch(0.2 0.03 50 / 0.08), 0 1px 2px oklch(0.2 0.03 50 / 0.04);
+      --shadow-lg: 0 4px 16px oklch(0.2 0.03 50 / 0.10), 0 2px 4px oklch(0.2 0.03 50 / 0.06), 0 1px 2px oklch(0.2 0.03 50 / 0.04);
+
+      --header-height: 3rem;
+      --sidebar-width: 16rem;
+      --sidebar-collapsed-width: 3.5rem;
+
+      --font-heading: 'Merriweather', Georgia, 'Times New Roman', serif;
+      --font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-size-xs: 0.75rem;
+      --font-size-sm: 0.875rem;
+      --font-size-base: 1rem;
+      --font-size-lg: 1.125rem;
+      --font-size-xl: 1.25rem;
+      --font-size-2xl: 1.5rem;
+      --font-size-3xl: 2rem;
+      --font-size-4xl: 2.5rem;
+      --line-height-tight: 1.2;
+      --line-height-normal: 1.5;
+      --line-height-relaxed: 1.65;
+    }
+
+    /* Light theme */
+    [data-theme="light"] {
+      --bg: oklch(0.96 0.01 60);
+      --surface: oklch(0.93 0.015 55);
+      --surface-raised: oklch(1.0 0 0);
+      --surface-overlay: oklch(0.96 0.01 60);
+      --header-bg: oklch(1.0 0 0);
+      --sidebar-bg: oklch(0.95 0.01 60);
+      --text-primary: oklch(0.22 0.03 50);
+      --text-secondary: oklch(0.45 0.04 55);
+      --text-tertiary: oklch(0.58 0.03 55);
+      --border-color: oklch(0.88 0.01 55);
+      --border-subtle: oklch(0.93 0.008 55);
+      --hover-bg: oklch(0.95 0.008 55);
+      --active-bg: oklch(0.92 0.012 55);
+      --focus-ring: oklch(0.50 0.10 55 / 0.35);
+      --nav-active-bg: oklch(0.92 0.04 55);
+      --nav-active-text: oklch(0.40 0.12 55);
+      --badge-bg: oklch(0.93 0.03 55);
+      --badge-text: oklch(0.40 0.12 55);
+      --scrollbar-track: oklch(0.95 0.005 55);
+      --scrollbar-thumb: oklch(0.85 0.01 55);
+    }
+
+    /* Dark theme */
+    [data-theme="dark"] {
+      --bg: oklch(0.22 0.03 50);
+      --surface: oklch(0.28 0.03 55);
+      --surface-raised: oklch(0.32 0.03 55);
+      --surface-overlay: oklch(0.25 0.03 50);
+      --header-bg: oklch(0.24 0.03 50);
+      --sidebar-bg: oklch(0.23 0.03 50);
+      --text-primary: oklch(0.93 0.01 55);
+      --text-secondary: oklch(0.75 0.015 55);
+      --text-tertiary: oklch(0.58 0.015 55);
+      --border-color: oklch(0.35 0.03 55);
+      --border-subtle: oklch(0.30 0.025 55);
+      --hover-bg: oklch(0.30 0.03 55);
+      --active-bg: oklch(0.34 0.03 55);
+      --focus-ring: oklch(0.50 0.10 55 / 0.5);
+      --nav-active-bg: oklch(0.30 0.06 55);
+      --nav-active-text: oklch(0.78 0.12 55);
+      --badge-bg: oklch(0.30 0.06 55);
+      --badge-text: oklch(0.80 0.12 55);
+      --shadow-sm: none;
+      --shadow-md: 0 0 0 1px oklch(0.38 0.025 55);
+      --shadow-lg: 0 0 0 1px oklch(0.35 0.025 55);
+      --scrollbar-track: oklch(0.24 0.025 55);
+      --scrollbar-thumb: oklch(0.35 0.025 55);
+    }
+
+    html {
+      font-family: var(--font-family);
+      font-size: 16px;
+      line-height: var(--line-height-normal);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      color: var(--text-primary);
+      background: var(--bg);
+    }
+
+    body { min-height: 100vh; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: var(--radius-full); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+
+    /* ─── Layout shell ─── */
+    .shell { display: flex; min-height: 100vh; }
+
+    /* ─── Sidebar ─── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: width 200ms ease-out, transform 200ms ease-out;
+      overflow: hidden;
+    }
+    .sidebar.collapsed { width: var(--sidebar-collapsed-width); }
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      height: var(--header-height);
+      padding: 0 var(--space-4);
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+    .sidebar-brand-icon {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-md);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-primary);
+    }
+    .sidebar-brand-icon svg { width: 16px; height: 16px; fill: oklch(1.0 0 0); }
+    .sidebar-brand-text {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: var(--font-size-sm);
+      white-space: nowrap;
+      overflow: hidden;
+      transition: opacity 150ms ease-out;
+      color: var(--text-primary);
+    }
+    .sidebar.collapsed .sidebar-brand-text { opacity: 0; width: 0; }
+
+    .sidebar-nav { flex: 1; padding: var(--space-3) var(--space-2); overflow-y: auto; }
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 120ms ease-out, color 120ms ease-out;
+      white-space: nowrap;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .sidebar-nav-item:hover { background: var(--hover-bg); color: var(--text-primary); }
+    .sidebar-nav-item.active { background: var(--nav-active-bg); color: var(--nav-active-text); }
+    .sidebar-nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .sidebar-nav-item-label { overflow: hidden; transition: opacity 150ms ease-out; }
+    .sidebar.collapsed .sidebar-nav-item-label { opacity: 0; width: 0; }
+
+    .sidebar-section-label {
+      font-size: var(--font-size-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      padding: var(--space-4) var(--space-3) var(--space-2);
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .sidebar.collapsed .sidebar-section-label { opacity: 0; }
+
+    .sidebar-footer {
+      padding: var(--space-3);
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* ─── Main wrapper ─── */
+    .main-wrapper {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: margin-left 200ms ease-out;
+    }
+    .sidebar.collapsed ~ .main-wrapper { margin-left: var(--sidebar-collapsed-width); }
+
+    /* ─── Header ─── */
+    .header {
+      position: sticky;
+      top: 0;
+      height: var(--header-height);
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--space-6);
+      gap: var(--space-4);
+      z-index: 90;
+      box-shadow: var(--shadow-sm);
+    }
+    .header-hamburger {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px;
+      border: none; background: none;
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 120ms ease-out;
+    }
+    .header-hamburger:hover { background: var(--hover-bg); }
+    .header-hamburger svg { width: 20px; height: 20px; }
+
+    .header-title {
+      font-family: var(--font-heading);
+      font-size: var(--font-size-base);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .header-spacer { flex: 1; }
+
+    .header-actions { display: flex; align-items: center; gap: var(--space-2); }
+
+    .icon-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px;
+      border: none; background: none;
+      border-radius: var(--radius-full);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 120ms ease-out, color 120ms ease-out;
+    }
+    .icon-btn:hover { background: var(--hover-bg); color: var(--text-primary); }
+    .icon-btn:active { transform: scale(0.96); }
+    .icon-btn svg { width: 20px; height: 20px; }
+
+    .avatar {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      color: oklch(1.0 0 0);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ─── Content ─── */
+    .content {
+      flex: 1;
+      padding: var(--space-8);
+      max-width: 72ch;
+    }
+    .content-wide { max-width: none; }
+
+    /* ─── Typography ─── */
+    h1 { font-family: var(--font-heading); font-size: var(--font-size-3xl); font-weight: 700; line-height: var(--line-height-tight); color: var(--text-primary); text-wrap: balance; }
+    h2 { font-family: var(--font-heading); font-size: var(--font-size-2xl); font-weight: 700; line-height: var(--line-height-tight); color: var(--text-primary); text-wrap: balance; }
+    h3 { font-family: var(--font-heading); font-size: var(--font-size-xl); font-weight: 700; line-height: var(--line-height-tight); color: var(--text-primary); text-wrap: balance; }
+    h4 { font-family: var(--font-heading); font-size: var(--font-size-lg); font-weight: 700; line-height: var(--line-height-tight); color: var(--text-primary); text-wrap: balance; }
+    p { line-height: var(--line-height-relaxed); color: var(--text-secondary); max-width: 65ch; }
+
+    /* ─── Cards ─── */
+    .card {
+      background: var(--surface-raised);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 150ms ease-out, transform 150ms ease-out;
+    }
+    .card:hover { box-shadow: var(--shadow-md); }
+
+    /* ─── Badge ─── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+    }
+    .badge-success { background: oklch(0.90 0.05 155); color: oklch(0.38 0.12 155); }
+    .badge-warning { background: oklch(0.92 0.06 75); color: oklch(0.42 0.12 75); }
+    .badge-danger { background: oklch(0.90 0.06 25); color: oklch(0.45 0.14 25); }
+    .badge-info { background: oklch(0.90 0.04 240); color: oklch(0.42 0.10 240); }
+
+    /* ─── Button ─── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      height: 2.5rem;
+      padding: 0 var(--space-3);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 120ms ease-out, transform 100ms ease-out;
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn-primary { background: var(--color-primary); color: oklch(1.0 0 0); }
+    .btn-primary:hover { background: var(--color-primary-hover); }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--border-color); }
+    .btn-outline:hover { background: var(--hover-bg); }
+
+    /* ─── Grid helpers ─── */
+    .grid { display: grid; gap: var(--space-4); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    /* ─── Section ─── */
+    .section { margin-bottom: var(--space-8); }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+
+    /* ─── Footer ─── */
+    .footer {
+      padding: var(--space-4) var(--space-6);
+      border-top: 1px solid var(--border-color);
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      text-align: center;
+    }
+
+    /* ─── Status dot ─── */
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: var(--radius-full);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .status-dot-active { background: var(--color-success); }
+    .status-dot-pending { background: var(--color-warning); }
+    .status-dot-inactive { background: var(--text-tertiary); }
+
+    /* ─── Progress ring ─── */
+    .progress-ring { transform: rotate(-90deg); }
+    .progress-ring-bg { fill: none; stroke: var(--border-color); }
+    .progress-ring-fill { fill: none; stroke-linecap: round; transition: stroke-dashoffset 600ms ease-out; }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); width: var(--sidebar-width); }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .main-wrapper { margin-left: 0 !important; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .content { padding: var(--space-4); }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ─── Variant 1: Timber Map Operations ─── */
+    .ops-map-hero {
+      position: relative;
+      height: 320px;
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: var(--space-6);
+    }
+    .ops-map-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border-subtle) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.6;
+    }
+    .ops-map-block {
+      position: absolute;
+      border-radius: var(--radius-md);
+      border: 2px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-xs);
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+    }
+    .ops-map-block:hover { transform: scale(1.05); box-shadow: var(--shadow-md); }
+    .ops-map-block.active { background: oklch(0.62 0.14 155 / 0.2); border-color: var(--color-success); color: oklch(0.38 0.12 155); }
+    .ops-map-block.harvesting { background: oklch(0.75 0.15 75 / 0.2); border-color: var(--color-warning); color: oklch(0.42 0.12 75); }
+    .ops-map-block.dormant { background: oklch(0.58 0.03 55 / 0.1); border-color: var(--text-tertiary); color: var(--text-tertiary); }
+
+    .ops-block-list-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: var(--font-size-sm);
+      cursor: pointer;
+      transition: background 120ms ease-out;
+    }
+    .ops-block-list-item:hover { background: var(--hover-bg); }
+    .ops-block-list-item:last-child { border-bottom: none; }
+    .ops-block-id { font-weight: 700; color: var(--text-primary); min-width: 4rem; }
+    .ops-block-coords { color: var(--text-tertiary); font-size: var(--font-size-xs); font-variant-numeric: tabular-nums; }
+
+    .ops-activity-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: var(--font-size-sm);
+    }
+    .ops-activity-row:last-child { border-bottom: none; }
+    .ops-activity-time { color: var(--text-tertiary); font-size: var(--font-size-xs); white-space: nowrap; min-width: 5rem; }
+    .ops-activity-text { color: var(--text-secondary); flex: 1; }
+
+    /* ─── Variant 2: Fleet & Forestry ─── */
+    .fleet-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4);
+    }
+    .fleet-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .fleet-icon svg { width: 22px; height: 22px; }
+    .fleet-info { flex: 1; }
+    .fleet-name { font-weight: 700; font-size: var(--font-size-sm); color: var(--text-primary); }
+    .fleet-meta { font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: 2px; }
+
+    .block-grid-item {
+      padding: var(--space-4);
+      border-left: 3px solid;
+      cursor: pointer;
+      transition: background 120ms ease-out;
+    }
+    .block-grid-item:hover { background: var(--hover-bg); }
+    .block-grid-item.status-active { border-color: var(--color-success); }
+    .block-grid-item.status-dormant { border-color: var(--text-tertiary); }
+    .block-grid-item.status-harvested { border-color: var(--color-warning); }
+
+    .quick-action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-5) var(--space-3);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      background: var(--surface-raised);
+      color: var(--text-primary);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 120ms ease-out, border-color 120ms ease-out, transform 100ms ease-out;
+      text-align: center;
+    }
+    .quick-action-btn:hover { background: var(--hover-bg); border-color: var(--color-primary); }
+    .quick-action-btn:active { transform: scale(0.96); }
+    .quick-action-icon { font-size: var(--font-size-2xl); }
+
+    /* ─── Variant 3: Mill Operations ─── */
+    .mill-metric {
+      text-align: center;
+      padding: var(--space-5);
+    }
+    .mill-metric-value {
+      font-family: var(--font-heading);
+      font-size: var(--font-size-4xl);
+      font-weight: 700;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    .mill-metric-label {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      margin-top: var(--space-2);
+    }
+
+    .mill-grade-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) 0;
+    }
+    .mill-grade-label { font-size: var(--font-size-sm); color: var(--text-secondary); min-width: 5rem; }
+    .mill-grade-track {
+      flex: 1;
+      height: 8px;
+      background: var(--border-color);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .mill-grade-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      transition: width 600ms ease-out;
+    }
+    .mill-grade-value { font-size: var(--font-size-sm); font-weight: 600; color: var(--text-primary); min-width: 3rem; text-align: right; font-variant-numeric: tabular-nums; }
+
+    .mill-schedule-day {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .mill-schedule-day:last-child { border-bottom: none; }
+    .mill-schedule-date { font-size: var(--font-size-sm); font-weight: 700; color: var(--text-primary); min-width: 5rem; }
+    .mill-schedule-shifts { display: flex; gap: var(--space-2); flex: 1; }
+    .mill-shift-tag {
+      padding: 2px var(--space-2);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+    }
+    .mill-shift-morning { background: oklch(0.92 0.04 75); color: oklch(0.45 0.12 75); }
+    .mill-shift-afternoon { background: oklch(0.90 0.04 240); color: oklch(0.42 0.10 240); }
+    .mill-shift-night { background: oklch(0.90 0.03 280); color: oklch(0.45 0.08 280); }
+
+    .inv-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: var(--font-size-sm);
+    }
+    .inv-row:last-child { border-bottom: none; }
+    .inv-label { color: var(--text-secondary); flex: 1; }
+    .inv-value { font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; min-width: 5rem; text-align: right; }
+  </style>
+</head>
+<body>
+
+<div id="stage"></div>
+
+<nav class="proto-picker" aria-label="Prototype variants">
+  <span class="proto-picker-highlight" aria-hidden="true"></span>
+  <button class="proto-picker-item" data-active aria-current="true">Timber Map Operations</button>
+  <button class="proto-picker-item">Fleet &amp; Forestry Dashboard</button>
+  <button class="proto-picker-item">Mill Operations Center</button>
+</nav>
+
+<script>
+const icons = {
+  home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  tree: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 22v-2"/><path d="M9 18H4l4-6h8l4 6h-5"/><path d="M12 2L6 12h12z"/><rect x="11" y="18" width="2" height="4"/></svg>`,
+  truck: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
+  map: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>`,
+  factory: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"/><path d="M5 20V8l5 4V8l5 4V4h3v16"/></svg>`,
+  box: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
+  menu: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
+  sun: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+  moon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  settings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+  harvester: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8" width="14" height="10" rx="2"/><path d="M16 12h4l2 4v2h-6v-6z"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="20" r="2"/><path d="M6 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
+  clipboard: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>`
+};
+
+function shell(inner, opts = {}) {
+  const theme = document.documentElement.getAttribute('data-theme') || 'light';
+  const isDark = theme === 'dark';
+  const toggleIcon = isDark ? icons.sun : icons.moon;
+  const collapsed = opts.collapsed || false;
+  const collapsedClass = collapsed ? ' collapsed' : '';
+  const contentClass = opts.wide ? ' content content-wide' : ' content';
+
+  return `
+    <div class="sidebar${collapsedClass}" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 22v-2"/><path d="M9 18H4l4-6h8l4 6h-5"/><path d="M12 2L6 12h12z"/><rect x="11" y="18" width="2" height="4"/></svg>
+        </div>
+        <span class="sidebar-brand-text">Pacific Timber Co</span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Navigation</div>
+        <a class="sidebar-nav-item active" href="#" onclick="return false">
+          ${icons.home}
+          <span class="sidebar-nav-item-label">Dashboard</span>
+        </a>
+        <a class="sidebar-nav-item" href="#" onclick="return false">
+          ${icons.tree}
+          <span class="sidebar-nav-item-label">Timber Blocks</span>
+        </a>
+        <a class="sidebar-nav-item" href="#" onclick="return false">
+          ${icons.truck}
+          <span class="sidebar-nav-item-label">Fleet Tracking</span>
+        </a>
+        <a class="sidebar-nav-item" href="#" onclick="return false">
+          ${icons.factory}
+          <span class="sidebar-nav-item-label">Mill Operations</span>
+        </a>
+        <a class="sidebar-nav-item" href="#" onclick="return false">
+          ${icons.box}
+          <span class="sidebar-nav-item-label">Inventory</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <a class="sidebar-nav-item" href="#" onclick="return false">
+          ${icons.settings}
+          <span class="sidebar-nav-item-label">Settings</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="main-wrapper">
+      <header class="header">
+        <button class="header-hamburger" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+          ${icons.menu}
+        </button>
+        <span class="header-title">Dashboard</span>
+        <div class="header-spacer"></div>
+        <div class="header-actions">
+          <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+            ${toggleIcon}
+          </button>
+          <div class="avatar" title="User">MT</div>
+        </div>
+      </header>
+
+      <div class="${contentClass}">
+        ${inner}
+      </div>
+
+      <footer class="footer">
+        &copy; 2026 Pacific Timber Co. All rights reserved. &middot; British Columbia, Canada
+      </footer>
+    </div>`;
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  if (sb) sb.classList.toggle('collapsed');
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  try { localStorage.setItem('theme', next); } catch(e) {}
+}
+
+(function initTheme() {
+  try {
+    const stored = localStorage.getItem('theme');
+    if (stored) { document.documentElement.setAttribute('data-theme', stored); return; }
+  } catch(e) {}
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+
+/* ═══════════════════════════════════════════
+   VARIANT 1 — Timber Map Operations
+   Full map hero with timber block grid,
+   block list sidebar, operations summary.
+   ═══════════════════════════════════════════ */
+function variant1() {
+  const stats = [
+    { label: 'Active Blocks', value: '18', change: '+3 this week', up: true },
+    { label: 'Fleet Vehicles', value: '24', change: '2 in maintenance', up: false },
+    { label: 'Board Feet Today', value: '48.2K', change: '+12.3% vs avg', up: true },
+    { label: 'Crews Deployed', value: '12', change: 'All sectors covered', up: true }
+  ];
+
+  const blocks = [
+    { id: 'A-12', coords: '49.2827° N, 123.1207° W', status: 'active', acres: 240 },
+    { id: 'B-07', coords: '49.2915° N, 123.1089° W', status: 'active', acres: 185 },
+    { id: 'C-23', coords: '49.2701° N, 123.1345° W', status: 'harvesting', acres: 310 },
+    { id: 'D-04', coords: '49.3012° N, 123.0978° W', status: 'dormant', acres: 150 },
+    { id: 'E-19', coords: '49.2658° N, 123.1456° W', status: 'active', acres: 275 },
+    { id: 'F-11', coords: '49.2890° N, 123.1134° W', status: 'harvesting', acres: 198 }
+  ];
+
+  const activities = [
+    { time: '10:32 AM', text: 'Harvester Unit H-3 started felling in Block C-23', badge: 'Active', badgeClass: 'badge-success' },
+    { time: '09:45 AM', text: 'Logging truck convoy dispatched to Nanaimo mill', badge: 'In Transit', badgeClass: 'badge-info' },
+    { time: '09:12 AM', text: 'Block A-12 yield assessment completed — 12,400 board ft/acre', badge: 'Completed', badgeClass: 'badge-success' },
+    { time: '08:30 AM', text: 'Forwarder F-2 repositioned from Block E-19 to B-07', badge: 'Moved', badgeClass: 'badge-warning' },
+    { time: 'Yesterday', text: 'Block D-04 dormant — replanting scheduled for spring', badge: 'Dormant', badgeClass: 'badge-warning' },
+    { time: 'Yesterday', text: 'Monthly inventory audit: 142,000 board ft processed', badge: 'Audited', badgeClass: 'badge-success' }
+  ];
+
+  const body = `
+    <div class="section">
+      <h1 style="font-size:var(--font-size-2xl);margin-bottom:var(--space-1)">Timber Operations Map</h1>
+      <p style="font-size:var(--font-size-sm)">Real-time overview of active timber blocks across Vancouver Island operations.</p>
+    </div>
+
+    <div class="section">
+      <div class="grid grid-4">
+        ${stats.map(s => `
+          <div class="card" style="padding:var(--space-4) var(--space-5)">
+            <div style="font-size:var(--font-size-xs);color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;font-weight:600">${s.label}</div>
+            <div style="font-family:var(--font-heading);font-size:var(--font-size-2xl);font-weight:700;color:var(--text-primary);margin-top:var(--space-1);font-variant-numeric:tabular-nums">${s.value}</div>
+            <div style="font-size:var(--font-size-xs);font-weight:600;margin-top:var(--space-1);color:${s.up ? 'var(--color-success)' : 'var(--color-warning)'}">${s.change}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="ops-map-hero">
+        <div class="ops-map-grid"></div>
+        <div class="ops-map-block active" style="left:15%;top:20%;width:80px;height:50px">A-12</div>
+        <div class="ops-map-block active" style="left:35%;top:15%;width:70px;height:45px">B-07</div>
+        <div class="ops-map-block harvesting" style="left:55%;top:30%;width:90px;height:55px">C-23</div>
+        <div class="ops-map-block dormant" style="left:75%;top:18%;width:65px;height:40px">D-04</div>
+        <div class="ops-map-block active" style="left:25%;top:55%;width:85px;height:50px">E-19</div>
+        <div class="ops-map-block harvesting" style="left:60%;top:60%;width:75px;height:45px">F-11</div>
+        <div style="position:absolute;bottom:var(--space-3);left:var(--space-3);display:flex;gap:var(--space-3);font-size:var(--font-size-xs);color:var(--text-tertiary)">
+          <span><span class="status-dot status-dot-active" style="display:inline-block;vertical-align:middle;margin-right:4px"></span> Active</span>
+          <span><span class="status-dot status-dot-pending" style="display:inline-block;vertical-align:middle;margin-right:4px"></span> Harvesting</span>
+          <span><span class="status-dot status-dot-inactive" style="display:inline-block;vertical-align:middle;margin-right:4px"></span> Dormant</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-6)">
+        <div class="card" style="padding:0">
+          <div style="padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--border-subtle)">
+            <h3 style="font-size:var(--font-size-lg);margin:0">Timber Blocks</h3>
+          </div>
+          ${blocks.map(b => `
+            <div class="ops-block-list-item">
+              <span class="status-dot status-dot-${b.status === 'active' ? 'active' : b.status === 'harvesting' ? 'pending' : 'inactive'}"></span>
+              <span class="ops-block-id">${b.id}</span>
+              <span style="flex:1;font-size:var(--font-size-xs);color:var(--text-tertiary)">${b.acres} acres</span>
+              <span class="badge badge-${b.status === 'active' ? 'success' : b.status === 'harvesting' ? 'warning' : 'info'}" style="font-size:10px">${b.status}</span>
+              <span class="ops-block-coords">${b.coords}</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="card" style="padding:0">
+          <div style="padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--border-subtle)">
+            <h3 style="font-size:var(--font-size-lg);margin:0">Operations Activity</h3>
+          </div>
+          <div style="padding:var(--space-3) var(--space-5)">
+            ${activities.map(a => `
+              <div class="ops-activity-row">
+                <span class="ops-activity-time">${a.time}</span>
+                <span class="ops-activity-text">${a.text}</span>
+                <span class="badge ${a.badgeClass}">${a.badge}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3 style="font-size:var(--font-size-lg)">Quick Actions</h3>
+      </div>
+      <div style="display:flex;gap:var(--space-3);flex-wrap:wrap">
+        <button class="btn btn-primary">${icons.plus} New Block Assessment</button>
+        <button class="btn btn-outline">${icons.truck} Schedule Haul</button>
+        <button class="btn btn-outline">${icons.clipboard} Log Harvest</button>
+      </div>
+    </div>`;
+
+  return shell(body, { wide: true });
+}
+
+/* ═══════════════════════════════════════════
+   VARIANT 2 — Fleet & Forestry Dashboard
+   Split layout: map placeholder top, data bottom.
+   Fleet cards, timber block grid, quick actions.
+   ═══════════════════════════════════════════ */
+function variant2() {
+  const fleet = [
+    { name: 'LT-101 — Kenworth W900', type: 'Logging Truck', status: 'En Route', statusClass: 'badge-success', icon: icons.truck, iconBg: 'oklch(0.92 0.04 155)', detail: 'Block C-23 → Nanaimo Mill · 42 km remaining' },
+    { name: 'LT-107 — Peterbilt 389', type: 'Logging Truck', status: 'Loading', statusClass: 'badge-warning', icon: icons.truck, iconBg: 'oklch(0.92 0.04 75)', detail: 'Block A-12 · 8,200 board ft loaded' },
+    { name: 'H-03 — Tigercat 860', type: 'Harvester', status: 'Felling', statusClass: 'badge-success', icon: icons.harvester, iconBg: 'oklch(0.92 0.04 155)', detail: 'Block C-23 · 340 board ft/hr' },
+    { name: 'F-02 — Ponsse Scorpion', type: 'Forwarder', status: 'Idle', statusClass: 'badge-info', icon: icons.truck, iconBg: 'oklch(0.90 0.04 240)', detail: 'Block B-07 · Awaiting next load' }
+  ];
+
+  const blocks = [
+    { id: 'A-12', acres: 240, boardFt: '2.98M', status: 'active', trees: 'Douglas Fir' },
+    { id: 'B-07', acres: 185, boardFt: '2.15M', status: 'active', trees: 'Western Red Cedar' },
+    { id: 'C-23', acres: 310, boardFt: '4.82M', status: 'harvesting', trees: 'Sitka Spruce' },
+    { id: 'D-04', acres: 150, boardFt: '1.68M', status: 'dormant', trees: 'Hemlock' },
+    { id: 'E-19', acres: 275, boardFt: '3.41M', status: 'active', trees: 'Douglas Fir' },
+    { id: 'F-11', acres: 198, boardFt: '2.54M', status: 'harvesting', trees: 'Cedar' }
+  ];
+
+  const body = `
+    <div class="section">
+      <div style="display:flex;align-items:center;gap:var(--space-4);margin-bottom:var(--space-2)">
+        <h1 style="font-size:var(--font-size-2xl)">Fleet &amp; Forestry Dashboard</h1>
+        <span class="badge badge-success" style="font-size:var(--font-size-sm);padding:var(--space-2) var(--space-4)">All Systems Operational</span>
+      </div>
+      <p>Track fleet vehicles and timber block status across Vancouver Island operations.</p>
+    </div>
+
+    <div class="section">
+      <div style="height:200px;background:var(--surface);border:1px solid var(--border-color);border-radius:var(--radius-lg);position:relative;overflow:hidden">
+        <div style="position:absolute;inset:0;background-image:linear-gradient(var(--border-subtle) 1px,transparent 1px),linear-gradient(90deg,var(--border-subtle) 1px,transparent 1px);background-size:40px 40px;opacity:0.5"></div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:var(--space-2)">
+          <span style="color:var(--text-tertiary);font-size:var(--font-size-sm);font-weight:600">Fleet Tracking Map</span>
+          <span style="color:var(--text-tertiary);font-size:var(--font-size-xs)">24 vehicles · 6 timber blocks · Real-time GPS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3 style="font-size:var(--font-size-lg)">Active Fleet</h3>
+        <span style="font-size:var(--font-size-xs);color:var(--text-tertiary)">24 vehicles total · 18 active</span>
+      </div>
+      <div class="grid grid-2">
+        ${fleet.map(f => `
+          <div class="card fleet-card">
+            <div class="fleet-icon" style="background:${f.iconBg};color:var(--text-primary)">${f.icon}</div>
+            <div class="fleet-info">
+              <div class="fleet-name">${f.name}</div>
+              <div class="fleet-meta">${f.type} · ${f.detail}</div>
+            </div>
+            <span class="badge ${f.statusClass}">${f.status}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3 style="font-size:var(--font-size-lg)">Timber Block Grid</h3>
+        <button class="btn btn-outline" style="height:2rem;font-size:var(--font-size-xs)">View All</button>
+      </div>
+      <div class="grid grid-3">
+        ${blocks.map(b => `
+          <div class="card block-grid-item status-${b.status}" style="padding:var(--space-4)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-2)">
+              <span style="font-family:var(--font-heading);font-weight:700;font-size:var(--font-size-lg);color:var(--text-primary)">${b.id}</span>
+              <span class="badge badge-${b.status === 'active' ? 'success' : b.status === 'harvesting' ? 'warning' : 'info'}" style="font-size:10px">${b.status}</span>
+            </div>
+            <div style="font-size:var(--font-size-sm);color:var(--text-secondary)">${b.trees}</div>
+            <div style="display:flex;justify-content:space-between;margin-top:var(--space-3);font-size:var(--font-size-xs);color:var(--text-tertiary)">
+              <span>${b.acres} acres</span>
+              <span>${b.boardFt} board ft</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3 style="font-size:var(--font-size-lg)">Quick Actions</h3>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-3)">
+        <button class="quick-action-btn">
+          <span class="quick-action-icon">🌲</span>
+          New Block Assessment
+        </button>
+        <button class="quick-action-btn">
+          <span class="quick-action-icon">🚛</span>
+          Schedule Haul
+        </button>
+        <button class="quick-action-btn">
+          <span class="quick-action-icon">🪓</span>
+          Log Harvest
+        </button>
+        <button class="quick-action-btn">
+          <span class="quick-action-icon">📦</span>
+          Update Inventory
+        </button>
+      </div>
+    </div>`;
+
+  return shell(body, { wide: true });
+}
+
+/* ═══════════════════════════════════════════
+   VARIANT 3 — Mill Operations Center
+   Production-focused: metrics, grade dist,
+   inventory, QC status, 7-day schedule.
+   ═══════════════════════════════════════════ */
+function variant3() {
+  const metrics = [
+    { label: 'Board Feet Today', value: '48,200', sub: 'Target: 50,000' },
+    { label: 'Grade A', value: '62%', sub: '+2.1% vs last week' },
+    { label: 'Shift Status', value: 'Day', sub: 'Shift B starts at 14:00' },
+    { label: 'Mill Efficiency', value: '94.3%', sub: '+1.2% vs target' }
+  ];
+
+  const grades = [
+    { label: 'Grade A', pct: 62, color: 'var(--color-success)' },
+    { label: 'Grade B', pct: 24, color: 'var(--color-primary)' },
+    { label: 'Grade C', pct: 10, color: 'var(--color-warning)' },
+    { label: 'Waste', pct: 4, color: 'var(--color-danger)' }
+  ];
+
+  const rawMaterials = [
+    { label: 'Douglas Fir Logs', value: '142,000 bf' },
+    { label: 'Western Red Cedar', value: '68,500 bf' },
+    { label: 'Sitka Spruce', value: '95,200 bf' },
+    { label: 'Hemlock', value: '54,800 bf' },
+    { label: 'Total Raw Stock', value: '360,500 bf' }
+  ];
+
+  const finishedGoods = [
+    { label: 'Dimensional Lumber', value: '89,400 bf' },
+    { label: 'Beams & Stringers', value: '24,600 bf' },
+    { label: 'Decking', value: '18,200 bf' },
+    { label: 'Total Finished', value: '132,200 bf' }
+  ];
+
+  const qcItems = [
+    { label: 'Moisture Content', status: 'Pass', statusClass: 'badge-success', detail: '12.4% (target: 12-15%)' },
+    { label: 'Dimensional Accuracy', status: 'Pass', statusClass: 'badge-success', detail: '±0.5mm tolerance' },
+    { label: 'Visual Grade Sorting', status: 'Review', statusClass: 'badge-warning', detail: '3 loads pending review' },
+    { label: 'Knot Frequency', status: 'Pass', statusClass: 'badge-success', detail: 'Within Grade A limits' },
+    { label: 'Resin Pocket Check', status: 'Fail', statusClass: 'badge-danger', detail: 'Lot #2847 rejected' }
+  ];
+
+  const schedule = [
+    { day: 'Mon Sep 01', shifts: ['morning', 'afternoon', 'night'], output: '48,200 bf' },
+    { day: 'Tue Sep 02', shifts: ['morning', 'afternoon', 'night'], output: '51,400 bf' },
+    { day: 'Wed Sep 03', shifts: ['morning', 'afternoon', 'night'], output: '49,800 bf' },
+    { day: 'Thu Sep 04', shifts: ['morning', 'afternoon'], output: '—' },
+    { day: 'Fri Sep 05', shifts: ['morning', 'afternoon', 'night'], output: '—' },
+    { day: 'Sat Sep 06', shifts: ['morning'], output: '—' },
+    { day: 'Sun Sep 07', shifts: [], output: '—' }
+  ];
+
+  const body = `
+    <div class="section">
+      <h1 style="font-size:var(--font-size-2xl);margin-bottom:var(--space-1)">Mill Operations Center</h1>
+      <p style="font-size:var(--font-size-sm)">Ladysmith Mill — Production metrics, inventory, and quality control.</p>
+    </div>
+
+    <div class="section">
+      <div class="grid grid-4">
+        ${metrics.map(m => `
+          <div class="card mill-metric">
+            <div class="mill-metric-value">${m.value}</div>
+            <div class="mill-metric-label">${m.label}</div>
+            <div style="font-size:var(--font-size-xs);color:var(--text-tertiary);margin-top:var(--space-2)">${m.sub}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3 style="font-size:var(--font-size-lg)">Grade Distribution</h3>
+        <span style="font-size:var(--font-size-xs);color:var(--text-tertiary)">Today's production</span>
+      </div>
+      <div class="card">
+        ${grades.map(g => `
+          <div class="mill-grade-bar">
+            <span class="mill-grade-label">${g.label}</span>
+            <div class="mill-grade-track">
+              <div class="mill-grade-fill" style="width:${g.pct}%;background:${g.color}"></div>
+            </div>
+            <span class="mill-grade-value">${g.pct}%</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-6)">
+        <div class="card" style="padding:0">
+          <div style="padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--border-subtle)">
+            <h3 style="font-size:var(--font-size-lg);margin:0">Raw Materials Inventory</h3>
+          </div>
+          <div style="padding:var(--space-3) var(--space-5)">
+            ${rawMaterials.map(r => `
+              <div class="inv-row">
+                <span class="inv-label">${r.label}</span>
+                <span class="inv-value">${r.value}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="card" style="padding:0">
+          <div style="padding:var(--space-4) var(--space-5);border-bottom:1px solid var(--border-subtle)">
+            <h3 style="font-size:var(--font-size-lg);margin:0">Finished Goods</h3>
+          </div>
+          <div style="padding:var(--space-3) var(--space-5)">
+            ${finishedGoods.map(f => `
+              <div class="inv-row">
+                <span class="inv-label">${f.label}</span>
+                <span class="inv-value">${f.value}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3 style="font-size:var(--font-size-lg)">Quality Control Status</h3>
+      </div>
+      <div class="card" style="padding:var(--space-3) var(--space-5)">
+        ${qcItems.map(q => `
+          <div style="display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) 0;border-bottom:1px solid var(--border-subtle)">
+            <span style="flex:1;font-size:var(--font-size-sm);color:var(--text-secondary)">${q.label}</span>
+            <span style="font-size:var(--font-size-xs);color:var(--text-tertiary);flex:1">${q.detail}</span>
+            <span class="badge ${q.statusClass}">${q.status}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3 style="font-size:var(--font-size-lg)">7-Day Production Schedule</h3>
+      </div>
+      <div class="card" style="padding:var(--space-3) var(--space-5)">
+        ${schedule.map(s => `
+          <div class="mill-schedule-day">
+            <span class="mill-schedule-date">${s.day}</span>
+            <div class="mill-schedule-shifts">
+              ${s.shifts.length === 0 ? '<span style="font-size:var(--font-size-xs);color:var(--text-tertiary)">No shifts</span>' : ''}
+              ${s.shifts.includes('morning') ? '<span class="mill-shift-tag mill-shift-morning">Morning</span>' : ''}
+              ${s.shifts.includes('afternoon') ? '<span class="mill-shift-tag mill-shift-afternoon">Afternoon</span>' : ''}
+              ${s.shifts.includes('night') ? '<span class="mill-shift-tag mill-shift-night">Night</span>' : ''}
+            </div>
+            <span style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-primary);min-width:5rem;text-align:right;font-variant-numeric:tabular-nums">${s.output}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3 style="font-size:var(--font-size-lg)">Quick Actions</h3>
+      </div>
+      <div style="display:flex;gap:var(--space-3);flex-wrap:wrap">
+        <button class="btn btn-primary">${icons.clipboard} Update Production Log</button>
+        <button class="btn btn-outline">${icons.box} Inventory Count</button>
+        <button class="btn btn-outline">${icons.settings} QC Report</button>
+      </div>
+    </div>`;
+
+  return shell(body, { wide: true });
+}
+
+/* ═══════════════════════════════════════════
+   PICKER WIRING
+   ═══════════════════════════════════════════ */
+const stage = document.getElementById('stage');
+const picker = document.querySelector('.proto-picker');
+const highlight = picker.querySelector('.proto-picker-highlight');
+const items = [...picker.querySelectorAll('.proto-picker-item:not(.proto-picker-replay)')];
+const replay = picker?.querySelector('.proto-picker-replay');
+let current = 0;
+
+const variants = [variant1, variant2, variant3];
+
+function moveHighlight() {
+  const el = items[current];
+  highlight.style.width = el.offsetWidth + 'px';
+  highlight.style.transform = `translateX(${el.offsetLeft}px)`;
+}
+
+function mount(i) {
+  stage.innerHTML = '';
+  requestAnimationFrame(() => { stage.innerHTML = variants[i](); });
+}
+
+function setActive(i) {
+  if (i < 0 || i >= variants.length) return;
+  current = i;
+  items.forEach((el, j) => {
+    el.toggleAttribute('data-active', j === i);
+    if (j === i) el.setAttribute('aria-current', 'true');
+    else el.removeAttribute('aria-current');
+  });
+  moveHighlight();
+  const url = new URL(location);
+  url.searchParams.set('v', i + 1);
+  history.replaceState(null, '', url);
+  mount(i);
+}
+
+items.forEach((el, i) => el.addEventListener('click', () => setActive(i)));
+replay?.addEventListener('click', () => mount(current));
+window.addEventListener('resize', moveHighlight);
+document.addEventListener('keydown', (e) => {
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable) return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const num = parseInt(e.key, 10);
+  if (num >= 1 && num <= variants.length) setActive(num - 1);
+  else if (e.key === 'ArrowRight') setActive((current + 1) % variants.length);
+  else if (e.key === 'ArrowLeft') setActive((current - 1 + variants.length) % variants.length);
+  else if (e.key === 'r' || e.key === 'R') mount(current);
+});
+
+setActive((parseInt(new URLSearchParams(location.search).get('v'), 10) || 1) - 1);
+requestAnimationFrame(() => requestAnimationFrame(() => picker.setAttribute('data-ready', '')));
+</script>
+
+</body>
+</html>

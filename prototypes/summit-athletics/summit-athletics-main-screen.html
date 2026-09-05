@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Summit Athletics — Dashboard Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ===== DESIGN TOKENS ===== */
+    :root {
+      /* Primary palette — teal */
+      --color-primary: oklch(0.50 0.10 178);
+      --color-primary-hover: oklch(0.44 0.11 178);
+      --color-primary-light: oklch(0.92 0.04 178);
+      --color-primary-muted: oklch(0.70 0.08 170);
+
+      /* Secondary & Accent */
+      --color-secondary: oklch(0.60 0.08 170);
+      --color-accent: oklch(0.55 0.09 175);
+
+      /* Semantic */
+      --color-success: oklch(0.62 0.17 155);
+      --color-warning: oklch(0.75 0.15 80);
+      --color-danger: oklch(0.58 0.18 25);
+      --color-info: oklch(0.60 0.10 240);
+
+      /* Spacing */
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+
+      /* Border radius — concentric */
+      --radius-sm: 2px;
+      --radius-md: 4px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      --radius-full: 999px;
+
+      /* Shadows — light mode 3-layer */
+      --shadow-sm: 0 1px 2px oklch(0.2 0.02 178 / 0.06);
+      --shadow-md: 0 2px 8px oklch(0.2 0.02 178 / 0.08), 0 1px 2px oklch(0.2 0.02 178 / 0.04);
+      --shadow-lg: 0 4px 16px oklch(0.2 0.02 178 / 0.10), 0 2px 4px oklch(0.2 0.02 178 / 0.06), 0 1px 2px oklch(0.2 0.02 178 / 0.04);
+
+      /* Layout */
+      --header-height: 3rem;
+      --sidebar-width: 14rem;
+
+      /* Typography */
+      --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-size-xs: 0.75rem;
+      --font-size-sm: 0.875rem;
+      --font-size-base: 1rem;
+      --font-size-lg: 1.125rem;
+      --font-size-xl: 1.25rem;
+      --font-size-2xl: 1.5rem;
+      --font-size-3xl: 2rem;
+      --font-size-4xl: 2.5rem;
+      --line-height-tight: 1.2;
+      --line-height-normal: 1.5;
+      --line-height-relaxed: 1.65;
+    }
+
+    /* ===== LIGHT THEME ===== */
+    [data-theme="light"] {
+      --bg: oklch(0.97 0.005 80);
+      --surface: oklch(0.94 0.01 80);
+      --surface-raised: oklch(1.0 0 0);
+      --surface-overlay: oklch(0.96 0.008 80);
+      --header-bg: oklch(1.0 0 0);
+      --sidebar-bg: oklch(0.955 0.008 80);
+      --text-primary: oklch(0.18 0.02 180);
+      --text-secondary: oklch(0.45 0.03 178);
+      --text-tertiary: oklch(0.58 0.02 178);
+      --border-color: oklch(0.89 0.008 80);
+      --border-subtle: oklch(0.93 0.005 80);
+      --hover-bg: oklch(0.95 0.005 80);
+      --active-bg: oklch(0.92 0.008 80);
+      --focus-ring: oklch(0.50 0.10 178 / 0.35);
+      --nav-active-bg: oklch(0.92 0.04 178);
+      --nav-active-text: oklch(0.42 0.12 178);
+      --badge-bg: oklch(0.93 0.03 178);
+      --badge-text: oklch(0.42 0.12 178);
+      --scrollbar-track: oklch(0.95 0.003 80);
+      --scrollbar-thumb: oklch(0.85 0.01 80);
+    }
+
+    /* ===== DARK THEME ===== */
+    [data-theme="dark"] {
+      --bg: oklch(0.20 0.03 180);
+      --surface: oklch(0.26 0.03 175);
+      --surface-raised: oklch(0.28 0.028 178);
+      --surface-overlay: oklch(0.22 0.03 178);
+      --header-bg: oklch(0.22 0.03 178);
+      --sidebar-bg: oklch(0.21 0.03 180);
+      --text-primary: oklch(0.94 0.008 80);
+      --text-secondary: oklch(0.75 0.015 178);
+      --text-tertiary: oklch(0.58 0.015 178);
+      --border-color: oklch(0.34 0.025 178);
+      --border-subtle: oklch(0.28 0.02 178);
+      --hover-bg: oklch(0.28 0.025 178);
+      --active-bg: oklch(0.30 0.028 178);
+      --focus-ring: oklch(0.50 0.10 178 / 0.5);
+      --nav-active-bg: oklch(0.26 0.06 178);
+      --nav-active-text: oklch(0.75 0.12 178);
+      --badge-bg: oklch(0.26 0.06 178);
+      --badge-text: oklch(0.78 0.12 178);
+      --shadow-sm: none;
+      --shadow-md: 0 0 0 1px oklch(0.36 0.02 178);
+      --shadow-lg: 0 0 0 1px oklch(0.34 0.02 178);
+      --scrollbar-track: oklch(0.20 0.02 178);
+      --scrollbar-thumb: oklch(0.34 0.025 178);
+    }
+
+    /* ===== BASE ===== */
+    html {
+      font-family: var(--font-family);
+      font-size: 16px;
+      line-height: var(--line-height-normal);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      color: var(--text-primary);
+      background: var(--bg);
+    }
+    body { min-height: 100vh; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: var(--radius-full); }
+
+    /* ===== LAYOUT SHELL ===== */
+    .shell { display: flex; min-height: 100vh; }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      overflow: hidden;
+    }
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      height: var(--header-height);
+      padding: 0 var(--space-4);
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+    .sidebar-brand-icon {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-md);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-primary);
+      color: oklch(1.0 0 0);
+    }
+    .sidebar-brand-icon svg { width: 16px; height: 16px; }
+    .sidebar-brand-text {
+      font-weight: 700;
+      font-size: var(--font-size-sm);
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .sidebar-nav { flex: 1; padding: var(--space-3) var(--space-2); overflow-y: auto; }
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 120ms ease-out, color 120ms ease-out;
+      white-space: nowrap;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .sidebar-nav-item:hover { background: var(--hover-bg); color: var(--text-primary); }
+    .sidebar-nav-item.active { background: var(--nav-active-bg); color: var(--nav-active-text); font-weight: 600; }
+    .sidebar-nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .sidebar-nav-item-label { overflow: hidden; }
+
+    .sidebar-section-label {
+      font-size: var(--font-size-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-tertiary);
+      padding: var(--space-4) var(--space-3) var(--space-2);
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .sidebar-footer {
+      padding: var(--space-3);
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* ===== MAIN WRAPPER ===== */
+    .main-wrapper {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER (top bar) ===== */
+    .header {
+      position: sticky;
+      top: 0;
+      height: var(--header-height);
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      padding: 0 var(--space-6);
+      gap: var(--space-4);
+      z-index: 90;
+      box-shadow: var(--shadow-sm);
+    }
+    .header-title {
+      font-size: var(--font-size-base);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .header-spacer { flex: 1; }
+    .header-actions { display: flex; align-items: center; gap: var(--space-2); }
+
+    .icon-btn {
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px;
+      border: none; background: none;
+      border-radius: var(--radius-full);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 120ms ease-out, color 120ms ease-out;
+    }
+    .icon-btn:hover { background: var(--hover-bg); color: var(--text-primary); }
+    .icon-btn:active { transform: scale(0.96); }
+    .icon-btn svg { width: 20px; height: 20px; }
+
+    .avatar {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      color: oklch(1.0 0 0);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: box-shadow 150ms ease-out;
+    }
+    .avatar:hover {
+      box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--color-primary);
+    }
+
+    /* ===== CONTENT ===== */
+    .content {
+      flex: 1;
+      padding: var(--space-8);
+      max-width: 72ch;
+    }
+    .content-wide { max-width: none; }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1 { font-size: var(--font-size-3xl); font-weight: 800; line-height: var(--line-height-tight); color: var(--text-primary); text-wrap: balance; }
+    h2 { font-size: var(--font-size-2xl); font-weight: 700; line-height: var(--line-height-tight); color: var(--text-primary); text-wrap: balance; }
+    h3 { font-size: var(--font-size-xl); font-weight: 600; line-height: var(--line-height-tight); color: var(--text-primary); text-wrap: balance; }
+    h4 { font-size: var(--font-size-lg); font-weight: 600; line-height: var(--line-height-tight); color: var(--text-primary); text-wrap: balance; }
+    p { line-height: var(--line-height-relaxed); color: var(--text-secondary); max-width: 65ch; }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--surface-raised);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 150ms ease-out, transform 150ms ease-out;
+    }
+    .card:hover { box-shadow: var(--shadow-md); }
+
+    /* ===== BADGE ===== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+    }
+    .badge-success { background: oklch(0.90 0.05 155); color: oklch(0.38 0.12 155); }
+    .badge-warning { background: oklch(0.92 0.06 80); color: oklch(0.42 0.12 80); }
+    .badge-danger { background: oklch(0.90 0.06 25); color: oklch(0.45 0.14 25); }
+    .badge-info { background: oklch(0.90 0.04 240); color: oklch(0.42 0.10 240); }
+
+    [data-theme="dark"] .badge-success { background: oklch(0.62 0.17 155 / 0.2); color: oklch(0.78 0.14 155); }
+    [data-theme="dark"] .badge-warning { background: oklch(0.75 0.15 80 / 0.2); color: oklch(0.82 0.14 80); }
+    [data-theme="dark"] .badge-danger { background: oklch(0.58 0.18 25 / 0.2); color: oklch(0.80 0.14 25); }
+    [data-theme="dark"] .badge-info { background: oklch(0.60 0.10 240 / 0.2); color: oklch(0.78 0.10 240); }
+
+    /* ===== BUTTON ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      height: 2.5rem;
+      padding: 0 var(--space-3);
+      border: none;
+      border-radius: var(--radius-md);
+      font-family: var(--font-family);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 120ms ease-out, transform 100ms ease-out, box-shadow 120ms ease-out;
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn-primary { background: var(--color-primary); color: oklch(1.0 0 0); }
+    .btn-primary:hover { background: var(--color-primary-hover); }
+    .btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--border-color); }
+    .btn-outline:hover { background: var(--hover-bg); }
+
+    /* ===== GRID HELPERS ===== */
+    .grid { display: grid; gap: var(--space-4); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    /* ===== SECTION ===== */
+    .section { margin-bottom: var(--space-8); }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      padding: var(--space-4) var(--space-6);
+      border-top: 1px solid var(--border-color);
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      text-align: center;
+    }
+
+    /* ===== PROGRESS RING ===== */
+    .progress-ring { transform: rotate(-90deg); }
+    .progress-ring-bg { fill: none; stroke: var(--border-color); }
+    .progress-ring-fill { fill: none; stroke-linecap: round; transition: stroke-dashoffset 600ms ease-out; }
+
+    /* ===== STATUS DOT ===== */
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: var(--radius-full);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .status-dot-active { background: var(--color-success); }
+    .status-dot-pending { background: var(--color-warning); }
+
+    /* ===== VARIANT-SPECIFIC: MEMBER DASHBOARD ===== */
+    .welcome-banner {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      color: oklch(1.0 0 0);
+      margin-bottom: var(--space-8);
+    }
+    [data-theme="dark"] .welcome-banner {
+      background: linear-gradient(135deg, oklch(0.50 0.10 178 / 0.3), oklch(0.60 0.08 170 / 0.2));
+      border: 1px solid var(--border-color);
+    }
+    .welcome-banner h1 { color: oklch(1.0 0 0); margin-bottom: var(--space-2); }
+    .welcome-banner p { color: oklch(0.94 0.008 80); max-width: none; }
+    .welcome-tier {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: oklch(1.0 0 0 / 0.2);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      margin-top: var(--space-3);
+    }
+
+    .schedule-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .schedule-item:last-child { border-bottom: none; }
+    .schedule-time {
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      color: var(--color-primary);
+      min-width: 5rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .schedule-info { flex: 1; }
+    .schedule-name { font-size: var(--font-size-sm); font-weight: 600; color: var(--text-primary); }
+    .schedule-meta { font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: var(--space-1); }
+
+    .quick-action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-5) var(--space-4);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      background: var(--surface-raised);
+      color: var(--text-primary);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      font-family: var(--font-family);
+      cursor: pointer;
+      transition: transform 150ms ease-out, background 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out;
+    }
+    .quick-action-btn:hover {
+      background: var(--surface);
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-md);
+    }
+    .quick-action-btn:active { transform: scale(0.96); }
+    .quick-action-icon {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-lg);
+      background: var(--color-primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+    }
+    [data-theme="dark"] .quick-action-icon {
+      background: oklch(0.50 0.10 178 / 0.15);
+    }
+    .quick-action-icon svg { width: 20px; height: 20px; }
+
+    /* ===== VARIANT-SPECIFIC: TRAINER VIEW ===== */
+    .client-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .client-row:last-child { border-bottom: none; }
+    .client-avatar {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--font-size-xs);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    [data-theme="dark"] .client-avatar {
+      background: oklch(0.50 0.10 178 / 0.2);
+    }
+    .client-info { flex: 1; }
+    .client-name { font-size: var(--font-size-sm); font-weight: 600; color: var(--text-primary); }
+    .client-meta { font-size: var(--font-size-xs); color: var(--text-tertiary); }
+    .client-time {
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timeline-slot {
+      display: flex;
+      align-items: stretch;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-subtle);
+      min-height: 3rem;
+    }
+    .timeline-slot:last-child { border-bottom: none; }
+    .timeline-time {
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      color: var(--text-tertiary);
+      min-width: 4rem;
+      font-variant-numeric: tabular-nums;
+      padding-top: 2px;
+    }
+    .timeline-bar {
+      width: 3px;
+      background: var(--border-color);
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+    .timeline-bar.active { background: var(--color-primary); }
+    .timeline-content { flex: 1; }
+    .timeline-title { font-size: var(--font-size-sm); font-weight: 600; color: var(--text-primary); }
+    .timeline-sub { font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: var(--space-1); }
+
+    .revenue-stat {
+      text-align: center;
+      padding: var(--space-4);
+    }
+    .revenue-value {
+      font-size: var(--font-size-2xl);
+      font-weight: 800;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+    .revenue-label {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      margin-top: var(--space-1);
+    }
+
+    /* ===== VARIANT-SPECIFIC: PERFORMANCE HUB ===== */
+    .perf-stat-number {
+      font-size: var(--font-size-4xl);
+      font-weight: 800;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    .perf-stat-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-2);
+    }
+    .perf-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+    }
+    .perf-trend.up { color: var(--color-success); }
+    .perf-trend.down { color: var(--color-danger); }
+    .perf-trend svg { width: 14px; height: 14px; }
+    .perf-stat-period { font-size: var(--font-size-xs); color: var(--text-tertiary); }
+
+    .chart-area {
+      height: 140px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, var(--color-primary-light) 0%, transparent 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    [data-theme="dark"] .chart-area {
+      background: linear-gradient(180deg, oklch(0.50 0.10 178 / 0.12) 0%, transparent 100%);
+    }
+    .chart-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--color-primary);
+    }
+
+    .goal-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .goal-card:last-child { border-bottom: none; }
+    .goal-info { flex: 1; }
+    .goal-name { font-size: var(--font-size-sm); font-weight: 600; color: var(--text-primary); }
+    .goal-detail { font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: var(--space-1); }
+    .goal-progress-bar {
+      height: 6px;
+      border-radius: var(--radius-full);
+      background: var(--border-color);
+      margin-top: var(--space-2);
+      overflow: hidden;
+    }
+    .goal-progress-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      transition: width 600ms ease-out;
+    }
+
+    .feed-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-dot {
+      width: 8px; height: 8px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .feed-dot.success { background: var(--color-success); }
+    .feed-dot.warning { background: var(--color-warning); }
+    .feed-text { font-size: var(--font-size-sm); color: var(--text-primary); line-height: 1.4; }
+    .feed-meta { font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: var(--space-1); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); width: var(--sidebar-width); }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .main-wrapper { margin-left: 0 !important; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .content { padding: var(--space-4); }
+      .welcome-banner { padding: var(--space-6); }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ===== PICKER (VERBATIM) ===== */
+    .proto-picker{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:2147483647;display:flex;align-items:center;gap:2px;padding:4px;border-radius:999px;background:rgba(10,10,10,0.82);-webkit-backdrop-filter:blur(12px) saturate(1.4);backdrop-filter:blur(12px) saturate(1.4);box-shadow:0 0 0 1px rgba(255,255,255,0.08) inset,0 8px 24px rgba(0,0,0,0.24),0 2px 6px rgba(0,0,0,0.12);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;line-height:1;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
+    .proto-picker-highlight{position:absolute;top:4px;left:0;height:28px;border-radius:999px;background:rgba(255,255,255,0.12);will-change:transform}
+    .proto-picker[data-ready] .proto-picker-highlight{transition:transform 250ms cubic-bezier(0.23,1,0.32,1),width 250ms cubic-bezier(0.23,1,0.32,1)}
+    @media(prefers-reduced-motion:reduce){.proto-picker[data-ready] .proto-picker-highlight{transition:none}}
+    .proto-picker-item{position:relative;display:flex;align-items:center;height:28px;padding:0 12px;border:0;border-radius:999px;background:transparent;color:rgba(255,255,255,0.55);font:inherit;cursor:pointer;transition:color 150ms ease-out}
+    .proto-picker-item:hover{color:rgba(255,255,255,0.85)}
+    .proto-picker-item:active{transform:scale(0.97)}
+    .proto-picker-item:focus-visible{outline:2px solid rgba(255,255,255,0.4);outline-offset:2px}
+    .proto-picker-item[data-active]{color:#fff}
+  </style>
+</head>
+<body>
+
+<div id="stage"></div>
+
+<nav class="proto-picker" aria-label="Prototype variants">
+  <span class="proto-picker-highlight" aria-hidden="true"></span>
+  <button class="proto-picker-item" data-active aria-current="true">Member Dashboard</button>
+  <button class="proto-picker-item">Trainer View</button>
+  <button class="proto-picker-item">Performance Hub</button>
+</nav>
+
+<script>
+const icons = {
+  home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+  dumbbell: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M6 12h12"/><rect x="2" y="8" width="4" height="8" rx="1"/><rect x="18" y="8" width="4" height="8" rx="1"/><rect x="5" y="10" width="2" height="4" rx="0.5"/><rect x="17" y="10" width="2" height="4" rx="0.5"/></svg>`,
+  trendingUp: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
+  users: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  target: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+  zap: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  menu: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
+  sun: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+  moon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  mountain: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3l4 8 5-5 5 15H2z"/></svg>`,
+  award: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>`,
+  activity: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+  clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  star: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+  mapPin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+  play: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
+  fileText: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`
+};
+
+/* Mountain/dumbbell brand icon SVG */
+const brandIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3l4 8 5-5 5 15H2z"/><path d="M4.5 15.5h15" stroke-width="1.5"/></svg>`;
+
+const navItems = [
+  { icon: 'home', label: 'Dashboard' },
+  { icon: 'calendar', label: 'Schedule' },
+  { icon: 'dumbbell', label: 'My Workouts' },
+  { icon: 'trendingUp', label: 'Progress' },
+  { icon: 'zap', label: 'Classes' },
+  { icon: 'users', label: 'Trainers' }
+];
+
+function shell(inner, opts = {}) {
+  const theme = document.documentElement.getAttribute('data-theme') || 'light';
+  const isDark = theme === 'dark';
+  const toggleIcon = isDark ? icons.sun : icons.moon;
+  const contentClass = opts.wide ? ' content content-wide' : ' content';
+  const activeNav = opts.activeNav || 'Dashboard';
+
+  const navHTML = navItems.map(item =>
+    `<a class="sidebar-nav-item${item.label === activeNav ? ' active' : ''}" href="#" onclick="return false">
+      ${icons[item.icon]}
+      <span class="sidebar-nav-item-label">${item.label}</span>
+    </a>`
+  ).join('');
+
+  return `
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon">${brandIcon}</div>
+        <span class="sidebar-brand-text">Summit Athletics</span>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Navigation</div>
+        ${navHTML}
+      </nav>
+      <div class="sidebar-footer">
+        <a class="sidebar-nav-item" href="#" onclick="return false">
+          ${icons.home}
+          <span class="sidebar-nav-item-label">Settings</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="main-wrapper">
+      <header class="header">
+        <span class="header-title">${opts.pageTitle || 'Dashboard'}</span>
+        <div class="header-spacer"></div>
+        <div class="header-actions">
+          <button class="icon-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+            ${toggleIcon}
+          </button>
+          <div class="avatar" title="Alex Morgan">AM</div>
+        </div>
+      </header>
+
+      <div class="${contentClass}">
+        ${inner}
+      </div>
+
+      <footer class="footer">
+        &copy; 2026 Summit Athletics. All rights reserved.
+      </footer>
+    </div>`;
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('sa-theme', next);
+}
+
+/* Detect system preference */
+(function initTheme() {
+  const stored = localStorage.getItem('sa-theme');
+  if (stored) {
+    document.documentElement.setAttribute('data-theme', stored);
+  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+
+/* ═══════════════════════════════════════════
+   VARIANT 1 — Member Dashboard
+   Welcome banner, today's schedule, quick
+   stats, upcoming classes, quick actions.
+   ═══════════════════════════════════════════ */
+function variant1() {
+  const stats = [
+    { label: 'Workouts This Week', value: '4', change: '+1 vs last week', up: true },
+    { label: 'Streak Days', value: '12', change: 'Personal best: 18', up: true },
+    { label: 'Personal Records', value: '7', change: '+2 this month', up: true }
+  ];
+
+  const schedule = [
+    { time: '6:30 AM', name: 'Spin Class', meta: 'Rhythm Studio · Coach Mia', badge: 'Upcoming', badgeClass: 'badge-info' },
+    { time: '8:00 AM', name: 'Personal Training', meta: 'Floor Area · Coach Derek', badge: 'Confirmed', badgeClass: 'badge-success' },
+    { time: '12:15 PM', name: 'HIIT Express', meta: 'Main Floor · Coach Kira', badge: 'Upcoming', badgeClass: 'badge-info' },
+    { time: '5:30 PM', name: 'Yoga Flow', meta: 'Mind Studio · Coach Aiden', badge: 'Waitlisted', badgeClass: 'badge-warning' }
+  ];
+
+  const upcomingClasses = [
+    { time: 'Tomorrow', name: 'Boxing Fundamentals', location: 'Strike Zone', instructor: 'Coach Ravi', spots: '3 spots left' },
+    { time: 'Wed', name: 'Strength & Conditioning', location: 'Power Floor', instructor: 'Coach Derek', spots: '8 spots left' },
+    { time: 'Thu', name: 'Spin Sprint', location: 'Rhythm Studio', instructor: 'Coach Mia', spots: '5 spots left' }
+  ];
+
+  const body = `
+    <div class="welcome-banner">
+      <h1>Welcome back, Alex</h1>
+      <p>Let's crush your goals today. You're on a 12-day streak!</p>
+      <div class="welcome-tier">
+        ${icons.award}
+        Gold Member
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="grid grid-3">
+        ${stats.map(s => `
+          <div class="card" style="padding:var(--space-5)">
+            <div style="font-size:var(--font-size-xs);color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;font-weight:600">${s.label}</div>
+            <div style="font-size:var(--font-size-3xl);font-weight:800;color:var(--text-primary);margin-top:var(--space-2);font-variant-numeric:tabular-nums">${s.value}</div>
+            <div style="font-size:var(--font-size-xs);font-weight:600;margin-top:var(--space-1);color:var(--color-success)">${s.change}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3>Today's Schedule</h3>
+        <button class="btn btn-outline" style="height:2rem;font-size:var(--font-size-xs)">View Full Schedule</button>
+      </div>
+      <div class="card" style="padding:var(--space-3) var(--space-5)">
+        ${schedule.map(s => `
+          <div class="schedule-item">
+            <span class="schedule-time">${s.time}</span>
+            <div class="schedule-info">
+              <div class="schedule-name">${s.name}</div>
+              <div class="schedule-meta">${s.meta}</div>
+            </div>
+            <span class="badge ${s.badgeClass}">${s.badge}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3>Upcoming Classes</h3>
+      </div>
+      <div class="grid grid-3">
+        ${upcomingClasses.map(c => `
+          <div class="card" style="padding:var(--space-5)">
+            <div style="font-size:var(--font-size-xs);color:var(--text-tertiary);font-weight:600;text-transform:uppercase;letter-spacing:0.05em">${c.time}</div>
+            <div style="font-size:var(--font-size-base);font-weight:700;color:var(--text-primary);margin-top:var(--space-2)">${c.name}</div>
+            <div style="display:flex;align-items:center;gap:var(--space-2);margin-top:var(--space-2);font-size:var(--font-size-xs);color:var(--text-tertiary)">
+              ${icons.mapPin} ${c.location}
+            </div>
+            <div style="font-size:var(--font-size-xs);color:var(--text-secondary);margin-top:var(--space-1)">${c.instructor}</div>
+            <div style="font-size:var(--font-size-xs);color:var(--color-primary);font-weight:600;margin-top:var(--space-2)">${c.spots}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3>Quick Actions</h3>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)">
+        <button class="quick-action-btn">
+          <div class="quick-action-icon">${icons.calendar}</div>
+          Book Class
+        </button>
+        <button class="quick-action-btn">
+          <div class="quick-action-icon">${icons.dumbbell}</div>
+          Log Workout
+        </button>
+        <button class="quick-action-btn">
+          <div class="quick-action-icon">${icons.trendingUp}</div>
+          View Progress
+        </button>
+      </div>
+    </div>`;
+
+  return shell(body, { activeNav: 'Dashboard', pageTitle: 'Dashboard' });
+}
+
+/* ═══════════════════════════════════════════
+   VARIANT 2 — Trainer View
+   Client list, session timeline, client
+   progress cards, revenue stats, quick actions.
+   ═══════════════════════════════════════════ */
+function variant2() {
+  const clients = [
+    { initials: 'JR', name: 'James Rivera', meta: 'Strength Program · Week 8', time: '7:00 AM' },
+    { initials: 'SN', name: 'Sarah Nguyen', meta: 'Weight Loss · Session 14', time: '8:30 AM' },
+    { initials: 'MC', name: 'Mike Chen', meta: 'Athletic Performance · Week 12', time: '10:00 AM' },
+    { initials: 'LP', name: 'Laura Park', meta: 'Rehab Program · Session 6', time: '11:30 AM' },
+    { initials: 'DW', name: 'David Wilson', meta: 'Muscle Gain · Week 4', time: '2:00 PM' },
+    { initials: 'AK', name: 'Amy Kim', meta: 'Marathon Prep · Week 10', time: '3:30 PM' }
+  ];
+
+  const timeline = [
+    { time: '7:00 AM', title: 'James Rivera — Strength', sub: 'Upper body focus · 60 min', active: true },
+    { time: '8:30 AM', title: 'Sarah Nguyen — Weight Loss', sub: 'HIIT circuit · 45 min', active: false },
+    { time: '10:00 AM', title: 'Mike Chen — Athletic', sub: 'Speed drills · 60 min', active: false },
+    { time: '11:30 AM', title: 'Laura Park — Rehab', sub: 'Mobility work · 30 min', active: false },
+    { time: '12:00 PM', title: 'Break', sub: '', active: false },
+    { time: '2:00 PM', title: 'David Wilson — Muscle Gain', sub: 'Push day · 60 min', active: false },
+    { time: '3:30 PM', title: 'Amy Kim — Marathon Prep', sub: 'Endurance run · 90 min', active: false }
+  ];
+
+  const progressCards = [
+    { name: 'James Rivera', metric: '+12% strength', pct: 78, detail: 'Bench press: 185 → 205 lbs' },
+    { name: 'Sarah Nguyen', metric: '-8 lbs', pct: 64, detail: 'On track for goal weight' },
+    { name: 'Mike Chen', metric: '+0.3s sprint', pct: 92, detail: '40-yard dash improvement' }
+  ];
+
+  const circumference = 2 * Math.PI * 28;
+
+  const body = `
+    <div class="section">
+      <h1 style="font-size:var(--font-size-2xl);margin-bottom:var(--space-1)">Good morning, Coach Derek</h1>
+      <p style="font-size:var(--font-size-sm)">You have 6 sessions scheduled today. Let's make them count.</p>
+    </div>
+
+    <div class="section">
+      <div class="grid grid-4">
+        ${[
+          { label: "Today's Sessions", value: '6' },
+          { label: 'Active Clients', value: '23' },
+          { label: 'This Week', value: '18' },
+          { label: 'Completion Rate', value: '94%' }
+        ].map(s => `
+          <div class="card revenue-stat" style="padding:var(--space-4)">
+            <div class="revenue-value">${s.value}</div>
+            <div class="revenue-label">${s.label}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-6)">
+      <div class="section" style="margin-bottom:0">
+        <div class="section-header">
+          <h3>Today's Clients</h3>
+        </div>
+        <div class="card" style="padding:var(--space-3) var(--space-5)">
+          ${clients.map(c => `
+            <div class="client-row">
+              <div class="client-avatar">${c.initials}</div>
+              <div class="client-info">
+                <div class="client-name">${c.name}</div>
+                <div class="client-meta">${c.meta}</div>
+              </div>
+              <div class="client-time">${c.time}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="section" style="margin-bottom:0">
+        <div class="section-header">
+          <h3>Session Timeline</h3>
+        </div>
+        <div class="card" style="padding:var(--space-3) var(--space-5)">
+          ${timeline.map(t => `
+            <div class="timeline-slot">
+              <div class="timeline-time">${t.time}</div>
+              <div class="timeline-bar${t.active ? ' active' : ''}"></div>
+              <div class="timeline-content">
+                <div class="timeline-title">${t.title}</div>
+                ${t.sub ? `<div class="timeline-sub">${t.sub}</div>` : ''}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:var(--space-8)">
+      <div class="section-header">
+        <h3>Client Progress</h3>
+        <button class="btn btn-outline" style="height:2rem;font-size:var(--font-size-xs)">View All Clients</button>
+      </div>
+      <div class="grid grid-3">
+        ${progressCards.map(p => {
+          const offset = circumference - (p.pct / 100) * circumference;
+          return `
+            <div class="card" style="padding:var(--space-5)">
+              <div style="display:flex;align-items:center;gap:var(--space-4)">
+                <svg class="progress-ring" width="64" height="64" viewBox="0 0 64 64">
+                  <circle class="progress-ring-bg" cx="32" cy="32" r="28" stroke-width="4"/>
+                  <circle class="progress-ring-fill" cx="32" cy="32" r="28" stroke-width="4"
+                    stroke="var(--color-primary)" stroke-dasharray="${circumference}"
+                    stroke-dashoffset="${offset}"/>
+                </svg>
+                <div>
+                  <div style="font-size:var(--font-size-sm);font-weight:700;color:var(--text-primary)">${p.name}</div>
+                  <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--color-primary);margin-top:var(--space-1)">${p.metric}</div>
+                  <div style="font-size:var(--font-size-xs);color:var(--text-tertiary);margin-top:var(--space-1)">${p.detail}</div>
+                </div>
+              </div>
+            </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3>Quick Actions</h3>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-3)">
+        <button class="quick-action-btn">
+          <div class="quick-action-icon">${icons.plus}</div>
+          Add Client
+        </button>
+        <button class="quick-action-btn">
+          <div class="quick-action-icon">${icons.calendar}</div>
+          Schedule Session
+        </button>
+        <button class="quick-action-btn">
+          <div class="quick-action-icon">${icons.fileText}</div>
+          Create Program
+        </button>
+      </div>
+    </div>`;
+
+  return shell(body, { wide: true, activeNav: 'Trainers', pageTitle: 'Trainer Dashboard' });
+}
+
+/* ═══════════════════════════════════════════
+   VARIANT 3 — Performance Hub
+   Large metrics, progress charts, goal
+   tracking with rings, activity & community feeds.
+   ═══════════════════════════════════════════ */
+function variant3() {
+  const trendUp = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`;
+  const trendDown = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>`;
+
+  const perfStats = [
+    { label: 'Workout Frequency', value: '4.2', unit: '/week', trend: '+0.8', up: true, period: 'vs last month' },
+    { label: 'Strength Gains', value: '+18%', unit: '', trend: '+5.2%', up: true, period: 'avg across lifts' },
+    { label: 'Cardio Improvement', value: '+12%', unit: '', trend: '+3.1%', up: true, period: 'VO2 max estimate' }
+  ];
+
+  const goals = [
+    { name: 'Bench Press 225 lbs', detail: 'Currently 205 lbs', pct: 72 },
+    { name: 'Run 5K Under 22 min', detail: 'Current PR: 23:45', pct: 58 },
+    { name: '12 Week Streak', detail: 'Day 12 of 84', pct: 14 },
+    { name: 'Lose 10 lbs', detail: '6 lbs lost', pct: 60 }
+  ];
+
+  const circumference = 2 * Math.PI * 36;
+
+  const activityFeed = [
+    { dot: 'success', text: 'Completed "Push Day" — Bench Press 5×5 @ 205 lbs', meta: '2 hours ago' },
+    { dot: '', text: 'Logged 30 min Spin Class — 420 cal burned', meta: '5 hours ago' },
+    { dot: 'success', text: 'New PR: Deadlift 315 lbs (+10 lbs)', meta: 'Yesterday' },
+    { dot: 'warning', text: 'Missed scheduled Yoga session', meta: 'Yesterday' },
+    { dot: '', text: 'Completed "Leg Day" — Squat 4×8 @ 185 lbs', meta: '2 days ago' },
+    { dot: 'success', text: 'Achieved 10-day workout streak badge', meta: '3 days ago' }
+  ];
+
+  const communityFeed = [
+    { dot: 'success', text: 'Sarah N. completed "HIIT Burn" class — 580 cal', meta: '30 min ago' },
+    { dot: '', text: 'Mike C. set a new 5K PR: 21:12', meta: '1 hour ago' },
+    { dot: 'success', text: 'Laura P. reached 30-day streak milestone', meta: '2 hours ago' },
+    { dot: '', text: 'James R. logged "Upper Body Strength" — 65 min', meta: '3 hours ago' },
+    { dot: 'warning', text: 'Spin Class at 5:30 PM is almost full — 2 spots left', meta: '4 hours ago' }
+  ];
+
+  const body = `
+    <div class="section">
+      <h1 style="font-size:var(--font-size-2xl);margin-bottom:var(--space-1)">Performance Hub</h1>
+      <p style="font-size:var(--font-size-sm)">Track your fitness journey. Every rep counts.</p>
+    </div>
+
+    <div class="section">
+      <div class="grid grid-3">
+        ${perfStats.map(s => `
+          <div class="card" style="padding:var(--space-6)">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start">
+              <div>
+                <div style="font-size:var(--font-size-xs);color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;font-weight:600">${s.label}</div>
+                <div class="perf-stat-number" style="margin-top:var(--space-2)">${s.value}<span style="font-size:var(--font-size-lg);font-weight:600;color:var(--text-secondary)">${s.unit}</span></div>
+              </div>
+            </div>
+            <div class="perf-stat-meta" style="margin-top:var(--space-3)">
+              <span class="perf-trend ${s.up ? 'up' : 'down'}">${s.up ? trendUp : trendDown} ${s.trend}</span>
+              <span class="perf-stat-period">${s.period}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3>Progress Charts</h3>
+        <span style="font-size:var(--font-size-xs);color:var(--text-tertiary)">Last 12 weeks</span>
+      </div>
+      <div class="grid grid-2">
+        <div class="card" style="padding:var(--space-5)">
+          <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-primary);margin-bottom:var(--space-3)">Workout Frequency</div>
+          <div class="chart-area">
+            <svg width="100%" height="100%" viewBox="0 0 400 140" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="oklch(0.50 0.10 178 / 0.3)"/>
+                  <stop offset="100%" stop-color="oklch(0.50 0.10 178 / 0)"/>
+                </linearGradient>
+              </defs>
+              <path d="M0,120 C40,110 80,90 120,85 C160,80 200,60 240,55 C280,50 320,35 360,30 L400,25 L400,140 L0,140 Z" fill="url(#g1)"/>
+              <path d="M0,120 C40,110 80,90 120,85 C160,80 200,60 240,55 C280,50 320,35 360,30 L400,25" fill="none" stroke="var(--color-primary)" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="card" style="padding:var(--space-5)">
+          <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-primary);margin-bottom:var(--space-3)">Strength Progress</div>
+          <div class="chart-area">
+            <svg width="100%" height="100%" viewBox="0 0 400 140" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="oklch(0.62 0.17 155 / 0.3)"/>
+                  <stop offset="100%" stop-color="oklch(0.62 0.17 155 / 0)"/>
+                </linearGradient>
+              </defs>
+              <path d="M0,130 C50,125 100,110 150,95 C200,80 250,60 300,45 C350,30 380,20 400,15 L400,140 L0,140 Z" fill="url(#g2)"/>
+              <path d="M0,130 C50,125 100,110 150,95 C200,80 250,60 300,45 C350,30 380,20 400,15" fill="none" stroke="var(--color-success)" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h3>Goal Tracking</h3>
+      </div>
+      <div class="card" style="padding:0">
+        ${goals.map(g => `
+          <div class="goal-card">
+            <svg class="progress-ring" width="48" height="48" viewBox="0 0 48 48">
+              <circle class="progress-ring-bg" cx="24" cy="24" r="20" stroke-width="3"/>
+              <circle class="progress-ring-fill" cx="24" cy="24" r="20" stroke-width="3"
+                stroke="var(--color-primary)" stroke-dasharray="${2 * Math.PI * 20}"
+                stroke-dashoffset="${2 * Math.PI * 20 - (g.pct / 100) * 2 * Math.PI * 20}"/>
+            </svg>
+            <div class="goal-info">
+              <div class="goal-name">${g.name}</div>
+              <div class="goal-detail">${g.detail}</div>
+              <div class="goal-progress-bar">
+                <div class="goal-progress-fill" style="width:${g.pct}%"></div>
+              </div>
+            </div>
+            <div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-primary);min-width:3rem;text-align:right;font-variant-numeric:tabular-nums">${g.pct}%</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-6)">
+      <div class="section" style="margin-bottom:0">
+        <div class="section-header">
+          <h3>Activity Feed</h3>
+        </div>
+        <div class="card" style="padding:var(--space-4) var(--space-5)">
+          ${activityFeed.map(f => `
+            <div class="feed-item">
+              <span class="feed-dot ${f.dot}"></span>
+              <div>
+                <div class="feed-text">${f.text}</div>
+                <div class="feed-meta">${f.meta}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="section" style="margin-bottom:0">
+        <div class="section-header">
+          <h3>Community Feed</h3>
+        </div>
+        <div class="card" style="padding:var(--space-4) var(--space-5)">
+          ${communityFeed.map(f => `
+            <div class="feed-item">
+              <span class="feed-dot ${f.dot}"></span>
+              <div>
+                <div class="feed-text">${f.text}</div>
+                <div class="feed-meta">${f.meta}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>`;
+
+  return shell(body, { wide: true, activeNav: 'Progress', pageTitle: 'Performance Hub' });
+}
+
+/* ═══════════════════════════════════════════
+   PICKER WIRING (VERBATIM)
+   ═══════════════════════════════════════════ */
+const variants = [variant1, variant2, variant3];
+const stage = document.getElementById('stage');
+const picker = document.querySelector('.proto-picker');
+const highlight = picker.querySelector('.proto-picker-highlight');
+const items = [...picker.querySelectorAll('.proto-picker-item:not(.proto-picker-replay)')];
+const replay = picker?.querySelector('.proto-picker-replay');
+let current = 0;
+
+function moveHighlight() {
+  const el = items[current];
+  highlight.style.width = el.offsetWidth + 'px';
+  highlight.style.transform = `translateX(${el.offsetLeft}px)`;
+}
+
+function mount(i) {
+  stage.innerHTML = '';
+  requestAnimationFrame(() => { stage.innerHTML = variants[i](); });
+}
+
+function setActive(i) {
+  if (i < 0 || i >= variants.length) return;
+  current = i;
+  items.forEach((el, j) => {
+    el.toggleAttribute('data-active', j === i);
+    if (j === i) el.setAttribute('aria-current', 'true');
+    else el.removeAttribute('aria-current');
+  });
+  moveHighlight();
+  const url = new URL(location);
+  url.searchParams.set('v', i + 1);
+  history.replaceState(null, '', url);
+  mount(i);
+}
+
+items.forEach((el, i) => el.addEventListener('click', () => setActive(i)));
+replay?.addEventListener('click', () => mount(current));
+window.addEventListener('resize', moveHighlight);
+document.addEventListener('keydown', (e) => {
+  if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable) return;
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const num = parseInt(e.key, 10);
+  if (num >= 1 && num <= variants.length) setActive(num - 1);
+  else if (e.key === 'ArrowRight') setActive((current + 1) % variants.length);
+  else if (e.key === 'ArrowLeft') setActive((current - 1 + variants.length) % variants.length);
+  else if (e.key === 'r' || e.key === 'R') mount(current);
+});
+
+setActive((parseInt(new URLSearchParams(location.search).get('v'), 10) || 1) - 1);
+requestAnimationFrame(() => requestAnimationFrame(() => picker.setAttribute('data-ready', '')));
+</script>
+
+</body>
+</html>
