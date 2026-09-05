@@ -1,0 +1,190 @@
+{
+  "typography": {
+    "scale": {
+      "caption":     { "fontSize": "0.75rem",  "lineHeight": 1.5 },
+      "label":       { "fontSize": "0.875rem", "lineHeight": 1.5 },
+      "body":        { "fontSize": "1rem",     "lineHeight": 1.5 },
+      "headingXs":   { "fontSize": "1rem",     "fontWeight": 600, "lineHeight": 1.3, "letterSpacing": "-0.01em" },
+      "headingSm":   { "fontSize": "1.25rem",  "fontWeight": 600, "lineHeight": 1.3, "letterSpacing": "-0.01em" },
+      "headingMd":   { "fontSize": "1.5rem",   "fontWeight": 600, "lineHeight": 1.2, "letterSpacing": "-0.015em" },
+      "headingLg":   { "fontSize": "2rem",     "fontWeight": 600, "lineHeight": 1.1, "letterSpacing": "-0.02em" },
+      "headingXl":   { "fontSize": "2.5rem",   "fontWeight": 600, "lineHeight": 1.1, "letterSpacing": "-0.02em" }
+    },
+    "families": {
+      "sans": "Inter, system-ui, sans-serif",
+      "mono": "'IBM Plex Mono', ui-monospace, monospace"
+    }
+  },
+  "spacing": {
+    "1":  "0.25rem",
+    "2":  "0.5rem",
+    "3":  "0.75rem",
+    "4":  "1rem",
+    "5":  "1.25rem",
+    "6":  "1.5rem",
+    "8":  "2rem",
+    "10": "2.5rem",
+    "12": "3rem",
+    "16": "4rem",
+    "20": "5rem"
+  },
+  "rounded": {
+    "sm":   "2px",
+    "md":   "4px",
+    "lg":   "8px",
+    "xl":   "12px",
+    "full": "9999px"
+  },
+  "shadows": {
+    "light": {
+      "sm": "0 1px 2px oklch(0.2 0.02 260 / 0.06), 0 1px 3px oklch(0.2 0.02 260 / 0.1)",
+      "md": "0 4px 6px oklch(0.2 0.02 260 / 0.08), 0 2px 4px oklch(0.2 0.02 260 / 0.06)",
+      "lg": "0 10px 15px oklch(0.2 0.02 260 / 0.1), 0 4px 6px oklch(0.2 0.02 260 / 0.05)"
+    },
+    "dark": {
+      "sm": "0 0 0 1px oklch(0 0 260 / 0.2)",
+      "md": "0 0 0 1px oklch(0 0 260 / 0.3)",
+      "lg": "0 0 0 1px oklch(0 0 260 / 0.4)"
+    }
+  },
+  "components": {
+    "button":  { "height": "2.5rem", "padding": "0 var(--space-6)",  "radius": "var(--radius-md)" },
+    "card":    { "padding": "var(--space-6)", "radius": "var(--radius-lg)" },
+    "header":  { "height": "3rem",   "padding": "0 var(--space-6)" },
+    "input":   { "height": "2.5rem", "padding": "var(--space-3) var(--space-4)", "radius": "var(--radius-md)" },
+    "sidebar": { "width": "16rem", "widthCollapsed": "3.5rem" }
+  },
+  "neutralPalette": [
+    { "label": "50", "color": "oklch(0.985 0.002 260)" },
+    { "label": "100", "color": "oklch(0.965 0.003 260)" },
+    { "label": "200", "color": "oklch(0.925 0.005 260)" },
+    { "label": "300", "color": "oklch(0.875 0.007 260)" },
+    { "label": "400", "color": "oklch(0.71 0.01 260)" },
+    { "label": "500", "color": "oklch(0.55 0.012 260)" },
+    { "label": "600", "color": "oklch(0.45 0.015 260)" },
+    { "label": "700", "color": "oklch(0.37 0.018 260)" },
+    { "label": "800", "color": "oklch(0.27 0.02 260)" },
+    { "label": "900", "color": "oklch(0.21 0.022 260)" },
+    { "label": "950", "color": "oklch(0.15 0.025 260)" }
+  ],
+  "supportColors": {
+    "success": "oklch(0.60 0.17 155)",
+    "successBg": "oklch(0.96 0.04 155)",
+    "warning": "oklch(0.75 0.16 80)",
+    "warningBg": "oklch(0.97 0.05 80)",
+    "error": "oklch(0.58 0.22 25)",
+    "errorBg": "oklch(0.96 0.03 25)",
+    "info": "oklch(0.60 0.15 230)",
+    "infoBg": "oklch(0.96 0.03 230)"
+  },
+  "tenants": {
+    "acme": {
+      "name": "ACME Corp",
+      "shortName": "ACME",
+      "primary": "oklch(0.502 0.126 300.4)",
+      "primaryHover": "oklch(0.573 0.129 310.6)",
+      "primaryActive": "oklch(0.42 0.11 300)",
+      "fontFamily": "Inter, system-ui, sans-serif",
+      "fontLabel": "Inter",
+      "primaryPalette": [
+        { "label": "50", "color": "oklch(0.97 0.04 300)" },
+        { "label": "100", "color": "oklch(0.93 0.07 300)" },
+        { "label": "200", "color": "oklch(0.87 0.12 300)" },
+        { "label": "300", "color": "oklch(0.79 0.15 300)" },
+        { "label": "400", "color": "oklch(0.70 0.18 300)" },
+        { "label": "500", "color": "oklch(0.62 0.20 300)" },
+        { "label": "600", "color": "oklch(0.502 0.126 300.4)" },
+        { "label": "700", "color": "oklch(0.42 0.11 300)" },
+        { "label": "800", "color": "oklch(0.34 0.09 300)" },
+        { "label": "900", "color": "oklch(0.26 0.07 300)" }
+      ],
+      "neutralHue": 308,
+      "lightBg": "oklch(0.962 0.014 308.3)",
+      "lightSurface": "oklch(0.933 0.023 308.2)",
+      "darkBg": "oklch(0.207 0.023 305.2)",
+      "darkSurface": "oklch(0.254 0.033 300.3)",
+      "darkFocus": "oklch(0.70 0.18 300)"
+    },
+    "northpac": {
+      "name": "NorthPac Moving & Storage",
+      "shortName": "NorthPac",
+      "primary": "oklch(0.383 0.083 156.3)",
+      "primaryHover": "oklch(0.33 0.07 156)",
+      "primaryActive": "oklch(0.28 0.06 156)",
+      "fontFamily": "'Source Sans Pro', system-ui, sans-serif",
+      "fontLabel": "Source Sans Pro",
+      "primaryPalette": [
+        { "label": "50", "color": "oklch(0.97 0.03 156)" },
+        { "label": "100", "color": "oklch(0.93 0.06 156)" },
+        { "label": "200", "color": "oklch(0.87 0.10 156)" },
+        { "label": "300", "color": "oklch(0.79 0.12 156)" },
+        { "label": "400", "color": "oklch(0.70 0.14 156)" },
+        { "label": "500", "color": "oklch(0.62 0.15 156)" },
+        { "label": "600", "color": "oklch(0.383 0.083 156.3)" },
+        { "label": "700", "color": "oklch(0.33 0.07 156)" },
+        { "label": "800", "color": "oklch(0.28 0.06 156)" },
+        { "label": "900", "color": "oklch(0.22 0.04 156)" }
+      ],
+      "neutralHue": 160,
+      "lightBg": "oklch(0.966 0.007 160.1)",
+      "lightSurface": "oklch(0.945 0.014 162.5)",
+      "darkBg": "oklch(0.205 0.020 160.1)",
+      "darkSurface": "oklch(0.248 0.024 172.7)",
+      "darkFocus": "oklch(0.70 0.14 156)"
+    },
+    "pacifictimber": {
+      "name": "Pacific Timber Co",
+      "shortName": "Pacific Timber",
+      "primary": "oklch(0.50 0.10 55)",
+      "primaryHover": "oklch(0.44 0.09 55)",
+      "primaryActive": "oklch(0.38 0.08 55)",
+      "fontFamily": "'Merriweather', Georgia, serif",
+      "fontLabel": "Merriweather",
+      "primaryPalette": [
+        { "label": "50", "color": "oklch(0.97 0.03 55)" },
+        { "label": "100", "color": "oklch(0.93 0.05 55)" },
+        { "label": "200", "color": "oklch(0.87 0.08 55)" },
+        { "label": "300", "color": "oklch(0.79 0.10 55)" },
+        { "label": "400", "color": "oklch(0.70 0.11 55)" },
+        { "label": "500", "color": "oklch(0.60 0.10 55)" },
+        { "label": "600", "color": "oklch(0.50 0.10 55)" },
+        { "label": "700", "color": "oklch(0.44 0.09 55)" },
+        { "label": "800", "color": "oklch(0.38 0.08 55)" },
+        { "label": "900", "color": "oklch(0.28 0.06 55)" }
+      ],
+      "neutralHue": 55,
+      "lightBg": "oklch(0.96 0.01 60)",
+      "lightSurface": "oklch(0.93 0.015 55)",
+      "darkBg": "oklch(0.22 0.03 50)",
+      "darkSurface": "oklch(0.28 0.03 55)",
+      "darkFocus": "oklch(0.70 0.10 55)"
+    },
+    "summitathletics": {
+      "name": "Summit Athletics",
+      "shortName": "Summit",
+      "primary": "oklch(0.50 0.10 178)",
+      "primaryHover": "oklch(0.44 0.09 178)",
+      "primaryActive": "oklch(0.38 0.08 178)",
+      "fontFamily": "'Outfit', system-ui, sans-serif",
+      "fontLabel": "Outfit",
+      "primaryPalette": [
+        { "label": "50", "color": "oklch(0.97 0.03 178)" },
+        { "label": "100", "color": "oklch(0.93 0.05 178)" },
+        { "label": "200", "color": "oklch(0.87 0.08 178)" },
+        { "label": "300", "color": "oklch(0.79 0.10 178)" },
+        { "label": "400", "color": "oklch(0.70 0.11 178)" },
+        { "label": "500", "color": "oklch(0.60 0.10 178)" },
+        { "label": "600", "color": "oklch(0.50 0.10 178)" },
+        { "label": "700", "color": "oklch(0.44 0.09 178)" },
+        { "label": "800", "color": "oklch(0.38 0.08 178)" },
+        { "label": "900", "color": "oklch(0.28 0.06 178)" }
+      ],
+      "neutralHue": 80,
+      "lightBg": "oklch(0.97 0.005 80)",
+      "lightSurface": "oklch(0.94 0.01 80)",
+      "darkBg": "oklch(0.20 0.03 180)",
+      "darkSurface": "oklch(0.26 0.03 175)",
+      "darkFocus": "oklch(0.70 0.10 178)"
+    }
+  }
+}

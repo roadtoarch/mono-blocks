@@ -6,9 +6,8 @@
   <title>SPAT Design System Prototype</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Source+Sans+Pro:wght@400;600;700&family=Merriweather:wght@400;700;900&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* CSS Custom Properties - Light Mode */
     :root, [data-theme="light"] {
       --background: oklch(0.985 0.002 260);
       --surface: oklch(0.965 0.003 260);
@@ -19,14 +18,10 @@
       --border-subtle: oklch(0.925 0.005 260);
       --border-default: oklch(0.55 0.012 260);
       --border-strong: oklch(0.55 0.012 260);
-      
-      /* Tenant colors - overridden by JavaScript */
       --primary: oklch(0.53 0.2 250);
       --primary-hover: oklch(0.45 0.18 250);
       --primary-active: oklch(0.36 0.14 250);
       --primary-text: oklch(0.985 0.002 260);
-      
-      /* Support colors */
       --success: oklch(0.60 0.17 155);
       --success-bg: oklch(0.96 0.04 155);
       --warning: oklch(0.75 0.16 80);
@@ -35,16 +30,12 @@
       --error-bg: oklch(0.96 0.03 25);
       --info: oklch(0.60 0.15 230);
       --info-bg: oklch(0.96 0.03 230);
-
-      /* Dark mode interactive brightness override */
       --primary-focus: var(--primary);
-
       --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.05), 0 2px 4px oklch(0 0 0 / 0.05);
       --shadow-md: 0 2px 4px oklch(0 0 0 / 0.08), 0 4px 8px oklch(0 0 0 / 0.08);
       --shadow-lg: 0 4px 8px oklch(0 0 0 / 0.1), 0 8px 16px oklch(0 0 0 / 0.1);
     }
 
-    /* Dark Mode */
     [data-theme="dark"] {
       --background: oklch(0.15 0.025 260);
       --surface: oklch(0.21 0.022 260);
@@ -53,346 +44,150 @@
       --text-disabled: oklch(0.45 0.015 260);
       --border-subtle: oklch(0.27 0.02 260);
       --border-default: oklch(0.37 0.018 260);
-      /* Brighter interactive for dark mode (primary-400 brightness) */
       --primary-focus: oklch(0.70 0.18 250);
-
       --shadow-sm: 0 0 0 1px oklch(1 0 0 / 0.1);
       --shadow-md: 0 0 0 1px oklch(1 0 0 / 0.15);
       --shadow-lg: 0 0 0 1px oklch(1 0 0 / 0.2);
     }
 
     /* Reset and base */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: var(--font-family, 'Inter', system-ui, -apple-system, sans-serif);
-      font-size: 1rem;
-      line-height: 1.5;
+      font-family: var(--font-sans);
+      font-size: var(--font-size-body);
+      line-height: var(--line-height-body);
       color: var(--text-primary);
       background-color: var(--background);
       transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    /* Typography scale */
-    .caption { font-size: 0.75rem; line-height: 1.5; }
-    .label { font-size: 0.875rem; line-height: 1.5; }
-    .body { font-size: 1rem; line-height: 1.5; }
-    .heading-xs { font-size: 1rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
-    .heading-sm { font-size: 1.25rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; }
-    .heading-md { font-size: 1.5rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.015em; }
-    .heading-lg { font-size: 2rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; }
-    .heading-xl { font-size: 2.5rem; font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; }
-    .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 0.875rem; }
+    .caption { font-size: var(--font-size-caption); line-height: var(--line-height-caption); }
+    .label { font-size: var(--font-size-label); line-height: var(--line-height-label); }
+    .body { font-size: var(--font-size-body); line-height: var(--line-height-body); }
+    .heading-xs { font-size: var(--font-size-heading-xs); font-weight: var(--font-weight-heading); line-height: var(--line-height-heading-xs); letter-spacing: var(--letter-spacing-heading-xs); }
+    .heading-sm { font-size: var(--font-size-heading-sm); font-weight: var(--font-weight-heading); line-height: var(--line-height-heading-sm); letter-spacing: var(--letter-spacing-heading-sm); }
+    .heading-md { font-size: var(--font-size-heading-md); font-weight: var(--font-weight-heading); line-height: var(--line-height-heading-md); letter-spacing: var(--letter-spacing-heading-md); }
+    .heading-lg { font-size: var(--font-size-heading-lg); font-weight: var(--font-weight-heading); line-height: var(--line-height-heading-lg); letter-spacing: var(--letter-spacing-heading-lg); }
+    .heading-xl { font-size: var(--font-size-heading-xl); font-weight: var(--font-weight-heading); line-height: var(--line-height-heading-xl); letter-spacing: var(--letter-spacing-heading-xl); }
+    .mono { font-family: var(--font-mono); font-size: var(--font-size-label); }
 
-    /* Layout */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
-
-    .section {
-      padding: 3rem 0;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .section:last-child {
-      border-bottom: none;
-    }
-
-    .grid {
-      display: grid;
-      gap: 1.5rem;
-    }
-
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 var(--space-6); }
+    .section { padding: var(--space-12) 0; border-bottom: 1px solid var(--border-subtle); }
+    .section:last-child { border-bottom: none; }
+    .grid { display: grid; gap: var(--space-6); }
     .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
     .grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
     .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 
-    /* Header */
     .header {
       background-color: var(--primary);
       color: var(--primary-text);
-      height: 3rem;
+      height: var(--component-header-height);
       display: flex;
       align-items: center;
-      padding: 0 1.5rem;
+      padding: var(--component-header-padding);
       box-shadow: var(--shadow-sm);
       position: sticky;
       top: 0;
       z-index: 100;
     }
+    .header-content { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1200px; margin: 0 auto; }
+    .header-logo { font-weight: 700; font-size: 1.125rem; display: flex; align-items: center; }
+    .header-controls { display: flex; gap: var(--space-4); align-items: center; }
 
-    .header-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .header-logo {
-      font-weight: 700;
-      font-size: 1.125rem;
-    }
-
-    .header-controls {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-
-    /* Buttons */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.25rem;
-      font-size: 0.875rem;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.15s ease, transform 0.1s ease;
-      height: 2.5rem;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: var(--space-3) var(--space-6); border-radius: var(--radius-md);
+      font-size: var(--font-size-label); font-weight: 600; border: none; cursor: pointer;
+      transition: background-color 0.15s ease, transform 0.1s ease; height: var(--component-button-height);
     }
+    .btn:active { transform: scale(0.96); }
+    .btn-primary { background-color: var(--primary); color: var(--primary-text); }
+    .btn-primary:hover { background-color: var(--primary-hover); }
+    .btn-primary:active { background-color: var(--primary-active); }
+    .btn-secondary { background-color: transparent; color: var(--primary); border: 1px solid var(--primary); }
+    .btn-secondary:hover { background-color: var(--primary); color: var(--primary-text); }
 
-    .btn:active {
-      transform: scale(0.96);
-    }
-
-    .btn-primary {
-      background-color: var(--primary);
-      color: var(--primary-text);
-    }
-
-    .btn-primary:hover {
-      background-color: var(--primary-hover);
-    }
-
-    .btn-primary:active {
-      background-color: var(--primary-active);
-    }
-
-    .btn-secondary {
-      background-color: transparent;
-      color: var(--primary);
-      border: 1px solid var(--primary);
-    }
-
-    .btn-secondary:hover {
-      background-color: var(--primary);
-      color: var(--primary-text);
-    }
-
-    /* Cards */
     .card {
-      background-color: var(--surface);
-      border-radius: 0.5rem;
-      padding: 1.5rem;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--border-subtle);
+      background-color: var(--surface); border-radius: var(--radius-lg); padding: var(--component-card-padding);
+      box-shadow: var(--shadow-sm); border: 1px solid var(--border-subtle);
     }
+    .card-title { font-size: var(--font-size-heading-sm); font-weight: var(--font-weight-heading); margin-bottom: var(--space-3); }
+    .card-text { color: var(--text-secondary); margin-bottom: var(--space-4); }
 
-    .card-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-    }
-
-    .card-text {
-      color: var(--text-secondary);
-      margin-bottom: 1rem;
-    }
-
-    /* Inputs */
     .input {
-      background-color: var(--background);
-      border: 1px solid var(--border-default);
-      border-radius: 0.25rem;
-      padding: 0.5rem 0.75rem;
-      height: 2.5rem;
-      font-size: 0.875rem;
-      color: var(--text-primary);
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
-      width: 100%;
+      background-color: var(--background); border: 1px solid var(--border-default);
+      border-radius: var(--component-input-radius); padding: var(--component-input-padding); height: var(--component-input-height);
+      font-size: var(--font-size-label); color: var(--text-primary);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease; width: 100%;
     }
-
     .input:focus {
-      outline: none;
-      border-color: var(--primary);
+      outline: none; border-color: var(--primary);
       box-shadow: 0 0 0 2px color-mix(in oklch, var(--primary-focus) 20%, transparent);
     }
+    .input::placeholder { color: var(--text-disabled); }
 
-    .input::placeholder {
-      color: var(--text-disabled);
-    }
+    .swatch { display: flex; flex-direction: column; gap: var(--space-2); }
+    .swatch-color { width: 100%; height: 80px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); }
+    .swatch-label { font-size: var(--font-size-caption); color: var(--text-secondary); font-family: var(--font-mono); }
 
-    /* Color swatches */
-    .swatch {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .swatch-color {
-      width: 100%;
-      height: 80px;
-      border-radius: 0.5rem;
-      border: 1px solid var(--border-subtle);
-    }
-
-    .swatch-label {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      font-family: 'IBM Plex Mono', monospace;
-    }
-
-    /* Theme toggle */
     .theme-toggle {
-      background: transparent;
-      border: 1px solid var(--primary-text);
-      color: var(--primary-text);
-      padding: 0.375rem 0.75rem;
-      border-radius: 0.25rem;
-      cursor: pointer;
-      font-size: 0.75rem;
-      font-weight: 600;
+      background: transparent; border: 1px solid var(--primary-text); color: var(--primary-text);
+      padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); cursor: pointer;
+      font-size: var(--font-size-caption); font-weight: 600;
     }
+    .theme-toggle:hover { background-color: oklch(1 0 0 / 0.1); }
 
-    .theme-toggle:hover {
-      background-color: oklch(1 0 0 / 0.1);
-    }
-
-    /* Tenant selector */
-    .tenant-selector {
-      display: flex;
-      gap: 0.5rem;
-    }
-
+    .tenant-selector { display: flex; gap: var(--space-2); }
     .tenant-btn {
-      background: transparent;
-      border: 1px solid var(--primary-text);
-      color: var(--primary-text);
-      padding: 0.375rem 0.75rem;
-      border-radius: 0.25rem;
-      cursor: pointer;
-      font-size: 0.75rem;
-      font-weight: 600;
+      background: transparent; border: 1px solid var(--primary-text); color: var(--primary-text);
+      padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); cursor: pointer;
+      font-size: var(--font-size-caption); font-weight: 600; display: inline-flex; align-items: center;
+    }
+    .tenant-btn.active { background-color: var(--primary-text); color: var(--primary); }
+    .tenant-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: var(--radius-full); margin-right: 6px;
     }
 
-    .tenant-btn.active {
-      background-color: var(--primary-text);
-      color: var(--primary);
-    }
+    .section-title { font-size: var(--font-size-heading-lg); font-weight: var(--font-weight-heading); margin-bottom: var(--space-6); letter-spacing: var(--letter-spacing-heading-lg); }
+    .section-subtitle { font-size: var(--font-size-heading-sm); font-weight: var(--font-weight-heading); margin-bottom: var(--space-4); color: var(--text-secondary); }
 
-    /* Section titles */
-    .section-title {
-      font-size: 2rem;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      letter-spacing: -0.02em;
-    }
+    .type-sample { margin-bottom: var(--space-6); padding: var(--space-4); background-color: var(--surface); border-radius: var(--radius-lg); }
+    .type-label { font-size: var(--font-size-caption); color: var(--text-secondary); margin-bottom: var(--space-2); font-family: var(--font-mono); }
 
-    .section-subtitle {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: var(--text-secondary);
-    }
-
-    /* Typography showcase */
-    .type-sample {
-      margin-bottom: 1.5rem;
-      padding: 1rem;
-      background-color: var(--surface);
-      border-radius: 0.5rem;
-    }
-
-    .type-label {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-      font-family: 'IBM Plex Mono', monospace;
-    }
-
-    /* Support banners */
-    .banner {
-      padding: 0.75rem 1rem;
-      border-radius: 0.25rem;
-      font-size: 0.875rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+    .banner { padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); font-size: var(--font-size-label); font-weight: 600; display: flex; align-items: center; gap: var(--space-2); }
     .banner-success { background-color: var(--success-bg); color: var(--success); }
     .banner-warning { background-color: var(--warning-bg); color: var(--warning); }
     .banner-error   { background-color: var(--error-bg); color: var(--error); }
     .banner-info    { background-color: var(--info-bg); color: var(--info); }
+    .banner-icon { width: var(--space-5); height: var(--space-5); flex-shrink: 0; }
 
-    .banner-icon {
-      width: 1.25rem;
-      height: 1.25rem;
-      flex-shrink: 0;
-    }
-
-    /* Spacing scale */
-    .spacing-item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .spacing-box {
-      background-color: var(--primary);
-      opacity: 0.3;
-      border-radius: 0.25rem;
-    }
-
-    .spacing-label {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      font-family: 'IBM Plex Mono', monospace;
-      min-width: 120px;
-    }
+    .spacing-item { display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-3); }
+    .spacing-box { background-color: var(--primary); opacity: 0.3; border-radius: var(--radius-md); }
+    .spacing-label { font-size: var(--font-size-label); color: var(--text-secondary); font-family: var(--font-mono); min-width: 120px; }
 
     /* Responsive */
     @media (max-width: 768px) {
-      .header-controls {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      
-      .grid-2, .grid-3, .grid-4 {
-        grid-template-columns: 1fr;
-      }
+      .header-controls { flex-direction: column; gap: var(--space-2); }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
     }
 
     /* Reduced motion */
     @media (prefers-reduced-motion: reduce) {
-      * {
-        transition: none !important;
-        animation: none !important;
-      }
+      * { transition: none !important; animation: none !important; }
     }
   </style>
 </head>
 <body>
   <header class="header">
     <div class="header-content">
-      <div class="header-logo" id="tenantName">ACME Corp</div>
+      <div class="header-logo">
+        <span id="tenantName">Loading...</span>
+        <span id="fontLabel" style="opacity: 0.7; font-size: var(--font-size-caption); margin-left: var(--space-2);"></span>
+      </div>
       <div class="header-controls">
-        <div class="tenant-selector">
-          <button class="tenant-btn active" data-tenant="acme">ACME</button>
-          <button class="tenant-btn" data-tenant="northpac">NorthPac</button>
-        </div>
+        <div class="tenant-selector" id="tenantSelector"></div>
         <button class="theme-toggle" id="themeToggle">Dark Mode</button>
       </div>
     </div>
@@ -402,17 +197,17 @@
     <!-- Colors Section -->
     <section class="section">
       <h2 class="section-title">Color Palette</h2>
-      <p class="body" style="margin-bottom: 2rem; color: var(--text-secondary);">
+      <p class="body" style="margin-bottom: var(--space-8); color: var(--text-secondary);">
         OKLCH color space with stable hue across lightness levels. Primary color changes per tenant.
       </p>
-      
+
       <h3 class="section-subtitle">Primary Palette (Tenant-Specific)</h3>
       <div class="grid grid-4" id="primaryPalette"></div>
-      
-      <h3 class="section-subtitle" style="margin-top: 2rem;">Neutral Palette</h3>
+
+      <h3 class="section-subtitle" style="margin-top: var(--space-8);">Neutral Palette</h3>
       <div class="grid grid-4" id="neutralPalette"></div>
-      
-      <h3 class="section-subtitle" style="margin-top: 2rem;">Semantic Colors</h3>
+
+      <h3 class="section-subtitle" style="margin-top: var(--space-8);">Semantic Colors</h3>
       <div class="grid grid-4">
         <div class="swatch">
           <div class="swatch-color" style="background-color: var(--background);"></div>
@@ -432,8 +227,8 @@
         </div>
       </div>
 
-      <h3 class="section-subtitle" style="margin-top: 2rem;">Support Colors</h3>
-      <div class="grid grid-4" style="margin-bottom: 1.5rem;">
+      <h3 class="section-subtitle" style="margin-top: var(--space-8);">Support Colors</h3>
+      <div class="grid grid-4" style="margin-bottom: var(--space-6);">
         <div class="swatch">
           <div class="swatch-color" style="background-color: var(--success);"></div>
           <div class="swatch-label">success oklch(0.60 0.17 155)</div>
@@ -453,7 +248,7 @@
       </div>
 
       <h3 class="section-subtitle">Support Banners</h3>
-      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      <div style="display: flex; flex-direction: column; gap: var(--space-3);">
         <div class="banner banner-success">
           <svg class="banner-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
           Assessment submitted successfully.
@@ -476,45 +271,38 @@
     <!-- Typography Section -->
     <section class="section">
       <h2 class="section-title">Typography</h2>
-      <p class="body" style="margin-bottom: 2rem; color: var(--text-secondary);">
-        Semantic type scale with Inter (ACME) or Source Sans Pro (NorthPac) font families.
+      <p class="body" style="margin-bottom: var(--space-8); color: var(--text-secondary);">
+        Semantic type scale with tenant-specific font families (Inter, Source Sans Pro, Merriweather, Outfit).
       </p>
-      
+
       <div class="type-sample">
         <div class="type-label">heading-xl (2.5rem)</div>
         <div class="heading-xl">The quick brown fox</div>
       </div>
-      
       <div class="type-sample">
         <div class="type-label">heading-lg (2rem)</div>
         <div class="heading-lg">The quick brown fox</div>
       </div>
-      
       <div class="type-sample">
         <div class="type-label">heading-md (1.5rem)</div>
         <div class="heading-md">The quick brown fox</div>
       </div>
-      
       <div class="type-sample">
         <div class="type-label">heading-sm (1.25rem)</div>
         <div class="heading-sm">The quick brown fox</div>
       </div>
-      
       <div class="type-sample">
         <div class="type-label">body (1rem)</div>
         <div class="body">The quick brown fox jumps over the lazy dog. This is body text at 1rem with 1.5 line height.</div>
       </div>
-      
       <div class="type-sample">
         <div class="type-label">label (0.875rem)</div>
         <div class="label">Form label or badge text</div>
       </div>
-      
       <div class="type-sample">
         <div class="type-label">caption (0.75rem)</div>
         <div class="caption">Helper text, timestamps, metadata</div>
       </div>
-      
       <div class="type-sample">
         <div class="type-label">mono (0.875rem)</div>
         <div class="mono">const value = oklch(0.53 0.2 250);</div>
@@ -524,20 +312,20 @@
     <!-- Components Section -->
     <section class="section">
       <h2 class="section-title">Components</h2>
-      
+
       <h3 class="section-subtitle">Buttons</h3>
-      <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+      <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-8); flex-wrap: wrap;">
         <button class="btn btn-primary">Primary Button</button>
         <button class="btn btn-secondary">Secondary Button</button>
         <button class="btn btn-primary" disabled style="opacity: 0.5; cursor: not-allowed;">Disabled</button>
       </div>
-      
+
       <h3 class="section-subtitle">Inputs</h3>
-      <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+      <div style="display: flex; gap: var(--space-4); margin-bottom: var(--space-8); flex-wrap: wrap;">
         <input type="text" class="input" placeholder="Text input" style="max-width: 300px;">
         <input type="email" class="input" placeholder="Email input" style="max-width: 300px;">
       </div>
-      
+
       <h3 class="section-subtitle">Cards</h3>
       <div class="grid grid-3">
         <div class="card">
@@ -561,48 +349,22 @@
     <!-- Spacing Section -->
     <section class="section">
       <h2 class="section-title">Spacing Scale</h2>
-      <p class="body" style="margin-bottom: 2rem; color: var(--text-secondary);">
+      <p class="body" style="margin-bottom: var(--space-8); color: var(--text-secondary);">
         4px-based spacing scale for visual rhythm and consistency.
       </p>
-      
-      <div class="spacing-item">
-        <div class="spacing-box" style="width: 4px; height: 24px;"></div>
-        <div class="spacing-label">spacing.1 (4px)</div>
-      </div>
-      <div class="spacing-item">
-        <div class="spacing-box" style="width: 8px; height: 24px;"></div>
-        <div class="spacing-label">spacing.2 (8px)</div>
-      </div>
-      <div class="spacing-item">
-        <div class="spacing-box" style="width: 12px; height: 24px;"></div>
-        <div class="spacing-label">spacing.3 (12px)</div>
-      </div>
-      <div class="spacing-item">
-        <div class="spacing-box" style="width: 16px; height: 24px;"></div>
-        <div class="spacing-label">spacing.4 (16px)</div>
-      </div>
-      <div class="spacing-item">
-        <div class="spacing-box" style="width: 24px; height: 24px;"></div>
-        <div class="spacing-label">spacing.6 (24px)</div>
-      </div>
-      <div class="spacing-item">
-        <div class="spacing-box" style="width: 32px; height: 24px;"></div>
-        <div class="spacing-label">spacing.8 (32px)</div>
-      </div>
-      <div class="spacing-item">
-        <div class="spacing-box" style="width: 48px; height: 24px;"></div>
-        <div class="spacing-label">spacing.12 (48px)</div>
-      </div>
-      <div class="spacing-item">
-        <div class="spacing-box" style="width: 64px; height: 24px;"></div>
-        <div class="spacing-label">spacing.16 (64px)</div>
-      </div>
+      <div class="spacing-item"><div class="spacing-box" style="width: 4px; height: 24px;"></div><div class="spacing-label">spacing.1 (4px)</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width: 8px; height: 24px;"></div><div class="spacing-label">spacing.2 (8px)</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width: 12px; height: 24px;"></div><div class="spacing-label">spacing.3 (12px)</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width: 16px; height: 24px;"></div><div class="spacing-label">spacing.4 (16px)</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width: 24px; height: 24px;"></div><div class="spacing-label">spacing.6 (24px)</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width: 32px; height: 24px;"></div><div class="spacing-label">spacing.8 (32px)</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width: 48px; height: 24px;"></div><div class="spacing-label">spacing.12 (48px)</div></div>
+      <div class="spacing-item"><div class="spacing-box" style="width: 64px; height: 24px;"></div><div class="spacing-label">spacing.16 (64px)</div></div>
     </section>
 
     <!-- Design Principles -->
     <section class="section">
       <h2 class="section-title">Design Principles</h2>
-      
       <div class="grid grid-2">
         <div class="card">
           <div class="card-title">✅ Per-Tenant Flexibility</div>
@@ -633,128 +395,311 @@
   </main>
 
   <script>
-    // Tenant configurations
-    const tenants = {
-      acme: {
-        name: 'ACME Corp',
-        primary: 'oklch(0.53 0.2 250)', // Blue
-        primaryHover: 'oklch(0.45 0.18 250)',
-        primaryActive: 'oklch(0.36 0.14 250)',
-        fontFamily: 'Inter, system-ui, sans-serif',
-        primaryPalette: [
-          { label: '50', color: 'oklch(0.97 0.04 250)' },
-          { label: '100', color: 'oklch(0.93 0.07 250)' },
-          { label: '200', color: 'oklch(0.87 0.12 250)' },
-          { label: '300', color: 'oklch(0.79 0.15 250)' },
-          { label: '400', color: 'oklch(0.7 0.18 250)' },
-          { label: '500', color: 'oklch(0.62 0.2 250)' },
-          { label: '600', color: 'oklch(0.53 0.2 250)' },
-          { label: '700', color: 'oklch(0.45 0.18 250)' },
-          { label: '800', color: 'oklch(0.36 0.14 250)' },
-          { label: '900', color: 'oklch(0.28 0.1 250)' },
-        ],
+    /* ------------------------------------------------------------------ */
+    /*  Fallback data (used when fetch fails, e.g. file:// protocol)       */
+    /* ------------------------------------------------------------------ */
+    const FALLBACK_DATA = {
+      typography: {
+        scale: {
+          caption:     { fontSize: "0.75rem",  lineHeight: 1.5 },
+          label:       { fontSize: "0.875rem", lineHeight: 1.5 },
+          body:        { fontSize: "1rem",     lineHeight: 1.5 },
+          headingXs:   { fontSize: "1rem",     fontWeight: 600, lineHeight: 1.3, letterSpacing: "-0.01em" },
+          headingSm:   { fontSize: "1.25rem",  fontWeight: 600, lineHeight: 1.3, letterSpacing: "-0.01em" },
+          headingMd:   { fontSize: "1.5rem",   fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.015em" },
+          headingLg:   { fontSize: "2rem",     fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.02em" },
+          headingXl:   { fontSize: "2.5rem",   fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.02em" }
+        },
+        families: { sans: "Inter, system-ui, sans-serif", mono: "'IBM Plex Mono', ui-monospace, monospace" }
       },
-      northpac: {
-        name: 'NorthPac Resources',
-        primary: 'oklch(0.55 0.15 145)', // Green
-        primaryHover: 'oklch(0.47 0.13 145)',
-        primaryActive: 'oklch(0.38 0.11 145)',
-        fontFamily: 'Source Sans Pro, system-ui, sans-serif',
-        primaryPalette: [
-          { label: '50', color: 'oklch(0.97 0.03 145)' },
-          { label: '100', color: 'oklch(0.93 0.06 145)' },
-          { label: '200', color: 'oklch(0.87 0.1 145)' },
-          { label: '300', color: 'oklch(0.79 0.12 145)' },
-          { label: '400', color: 'oklch(0.7 0.14 145)' },
-          { label: '500', color: 'oklch(0.62 0.15 145)' },
-          { label: '600', color: 'oklch(0.55 0.15 145)' },
-          { label: '700', color: 'oklch(0.47 0.13 145)' },
-          { label: '800', color: 'oklch(0.38 0.11 145)' },
-          { label: '900', color: 'oklch(0.28 0.08 145)' },
-        ],
+      spacing: { "1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem" },
+      rounded: { sm:"2px", md:"4px", lg:"8px", xl:"12px", full:"9999px" },
+      shadows: {
+        light: {
+          sm: "0 1px 2px oklch(0.2 0.02 260 / 0.06), 0 1px 3px oklch(0.2 0.02 260 / 0.1)",
+          md: "0 4px 6px oklch(0.2 0.02 260 / 0.08), 0 2px 4px oklch(0.2 0.02 260 / 0.06)",
+          lg: "0 10px 15px oklch(0.2 0.02 260 / 0.1), 0 4px 6px oklch(0.2 0.02 260 / 0.05)"
+        },
+        dark: {
+          sm: "0 0 0 1px oklch(0 0 260 / 0.2)",
+          md: "0 0 0 1px oklch(0 0 260 / 0.3)",
+          lg: "0 0 0 1px oklch(0 0 260 / 0.4)"
+        }
       },
+      components: {
+        button:  { height: "2.5rem", padding: "0 var(--space-6)",  radius: "var(--radius-md)" },
+        card:    { padding: "var(--space-6)", radius: "var(--radius-lg)" },
+        header:  { height: "3rem",   padding: "0 var(--space-6)" },
+        input:   { height: "2.5rem", padding: "var(--space-3) var(--space-4)", radius: "var(--radius-md)" },
+        sidebar: { width: "16rem", widthCollapsed: "3.5rem" }
+      },
+      supportColors: {
+        success:"oklch(0.60 0.17 155)",successBg:"oklch(0.96 0.04 155)",
+        warning:"oklch(0.75 0.16 80)",warningBg:"oklch(0.97 0.05 80)",
+        error:"oklch(0.58 0.22 25)",errorBg:"oklch(0.96 0.03 25)",
+        info:"oklch(0.60 0.15 230)",infoBg:"oklch(0.96 0.03 230)"
+      },
+      neutralPalette: [
+        {label:'50',color:'oklch(0.985 0.002 260)'},{label:'100',color:'oklch(0.965 0.003 260)'},
+        {label:'200',color:'oklch(0.925 0.005 260)'},{label:'300',color:'oklch(0.875 0.007 260)'},
+        {label:'400',color:'oklch(0.71 0.01 260)'},{label:'500',color:'oklch(0.55 0.012 260)'},
+        {label:'600',color:'oklch(0.45 0.015 260)'},{label:'700',color:'oklch(0.37 0.018 260)'},
+        {label:'800',color:'oklch(0.27 0.02 260)'},{label:'900',color:'oklch(0.21 0.022 260)'},
+        {label:'950',color:'oklch(0.15 0.025 260)'}
+      ],
+      tenants: {
+        acme: {
+          name:'ACME Corp', shortName:'ACME',
+          primary:'oklch(0.502 0.126 300.4)', primaryHover:'oklch(0.573 0.129 310.6)',
+          primaryActive:'oklch(0.42 0.11 300)',
+          fontFamily:'Inter, system-ui, sans-serif', fontLabel:'Inter',
+          primaryPalette:[{label:'400',color:'oklch(0.70 0.18 300)'},{label:'600',color:'oklch(0.502 0.126 300.4)'}],
+          neutralHue:308,
+          lightBg:'oklch(0.962 0.014 308.3)', lightSurface:'oklch(0.933 0.023 308.2)',
+          darkBg:'oklch(0.207 0.023 305.2)', darkSurface:'oklch(0.254 0.033 300.3)',
+          darkFocus:'oklch(0.70 0.18 300)'
+        },
+        northpac: {
+          name:'NorthPac Moving & Storage', shortName:'NorthPac',
+          primary:'oklch(0.383 0.083 156.3)', primaryHover:'oklch(0.33 0.07 156)',
+          primaryActive:'oklch(0.28 0.06 156)',
+          fontFamily:"'Source Sans Pro', system-ui, sans-serif", fontLabel:'Source Sans Pro',
+          primaryPalette:[{label:'400',color:'oklch(0.70 0.14 156)'},{label:'600',color:'oklch(0.383 0.083 156.3)'}],
+          neutralHue:160,
+          lightBg:'oklch(0.966 0.007 160.1)', lightSurface:'oklch(0.945 0.014 162.5)',
+          darkBg:'oklch(0.205 0.020 160.1)', darkSurface:'oklch(0.248 0.024 172.7)',
+          darkFocus:'oklch(0.70 0.14 156)'
+        },
+        pacifictimber: {
+          name:'Pacific Timber Co', shortName:'Pacific Timber',
+          primary:'oklch(0.50 0.10 55)', primaryHover:'oklch(0.44 0.09 55)',
+          primaryActive:'oklch(0.38 0.08 55)',
+          fontFamily:"'Merriweather', Georgia, serif", fontLabel:'Merriweather',
+          primaryPalette:[{label:'400',color:'oklch(0.70 0.11 55)'},{label:'600',color:'oklch(0.50 0.10 55)'}],
+          neutralHue:55,
+          lightBg:'oklch(0.96 0.01 60)', lightSurface:'oklch(0.93 0.015 55)',
+          darkBg:'oklch(0.22 0.03 50)', darkSurface:'oklch(0.28 0.03 55)',
+          darkFocus:'oklch(0.70 0.10 55)'
+        },
+        summitathletics: {
+          name:'Summit Athletics', shortName:'Summit',
+          primary:'oklch(0.50 0.10 178)', primaryHover:'oklch(0.44 0.09 178)',
+          primaryActive:'oklch(0.38 0.08 178)',
+          fontFamily:"'Outfit', system-ui, sans-serif", fontLabel:'Outfit',
+          primaryPalette:[{label:'400',color:'oklch(0.70 0.11 178)'},{label:'600',color:'oklch(0.50 0.10 178)'}],
+          neutralHue:80,
+          lightBg:'oklch(0.97 0.005 80)', lightSurface:'oklch(0.94 0.01 80)',
+          darkBg:'oklch(0.20 0.03 180)', darkSurface:'oklch(0.26 0.03 175)',
+          darkFocus:'oklch(0.70 0.10 178)'
+        }
+      }
     };
 
-    const neutralPalette = [
-      { label: '50', color: 'oklch(0.985 0.002 260)' },
-      { label: '100', color: 'oklch(0.965 0.003 260)' },
-      { label: '200', color: 'oklch(0.925 0.005 260)' },
-      { label: '300', color: 'oklch(0.875 0.007 260)' },
-      { label: '400', color: 'oklch(0.71 0.01 260)' },
-      { label: '500', color: 'oklch(0.55 0.012 260)' },
-      { label: '600', color: 'oklch(0.45 0.015 260)' },
-      { label: '700', color: 'oklch(0.37 0.018 260)' },
-      { label: '800', color: 'oklch(0.27 0.02 260)' },
-      { label: '900', color: 'oklch(0.21 0.022 260)' },
-      { label: '950', color: 'oklch(0.15 0.025 260)' },
-    ];
-
+    /* ------------------------------------------------------------------ */
+    /*  State                                                              */
+    /* ------------------------------------------------------------------ */
+    let tokenData = null;
     let currentTenant = 'acme';
 
-    // Apply tenant theme
+    const root = document.documentElement;
+
+    /* ------------------------------------------------------------------ */
+    /*  Helpers                                                            */
+    /* ------------------------------------------------------------------ */
+
+    /** Replace the hue in an oklch(...) string while keeping L and C. */
+    function shiftHue(oklchStr, hue) {
+      return oklchStr.replace(/oklch\(\s*([\d.]+)\s+([\d.]+)\s+[\d.]+\s*\)/,
+        (_, l, c) => `oklch(${l} ${c} ${hue})`);
+    }
+
+    /** Build neutral palette swatches tinted to the tenant's neutralHue. */
+    function buildNeutralPalette(baseNeutral, hue) {
+      return baseNeutral.map(entry => ({
+        label: entry.label,
+        color: shiftHue(entry.color, hue)
+      }));
+    }
+
+    /** Return the CSS vars object for the current theme + tenant. */
+    function getBgSurfaceVars(tenant) {
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      return {
+        '--background': isDark ? tenant.darkBg : tenant.lightBg,
+        '--surface':    isDark ? tenant.darkSurface : tenant.lightSurface
+      };
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Rendering                                                          */
+    /* ------------------------------------------------------------------ */
+
+    function buildTenantSelector() {
+      const container = document.getElementById('tenantSelector');
+      container.innerHTML = '';
+      Object.entries(tokenData.tenants).forEach(([key, t]) => {
+        const btn = document.createElement('button');
+        btn.className = 'tenant-btn' + (key === currentTenant ? ' active' : '');
+        btn.dataset.tenant = key;
+        btn.innerHTML = `<span class="tenant-dot" style="background:${t.primary}"></span>${t.shortName}`;
+        btn.addEventListener('click', () => applyTenant(key));
+        container.appendChild(btn);
+      });
+    }
+
     function applyTenant(tenantKey) {
-      const tenant = tenants[tenantKey];
+      const tenant = tokenData.tenants[tenantKey];
+      if (!tenant) return;
       currentTenant = tenantKey;
-      
-      document.documentElement.style.setProperty('--primary', tenant.primary);
-      document.documentElement.style.setProperty('--primary-hover', tenant.primaryHover);
-      document.documentElement.style.setProperty('--primary-active', tenant.primaryActive);
-      document.documentElement.style.setProperty('--font-family', tenant.fontFamily);
-      // Dark mode: brighter focus shade (primary-400 equivalent)
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      document.documentElement.style.setProperty('--primary-focus', isDark ? tenant.primaryPalette[4].color : tenant.primary);
-      
+
+      // Core primary tokens
+      root.style.setProperty('--primary', tenant.primary);
+      root.style.setProperty('--primary-hover', tenant.primaryHover);
+      root.style.setProperty('--primary-active', tenant.primaryActive);
+      root.style.setProperty('--font-family', tenant.fontFamily);
+
+      // Background / surface per theme
+      const bgVars = getBgSurfaceVars(tenant);
+      root.style.setProperty('--background', bgVars['--background']);
+      root.style.setProperty('--surface', bgVars['--surface']);
+
+      // Focus colour for dark-mode input rings
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      const focusColor = isDark
+        ? (tenant.darkFocus || tenant.primaryPalette.find(p => p.label === '400')?.color || tenant.primary)
+        : tenant.primary;
+      root.style.setProperty('--primary-focus', focusColor);
+
+      // Header text
       document.getElementById('tenantName').textContent = tenant.name;
-      
-      // Update primary palette display
-      const primaryPaletteEl = document.getElementById('primaryPalette');
-      primaryPaletteEl.innerHTML = tenant.primaryPalette.map(swatch => `
+      document.getElementById('fontLabel').textContent = tenant.fontLabel;
+
+      // Primary palette swatches
+      document.getElementById('primaryPalette').innerHTML = tenant.primaryPalette.map(s => `
         <div class="swatch">
-          <div class="swatch-color" style="background-color: ${swatch.color};"></div>
-          <div class="swatch-label">primary.${swatch.label}</div>
-        </div>
-      `).join('');
-      
-      // Update tenant button states
+          <div class="swatch-color" style="background-color: ${s.color};"></div>
+          <div class="swatch-label">primary.${s.label}</div>
+        </div>`).join('');
+
+      // Neutral palette (hue-shifted to tenant)
+      const neutrals = buildNeutralPalette(tokenData.neutralPalette, tenant.neutralHue);
+      document.getElementById('neutralPalette').innerHTML = neutrals.map(s => `
+        <div class="swatch">
+          <div class="swatch-color" style="background-color: ${s.color};"></div>
+          <div class="swatch-label">neutral.${s.label}</div>
+        </div>`).join('');
+
+      // Tenant button active states
       document.querySelectorAll('.tenant-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tenant === tenantKey);
       });
     }
 
-    // Render neutral palette
-    function renderNeutralPalette() {
-      const neutralPaletteEl = document.getElementById('neutralPalette');
-      neutralPaletteEl.innerHTML = neutralPalette.map(swatch => `
-        <div class="swatch">
-          <div class="swatch-color" style="background-color: ${swatch.color};"></div>
-          <div class="swatch-label">neutral.${swatch.label}</div>
-        </div>
-      `).join('');
+    /* ------------------------------------------------------------------ */
+    /*  Theme toggle                                                       */
+    /* ------------------------------------------------------------------ */
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const current = root.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      root.setAttribute('data-theme', next);
+      document.getElementById('themeToggle').textContent = next === 'light' ? 'Dark Mode' : 'Light Mode';
+
+      const tenant = tokenData.tenants[currentTenant];
+      const bgVars = getBgSurfaceVars(tenant);
+      root.style.setProperty('--background', bgVars['--background']);
+      root.style.setProperty('--surface', bgVars['--surface']);
+      const focusColor = next === 'dark'
+        ? (tenant.darkFocus || tenant.primaryPalette.find(p => p.label === '400')?.color || tenant.primary)
+        : tenant.primary;
+      root.style.setProperty('--primary-focus', focusColor);
+
+      if (tokenData.shadows) {
+        const shadowMode = next === 'dark' ? 'dark' : 'light';
+        const shadowSet = tokenData.shadows[shadowMode] || {};
+        Object.entries(shadowSet).forEach(([key, val]) => {
+          root.style.setProperty('--shadow-' + key, val);
+        });
+      }
+    });
+
+    /* ------------------------------------------------------------------ */
+    /*  Design Tokens → CSS Custom Properties                              */
+    /* ------------------------------------------------------------------ */
+    function applyDesignTokens(data) {
+      if (data.typography) {
+        const scale = data.typography.scale || {};
+        const families = data.typography.families || {};
+
+        if (families.sans) root.style.setProperty('--font-sans', families.sans);
+        if (families.mono) root.style.setProperty('--font-mono', families.mono);
+
+        Object.entries(scale).forEach(([key, val]) => {
+          const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+          if (val.fontSize)    root.style.setProperty('--font-size-' + cssKey, val.fontSize);
+          if (val.lineHeight)  root.style.setProperty('--line-height-' + cssKey, val.lineHeight);
+          if (val.fontWeight)  root.style.setProperty('--font-weight-' + cssKey, val.fontWeight);
+          if (val.letterSpacing) root.style.setProperty('--letter-spacing-' + cssKey, val.letterSpacing);
+        });
+
+        root.style.setProperty('--font-weight-heading', 600);
+      }
+
+      if (data.spacing) {
+        Object.entries(data.spacing).forEach(([key, val]) => {
+          root.style.setProperty('--space-' + key, val);
+        });
+      }
+
+      if (data.rounded) {
+        Object.entries(data.rounded).forEach(([key, val]) => {
+          root.style.setProperty('--radius-' + key, val);
+        });
+      }
+
+      if (data.shadows) {
+        const mode = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        const shadowSet = data.shadows[mode] || data.shadows.light || {};
+        Object.entries(shadowSet).forEach(([key, val]) => {
+          root.style.setProperty('--shadow-' + key, val);
+        });
+      }
+
+      if (data.components) {
+        Object.entries(data.components).forEach(([comp, props]) => {
+          Object.entries(props).forEach(([prop, val]) => {
+            root.style.setProperty('--component-' + comp + '-' + prop.replace(/([A-Z])/g, '-$1').toLowerCase(), val);
+          });
+        });
+      }
+
+      if (data.supportColors) {
+        Object.entries(data.supportColors).forEach(([key, val]) => {
+          const cssKey = '--' + key.replace(/([A-Z])/g, '-$1').toLowerCase();
+          root.style.setProperty(cssKey, val);
+        });
+      }
     }
 
-    // Theme toggle
-    document.getElementById('themeToggle').addEventListener('click', () => {
-      const html = document.documentElement;
-      const currentTheme = html.getAttribute('data-theme');
-      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-      html.setAttribute('data-theme', newTheme);
-      document.getElementById('themeToggle').textContent = newTheme === 'light' ? 'Dark Mode' : 'Light Mode';
-      // Update focus brightness per tenant + mode
-      const tenant = tenants[currentTenant];
-      const isDark = newTheme === 'dark';
-      document.documentElement.style.setProperty('--primary-focus', isDark ? tenant.primaryPalette[4].color : tenant.primary);
-    });
+    /* ------------------------------------------------------------------ */
+    /*  Init: fetch tokens, fall back to inline defaults                   */
+    /* ------------------------------------------------------------------ */
+    function init(data) {
+      tokenData = data;
+      applyDesignTokens(data);
+      buildTenantSelector();
+      applyTenant(currentTenant);
+    }
 
-    // Tenant selector
-    document.querySelectorAll('.tenant-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        applyTenant(btn.dataset.tenant);
+    fetch('./design-system-tokens.json')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(init)
+      .catch(() => {
+        console.warn('Could not load design-system-tokens.json — using fallback defaults.');
+        init(FALLBACK_DATA);
       });
-    });
-
-    // Initialize
-    renderNeutralPalette();
-    applyTenant('acme');
   </script>
 </body>
 </html>
