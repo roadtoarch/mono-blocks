@@ -1,9 +1,10 @@
 /* eslint-disable react-refresh/only-export-components -- TanStack Router route files export both Route config and components by design. */
 import { Loading } from '@carbon/react';
-import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { createFileRoute, Outlet, useNavigate, useRouterState } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useAuth } from 'react-oidc-context';
 
+import { persistRedirectUrl } from './redirectStorage';
 import AppShell from '../components/AppShell';
 
 export const Route = createFileRoute('/_authenticated')({
@@ -16,12 +17,19 @@ export const Route = createFileRoute('/_authenticated')({
  */
 function AuthenticatedLayout() {
   const auth = useAuth();
+  const navigate = useNavigate();
+  const { pathname } = useRouterState({ select: s => s.location });
 
   useEffect(() => {
     if (!auth.isLoading && !auth.isAuthenticated) {
+      /* Persist the attempted URL so we can restore it after OIDC login completes.
+         The index page reads this value post-login and navigates there. */
+      if (pathname !== '/login') {
+        persistRedirectUrl(pathname);
+      }
       void auth.signinRedirect();
     }
-  }, [auth]);
+  }, [auth, pathname, navigate]);
 
   if (auth.isLoading) {
     return <Loading withOverlay description="Loading authentication…" />;

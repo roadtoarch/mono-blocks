@@ -1,9 +1,10 @@
 /* eslint-disable react-refresh/only-export-components -- TanStack Router route files export both Route config and components by design. */
 import { Button, Loading, Tile } from '@carbon/react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAuth } from 'react-oidc-context';
 
+import { clearPersistedRedirect, readPersistedRedirect } from './redirectStorage';
 import { useTenant } from '../tenant/useTenant';
 
 import type { TenantConfig } from '../tenant/tenant.types';
@@ -55,9 +56,29 @@ function IndexPage() {
   const auth = useAuth();
   const tenant = useTenant();
   const navigate = useNavigate({ from: '/' });
+  const hasHandledRedirect = useRef(false);
 
+  /* Post-login redirect: if the user arrived here after completing OIDC login,
+     restore the pre-login URL from session storage instead of showing the landing page. */
   useEffect(() => {
-    if (auth.isAuthenticated) {
+    if (!auth.isAuthenticated || hasHandledRedirect.current) return;
+    hasHandledRedirect.current = true;
+
+    const storedUrl = readPersistedRedirect();
+    clearPersistedRedirect();
+
+    if (storedUrl && storedUrl !== '/') {
+      void navigate({ to: storedUrl as '/', replace: true });
+      return;
+    }
+
+    /* No stored URL — authenticated user arrives via OIDC callback, send to dashboard. */
+    void navigate({ to: '/dashboard' });
+  }, [auth.isAuthenticated, navigate]);
+
+  /* Redirect authenticated users away from the landing page. */
+  useEffect(() => {
+    if (auth.isAuthenticated && !hasHandledRedirect.current) {
       void navigate({ to: '/dashboard' });
     }
   }, [auth.isAuthenticated, navigate]);
