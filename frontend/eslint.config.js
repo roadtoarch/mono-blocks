@@ -44,13 +44,48 @@ export default defineConfig([
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
+      // Axios must only be imported from http/transport.ts — all other
+      // files use the pipeline instead.
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'axios',
+              message:
+                'axios must only be imported from src/http/transport.ts. Use the middleware pipeline instead.',
+            },
+          ],
+        },
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
     },
     languageOptions: {
       globals: globals.browser,
       parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        project: ['./tsconfig.node.json', './tsconfig.app.json', './tsconfig.vitest.json'],
         tsconfigRootDir: import.meta.dirname,
       },
+    },
+  },
+  // Allow axios import in the designated transport boundary file.
+  {
+    files: ['src/http/transport.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
+    },
+  },
+  // Relax require-await for test callbacks — middleware signatures require
+  // async returns even when the body is synchronous.
+  // Also allow type-only axios imports in test files (mock typings).
+  {
+    files: ['**/*.unit.test.{ts,tsx}', '**/*.e2e.test.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/require-await': 'off',
+      'no-restricted-imports': 'off',
     },
   },
 ])

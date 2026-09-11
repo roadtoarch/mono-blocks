@@ -1,4 +1,5 @@
 import path from 'node:path';
+
 import babel from '@rolldown/plugin-babel';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
@@ -29,5 +30,23 @@ export default defineConfig({
     // lightningcss cannot yet minify — skip CSS minification to avoid
     // a parse error on those at-rules.
     cssMinify: false,
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    clearMocks: true,
+    include: ['src/**/*.unit.test.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'lcov', 'html'],
+      reportsDirectory: './coverage',
+      thresholds: {
+        lines: 85,
+        functions: 85,
+        branches: 85,
+        statements: 85,
+      },
+      exclude: ['**/node_modules/**', '**/*.unit.test.{ts,tsx}', '**/*.d.ts', '**/types/**'],
+    },
   },
 });
