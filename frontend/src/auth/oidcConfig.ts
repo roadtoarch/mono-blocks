@@ -28,4 +28,4 @@ const fallbackTenant: TenantConfig = {
  *
  * @deprecated Use `createOidcConfig(tenant)` with the resolved tenant instead.
  */
-export const oidcConfig = createOidcConfig(fallbackTenant);
+export const oidcConfig = createOidcConfig(fallbackTenant).authProviderProps;

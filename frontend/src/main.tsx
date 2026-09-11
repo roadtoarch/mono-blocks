@@ -10,6 +10,7 @@ import { resolveTenant } from './tenant/resolveTenant';
 import TenantProvider from './tenant/TenantProvider';
 
 import { createOidcConfig } from '@/auth/createOidcConfig';
+import { setDefaultTokenProvider } from '@/http/api-client';
 import { createAppRouter } from '@/router';
 
 const queryClient = new QueryClient();
@@ -29,13 +30,22 @@ void (async () => {
   applyTenantTypography(tenant.typography);
   document.title = tenant.displayName;
 
-  const oidcConfig = createOidcConfig(tenant);
+  const { authProviderProps, userManager } = createOidcConfig(tenant);
+
+  // Wire the OIDC UserManager into the API pipeline so that every
+  // request through the default ApiClient automatically includes
+  // the current access token (or null if not yet authenticated).
+  setDefaultTokenProvider(async () => {
+    const user = await userManager.getUser();
+    return user?.access_token ?? null;
+  });
+
   const router = createAppRouter();
 
   createRoot(rootElement).render(
     <StrictMode>
       <TenantProvider value={tenant}>
-        <AuthProvider {...oidcConfig}>
+        <AuthProvider {...authProviderProps}>
           <QueryClientProvider client={queryClient}>
             <RouterProvider router={router} />
           </QueryClientProvider>
