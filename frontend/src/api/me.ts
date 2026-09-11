@@ -1,26 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { apiGet } from './client.ts';
+import { MeResource } from './resources/me-resource';
 
-/**
- * Response contract for `GET {API_BASE_URL}/api/me` — echoes the
- * authenticated caller's tenant id so the OIDC round-trip can be
- * verified end to end.
- */
-export interface MeResponse {
-  tenant_id: string;
-}
+import type { MeResponse } from './resources/me-resource';
 
-/**
- * Calls `GET /api/me` with the caller's access token as a bearer token.
- *
- * @param accessToken - OIDC access token from `useAuth().user`.
- * @param signal - `AbortSignal` forwarded to fetch (used by react-query).
- * @throws When the endpoint responds with a non-2xx status.
- */
-export const getMe = (accessToken: string, signal?: AbortSignal): Promise<MeResponse> => {
-  return apiGet<MeResponse>('/api/me', accessToken, signal);
-};
+import { request } from '@/http/api-client';
+
+// Re-export for backward compatibility.
+export type { MeResponse };
+
+const meResource = new MeResource(request);
 
 /**
  * Fetches the authenticated user's `/api/me` payload via react-query.
@@ -32,11 +21,6 @@ export const useMeQuery = (accessToken: string | undefined) => {
   return useQuery({
     queryKey: ['me', accessToken],
     enabled: accessToken !== undefined,
-    queryFn: ({ signal }) => {
-      if (accessToken === undefined) {
-        throw new Error('useMeQuery requires an access token');
-      }
-      return getMe(accessToken, signal);
-    },
+    queryFn: ({ signal }) => meResource.me(signal),
   });
 };

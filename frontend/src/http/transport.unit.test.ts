@@ -234,6 +234,32 @@ describe('transport', () => {
     expect.unreachable('Expected HttpError to be thrown');
   });
 
+  it('uses "unknown" as HttpError path when error.config.url is missing', async () => {
+    const axiosError = makeAxiosError({
+      response: {
+        data: 'Bad Gateway',
+        status: 502,
+        statusText: 'Bad Gateway',
+        headers: {},
+        config: {} as AxiosRequestConfig,
+      },
+      // No url on the config — covers the ?? 'unknown' branch
+      config: {},
+    });
+
+    mockRequest.mockRejectedValueOnce(axiosError);
+    mockIsAxiosError.mockReturnValueOnce(true);
+
+    try {
+      await transport(baseCtx);
+    } catch (error) {
+      expect(error).toBeInstanceOf(HttpError);
+      expect((error as HttpError).path).toBe('unknown');
+      return;
+    }
+    expect.unreachable('Expected HttpError to be thrown');
+  });
+
   // ── 401 dispatches auth:unauthorized ────────────────────────────
 
   it('dispatches auth:unauthorized CustomEvent on 401', async () => {

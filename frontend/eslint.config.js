@@ -13,7 +13,7 @@ import eslintConfigPrettier from 'eslint-config-prettier'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', 'src/routeTree.gen.ts']),
+  globalIgnores(['dist', 'coverage', 'src/routeTree.gen.ts']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -80,12 +80,17 @@ export default defineConfig([
   },
   // Relax require-await for test callbacks — middleware signatures require
   // async returns even when the body is synchronous.
-  // Also allow type-only axios imports in test files (mock typings).
+  // Also relax strict type-checked rules that conflict with Vitest matchers.
   {
     files: ['**/*.unit.test.{ts,tsx}', '**/*.e2e.test.{ts,tsx}'],
     rules: {
       '@typescript-eslint/require-await': 'off',
       'no-restricted-imports': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/unbound-method': 'off',
     },
   },
 ])
