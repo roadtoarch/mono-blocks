@@ -29,10 +29,6 @@ import {
 
 import type { UserSummary } from '../api/users';
 
-export const Route = createFileRoute('/_authenticated/users')({
-  component: UsersPage,
-});
-
 /** Default page size — enough for tenants with dozens of users. */
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -53,13 +49,13 @@ const HEADERS = [
  * Builds a display name from the user's first and last name fields,
  * falling back to an en-dash when both are absent.
  */
-function formatName(user: Pick<UserSummary, 'firstName' | 'lastName'>): string {
+const formatName = (user: Pick<UserSummary, 'firstName' | 'lastName'>): string => {
   const parts = [user.firstName, user.lastName].filter((s): s is string => s != null && s !== '');
   return parts.length > 0 ? parts.join(' ') : '—';
-}
+};
 
 /** Transforms a {@link UserSummary} into a flat row for the {@link DataTable}. */
-function toRow(user: UserSummary) {
+const toRow = (user: UserSummary) => {
   return {
     id: user.id,
     name: formatName(user),
@@ -68,10 +64,10 @@ function toRow(user: UserSummary) {
     status: user.enabled,
     roles: user.roles.join(', '),
   };
-}
+};
 
 /** Users management page — displays tenant users with invite and management actions. */
-function UsersPage() {
+const UsersPage = () => {
   const auth = useAuth();
   const accessToken = auth.user?.access_token ?? '';
   const currentUserId = auth.user?.profile.sub;
@@ -388,4 +384,8 @@ function UsersPage() {
       </Modal>
     </div>
   );
-}
+};
+
+export const Route = createFileRoute('/_authenticated/users')({
+  component: UsersPage,
+});

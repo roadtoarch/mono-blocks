@@ -12,22 +12,22 @@ type Theme = 'light' | 'dark';
  * Reads the current theme from `document.documentElement.dataset.theme`,
  * falling back to `'light'` when no value has been set.
  */
-function getTheme(): Theme {
+const getTheme = (): Theme => {
   return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
-}
+};
 
 /**
  * Applies the given theme by setting `data-theme` on `<html>` and
  * persisting the choice to {@link THEME_STORAGE_KEY}.
  */
-function applyTheme(theme: Theme): void {
+const applyTheme = (theme: Theme): void => {
   document.documentElement.dataset.theme = theme;
   try {
     globalThis.localStorage.setItem(THEME_STORAGE_KEY, theme);
   } catch {
     /* localStorage may be unavailable (private browsing, quota). Ignore. */
   }
-}
+};
 
 /* ------------------------------------------------------------------ */
 /* Minimal external store for theme state, compatible with React 19's  */
@@ -39,24 +39,24 @@ type Listener = () => void;
 
 const listeners = new Set<Listener>();
 
-function subscribe(listener: Listener): () => void {
+const subscribe = (listener: Listener): (() => void) => {
   listeners.add(listener);
   return () => {
     listeners.delete(listener);
   };
-}
+};
 
-function getSnapshot(): Theme {
+const getSnapshot = (): Theme => {
   return getTheme();
-}
+};
 
-function setTheme(theme: Theme): void {
+const setTheme = (theme: Theme): void => {
   if (theme === getTheme()) return;
   applyTheme(theme);
   listeners.forEach((fn) => {
     fn();
   });
-}
+};
 
 /**
  * Toggle button that switches between light and dark colour modes.
@@ -70,7 +70,7 @@ function setTheme(theme: Theme): void {
  * Uses Carbon's {@link IconButton} with `Sun` / `Moon` icons for a
  * consistent look in the application header.
  */
-export function ThemeToggle(): React.ReactElement {
+export const ThemeToggle = (): React.ReactElement => {
   const theme = useSyncExternalStore(subscribe, getSnapshot);
 
   const handleToggle = useCallback(() => {
@@ -89,4 +89,4 @@ export function ThemeToggle(): React.ReactElement {
       {isDark ? <Sun size={20} /> : <Moon size={20} />}
     </IconButton>
   );
-}
+};

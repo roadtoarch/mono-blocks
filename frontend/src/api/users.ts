@@ -39,18 +39,18 @@ export interface UsersPageResponse {
  * @param signal - Optional `AbortSignal` forwarded to `fetch`.
  * @throws When the endpoint responds with a non-2xx status.
  */
-export function getUsers(
+export const getUsers = (
   accessToken: string,
   page: number,
   size: number,
   signal?: AbortSignal,
-): Promise<UsersPageResponse> {
+): Promise<UsersPageResponse> => {
   const params = new URLSearchParams({
     page: String(page),
     size: String(size),
   });
   return apiGet<UsersPageResponse>(`/api/users?${params.toString()}`, accessToken, signal);
-}
+};
 
 /**
  * React Query hook for fetching the tenant's user list.
@@ -62,7 +62,7 @@ export function getUsers(
  * @param page - Zero-based page index forwarded to the backend.
  * @param size - Number of records per page.
  */
-export function useUsersQuery(accessToken: string | undefined, page: number, size: number) {
+export const useUsersQuery = (accessToken: string | undefined, page: number, size: number) => {
   return useQuery({
     queryKey: ['users', accessToken, page, size],
     enabled: accessToken !== undefined,
@@ -73,7 +73,7 @@ export function useUsersQuery(accessToken: string | undefined, page: number, siz
       return getUsers(accessToken, page, size, signal);
     },
   });
-}
+};
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Mutation functions
@@ -98,9 +98,9 @@ export interface InviteUserRequest {
  * @returns The Keycloak user ID of the newly invited user.
  * @throws When the endpoint responds with a non-2xx status.
  */
-export function inviteUser(accessToken: string, request: InviteUserRequest): Promise<string> {
+export const inviteUser = (accessToken: string, request: InviteUserRequest): Promise<string> => {
   return apiPost<string>('/api/users/invite', accessToken, request);
-}
+};
 
 /**
  * Enables or disables a user account via `PATCH /api/users/{id}/status`.
@@ -110,13 +110,13 @@ export function inviteUser(accessToken: string, request: InviteUserRequest): Pro
  * @param enabled - Whether the user should be active.
  * @throws When the endpoint responds with a non-2xx status.
  */
-export async function updateUserStatus(
+export const updateUserStatus = async (
   accessToken: string,
   userId: string,
   enabled: boolean,
-): Promise<void> {
+): Promise<void> => {
   await apiPatch(`/api/users/${encodeURIComponent(userId)}/status`, accessToken, { enabled });
-}
+};
 
 /**
  * Replaces the role assignments for a user via `PATCH /api/users/{id}/roles`.
@@ -126,13 +126,13 @@ export async function updateUserStatus(
  * @param roles - Complete list of role names the user should hold.
  * @throws When the endpoint responds with a non-2xx status.
  */
-export async function updateUserRoles(
+export const updateUserRoles = async (
   accessToken: string,
   userId: string,
   roles: string[],
-): Promise<void> {
+): Promise<void> => {
   await apiPatch(`/api/users/${encodeURIComponent(userId)}/roles`, accessToken, { roles });
-}
+};
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Mutation hooks
@@ -151,7 +151,7 @@ export interface InviteUserVariables {
  *
  * @param accessToken - OIDC access token from `useAuth().user`.
  */
-export function useInviteUserMutation(accessToken: string) {
+export const useInviteUserMutation = (accessToken: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -160,7 +160,7 @@ export function useInviteUserMutation(accessToken: string) {
       void queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
-}
+};
 
 /** Variables accepted by {@link useUpdateUserStatusMutation}. */
 export interface UpdateUserStatusVariables {
@@ -175,7 +175,7 @@ export interface UpdateUserStatusVariables {
  *
  * @param accessToken - OIDC access token from `useAuth().user`.
  */
-export function useUpdateUserStatusMutation(accessToken: string) {
+export const useUpdateUserStatusMutation = (accessToken: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -185,7 +185,7 @@ export function useUpdateUserStatusMutation(accessToken: string) {
       void queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
-}
+};
 
 /** Variables accepted by {@link useUpdateUserRolesMutation}. */
 export interface UpdateUserRolesVariables {
@@ -200,7 +200,7 @@ export interface UpdateUserRolesVariables {
  *
  * @param accessToken - OIDC access token from `useAuth().user`.
  */
-export function useUpdateUserRolesMutation(accessToken: string) {
+export const useUpdateUserRolesMutation = (accessToken: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -210,4 +210,4 @@ export function useUpdateUserRolesMutation(accessToken: string) {
       void queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
-}
+};

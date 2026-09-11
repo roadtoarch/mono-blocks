@@ -15,7 +15,7 @@ export const CURATED_FONT_FAMILIES: readonly string[] = [
 
 const GOOGLE_FONT_LINK_ID = 'tenant-google-font';
 
-export function applyTenantTheme(theme: TenantTheme): void {
+export const applyTenantTheme = (theme: TenantTheme): void => {
   const root = document.documentElement;
   root.style.setProperty('--cds-interactive', theme.primary);
   root.style.setProperty('--cds-focus', theme.primary);
@@ -32,7 +32,7 @@ export function applyTenantTheme(theme: TenantTheme): void {
   if (favicon) {
     favicon.href = theme.faviconUrl;
   }
-}
+};
 
 /**
  * Applies the tenant's typography configuration:
@@ -42,7 +42,7 @@ export function applyTenantTheme(theme: TenantTheme): void {
  * If the font family is not in {@link CURATED_FONT_FAMILIES}, or if `typography`
  * is `undefined`, no changes are applied (Carbon defaults are used).
  */
-export function applyTenantTypography(typography: TenantTypography | undefined): void {
+export const applyTenantTypography = (typography: TenantTypography | undefined): void => {
   if (!typography) {
     return;
   }
@@ -57,13 +57,13 @@ export function applyTenantTypography(typography: TenantTypography | undefined):
   root.style.setProperty('--cds-heading-font-family', fontFamily);
 
   injectGoogleFontLink(fontFamily);
-}
+};
 
 /**
  * Injects (or updates) a `<link rel="stylesheet">` element in `<head>` that
  * loads the given font family from Google Fonts CDN.
  */
-function injectGoogleFontLink(fontFamily: string): void {
+const injectGoogleFontLink = (fontFamily: string): void => {
   const existing = document.getElementById(GOOGLE_FONT_LINK_ID);
   const href = buildGoogleFontsUrl(fontFamily);
 
@@ -79,32 +79,32 @@ function injectGoogleFontLink(fontFamily: string): void {
   link.rel = 'stylesheet';
   link.href = href;
   document.head.appendChild(link);
-}
+};
 
-function buildGoogleFontsUrl(fontFamily: string): string {
+const buildGoogleFontsUrl = (fontFamily: string): string => {
   const familyParam = encodeURIComponent(fontFamily).replace(/%20/g, '+');
   return `https://fonts.googleapis.com/css2?family=${familyParam}:wght@400;600;700&display=swap`;
-}
+};
 
-function hexToRgb(hex: string): [number, number, number] {
+const hexToRgb = (hex: string): [number, number, number] => {
   const cleaned = hex.replace('#', '');
   return [
     parseInt(cleaned.substring(0, 2), 16),
     parseInt(cleaned.substring(2, 4), 16),
     parseInt(cleaned.substring(4, 6), 16),
   ];
-}
+};
 
-function rgbToHex(r: number, g: number, b: number): string {
+const rgbToHex = (r: number, g: number, b: number): string => {
   return '#' + [r, g, b].map((c) => Math.round(c).toString(16).padStart(2, '0')).join('');
-}
+};
 
-function darken(hex: string, amount: number): string {
+const darken = (hex: string, amount: number): string => {
   const [r, g, b] = hexToRgb(hex);
   return rgbToHex(r * (1 - amount), g * (1 - amount), b * (1 - amount));
-}
+};
 
-function lighten(hex: string, amount: number): string {
+const lighten = (hex: string, amount: number): string => {
   const [r, g, b] = hexToRgb(hex);
   return rgbToHex(r + (255 - r) * amount, g + (255 - g) * amount, b + (255 - b) * amount);
-}
+};

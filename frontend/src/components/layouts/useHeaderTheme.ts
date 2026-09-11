@@ -9,7 +9,7 @@ import { useTenant } from '../../tenant/useTenant';
  * Both {@link TopNavLayout} and {@link SideNavLayout} call this hook so
  * the header branding stays consistent across layout variants.
  */
-export function useHeaderTheme(): void {
+export const useHeaderTheme = (): void => {
   const tenant = useTenant();
 
   /* Apply tenant theme to the Carbon <header> element via CSS custom
@@ -25,4 +25,4 @@ export function useHeaderTheme(): void {
       header.style.setProperty('--cds-border-subtle', 'transparent');
     }
   }, [tenant.theme.headerBackground, tenant.theme.headerText]);
-}
+};

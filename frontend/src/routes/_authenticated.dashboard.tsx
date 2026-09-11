@@ -6,18 +6,14 @@ import { useAuth } from 'react-oidc-context';
 import { useMeQuery } from '../api/me';
 import { useTenant } from '../tenant/useTenant';
 
-export const Route = createFileRoute('/_authenticated/dashboard')({
-  component: DashboardPage,
-});
-
 /** Reads the `tenant_id` claim off the OIDC user profile if present. */
-function tenantIdFromUser(user: ReturnType<typeof useAuth>['user']): string | undefined {
+const tenantIdFromUser = (user: ReturnType<typeof useAuth>['user']): string | undefined => {
   const claim = user?.profile.tenant_id;
   return typeof claim === 'string' ? claim : undefined;
-}
+};
 
 /** Dashboard page — displays the authenticated user's profile and tenant info. */
-function DashboardPage() {
+const DashboardPage = () => {
   const auth = useAuth();
   const tenant = useTenant();
   const meQuery = useMeQuery(auth.user?.access_token);
@@ -69,4 +65,8 @@ function DashboardPage() {
       )}
     </div>
   );
-}
+};
+
+export const Route = createFileRoute('/_authenticated/dashboard')({
+  component: DashboardPage,
+});

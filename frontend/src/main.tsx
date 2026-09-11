@@ -4,13 +4,13 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AuthProvider } from 'react-oidc-context';
 
-import './index.css';
 import './styles.scss';
-import { createOidcConfig } from './auth/createOidcConfig';
-import { createAppRouter } from './router';
 import { applyTenantTheme, applyTenantTypography } from './tenant/applyTheme';
 import { resolveTenant } from './tenant/resolveTenant';
 import TenantProvider from './tenant/TenantProvider';
+
+import { createOidcConfig } from '@/auth/createOidcConfig';
+import { createAppRouter } from '@/router';
 
 const queryClient = new QueryClient();
 

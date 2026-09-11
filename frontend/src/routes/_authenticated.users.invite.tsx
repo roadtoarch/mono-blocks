@@ -14,10 +14,6 @@ import { useAuth } from 'react-oidc-context';
 
 import { useInviteUserMutation } from '../api/users';
 
-export const Route = createFileRoute('/_authenticated/users/invite')({
-  component: InviteUserPage,
-});
-
 /** Available roles for user invitation. */
 const AVAILABLE_ROLES = [
   { value: 'ADMIN', label: 'Admin' },
@@ -31,7 +27,7 @@ const AVAILABLE_ROLES = [
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
 
 /** Invite user form — creates a new tenant user with an initial role. */
-function InviteUserPage() {
+const InviteUserPage = () => {
   const auth = useAuth();
   const navigate = useNavigate();
   const accessToken = auth.user?.access_token ?? '';
@@ -183,4 +179,8 @@ function InviteUserPage() {
       </Tile>
     </div>
   );
-}
+};
+
+export const Route = createFileRoute('/_authenticated/users/invite')({
+  component: InviteUserPage,
+});

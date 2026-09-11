@@ -9,9 +9,9 @@ import { routeTree } from './routeTree.gen';
  * The router is instantiated after tenant resolution in `main.tsx` so that
  * the OIDC and tenant providers are available before any route renders.
  */
-export function createAppRouter() {
+export const createAppRouter = () => {
   return createRouter({ routeTree });
-}
+};
 
 /* ------------------------------------------------------------------ */
 /* TypeScript module augmentation for TanStack Router's type-safety.   */

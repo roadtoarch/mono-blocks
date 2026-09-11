@@ -4,21 +4,18 @@ import { createFileRoute, Outlet, useNavigate, useRouterState } from '@tanstack/
 import { useEffect } from 'react';
 import { useAuth } from 'react-oidc-context';
 
-import { persistRedirectUrl } from './redirectStorage';
 import AppShell from '../components/AppShell';
 
-export const Route = createFileRoute('/_authenticated')({
-  component: AuthenticatedLayout,
-});
+import { persistRedirectUrl } from './-redirectStorage';
 
 /**
  * Pathless layout route that guards all child routes behind authentication.
  * Wraps authenticated content in the {@link AppShell} layout.
  */
-function AuthenticatedLayout() {
+const AuthenticatedLayout = () => {
   const auth = useAuth();
   const navigate = useNavigate();
-  const { pathname } = useRouterState({ select: s => s.location });
+  const { pathname } = useRouterState({ select: (s) => s.location });
 
   useEffect(() => {
     if (!auth.isLoading && !auth.isAuthenticated) {
@@ -44,4 +41,8 @@ function AuthenticatedLayout() {
       <Outlet />
     </AppShell>
   );
-}
+};
+
+export const Route = createFileRoute('/_authenticated')({
+  component: AuthenticatedLayout,
+});

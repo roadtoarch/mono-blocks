@@ -13,7 +13,7 @@ import type { AuthProviderProps } from 'react-oidc-context';
  * own `client_id` from the tenant manifest. The `redirect_uri` is derived
  * from `window.location.origin` so it works on any subdomain.
  */
-export function createOidcConfig(tenant: TenantConfig): AuthProviderProps {
+export const createOidcConfig = (tenant: TenantConfig): AuthProviderProps => {
   const origin = globalThis.location.origin;
   const keycloakBase = env.VITE_KEYCLOAK_URL.replace(/\/$/, '');
   return {
@@ -31,4 +31,4 @@ export function createOidcConfig(tenant: TenantConfig): AuthProviderProps {
       globalThis.history.replaceState({}, document.title, globalThis.location.pathname);
     },
   };
-}
+};

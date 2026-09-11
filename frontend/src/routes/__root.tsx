@@ -12,7 +12,7 @@ import { useAuth } from 'react-oidc-context';
  * - **Authenticated**: renders a simple "Content Not Found" tile inside
  *   the AppShell so the user stays within the authenticated shell.
  */
-function NotFoundFallback() {
+const NotFoundFallback = () => {
   const auth = useAuth();
 
   useEffect(() => {
@@ -30,7 +30,7 @@ function NotFoundFallback() {
       <p>The page you are looking for does not exist.</p>
     </div>
   );
-}
+};
 
 /**
  * Root route — renders the child route via {@link Outlet} and registers the
@@ -38,7 +38,7 @@ function NotFoundFallback() {
  * the API returns a 401. Also provides an auth-aware {@link NotFoundFallback}
  * when no child route matches.
  */
-function RootRoute() {
+const RootRoute = () => {
   const auth = useAuth();
 
   /* Redirect to Keycloak when a 401 is received from the API. */
@@ -53,7 +53,7 @@ function RootRoute() {
   }, [auth]);
 
   return <Outlet />;
-}
+};
 
 export const Route = createRootRoute({
   component: RootRoute,

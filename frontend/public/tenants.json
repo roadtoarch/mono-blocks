@@ -10,7 +10,7 @@
         "primaryText": "#ffffff",
         "headerBackground": "#7050a0",
         "headerText": "#ffffff",
-        "logoUrl": "/tenants/acme/logo.png",
+        "logoUrl": "/tenants/acme/logo.svg",
         "faviconUrl": "/tenants/acme/favicon.ico"
       },
       "typography": {
@@ -36,7 +36,7 @@
         "primaryText": "#ffffff",
         "headerBackground": "#105030",
         "headerText": "#ffffff",
-        "logoUrl": "/tenants/northpac/logo.png",
+        "logoUrl": "/tenants/northpac/logo.svg",
         "faviconUrl": "/tenants/northpac/favicon.ico"
       },
       "typography": {
@@ -62,7 +62,7 @@
         "primaryText": "#ffffff",
         "headerBackground": "#6B4226",
         "headerText": "#ffffff",
-        "logoUrl": "/tenants/pacifictimber/logo.png",
+        "logoUrl": "/tenants/pacifictimber/logo.svg",
         "faviconUrl": "/tenants/pacifictimber/favicon.ico"
       },
       "typography": {
@@ -90,7 +90,7 @@
         "primaryText": "#ffffff",
         "headerBackground": "#0E8A7D",
         "headerText": "#ffffff",
-        "logoUrl": "/tenants/summitathletics/logo.png",
+        "logoUrl": "/tenants/summitathletics/logo.svg",
         "faviconUrl": "/tenants/summitathletics/favicon.ico"
       },
       "typography": {

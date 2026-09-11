@@ -6,7 +6,7 @@ import { useTenant } from './useTenant';
  * Falls back to `false` when the tenant has no `features` configuration
  * or the flag is not defined.
  */
-export function useFeature(name: string): boolean {
+export const useFeature = (name: string): boolean => {
   const tenant = useTenant();
   return tenant.features?.[name] ?? false;
-}
+};

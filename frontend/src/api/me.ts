@@ -18,9 +18,9 @@ export interface MeResponse {
  * @param signal - `AbortSignal` forwarded to fetch (used by react-query).
  * @throws When the endpoint responds with a non-2xx status.
  */
-export function getMe(accessToken: string, signal?: AbortSignal): Promise<MeResponse> {
+export const getMe = (accessToken: string, signal?: AbortSignal): Promise<MeResponse> => {
   return apiGet<MeResponse>('/api/me', accessToken, signal);
-}
+};
 
 /**
  * Fetches the authenticated user's `/api/me` payload via react-query.
@@ -28,7 +28,7 @@ export function getMe(accessToken: string, signal?: AbortSignal): Promise<MeResp
  *
  * @param accessToken - OIDC access token, or `undefined` while signed out.
  */
-export function useMeQuery(accessToken: string | undefined) {
+export const useMeQuery = (accessToken: string | undefined) => {
   return useQuery({
     queryKey: ['me', accessToken],
     enabled: accessToken !== undefined,
@@ -39,4 +39,4 @@ export function useMeQuery(accessToken: string | undefined) {
       return getMe(accessToken, signal);
     },
   });
-}
+};

@@ -4,15 +4,12 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef } from 'react';
 import { useAuth } from 'react-oidc-context';
 
-import { clearPersistedRedirect, readPersistedRedirect } from './redirectStorage';
 import { useTenant } from '../tenant/useTenant';
+
+import { clearPersistedRedirect, readPersistedRedirect } from './-redirectStorage';
 
 import type { TenantConfig } from '../tenant/tenant.types';
 import type { FC } from 'react';
-
-export const Route = createFileRoute('/')({
-  component: IndexPage,
-});
 
 interface LandingPageProps {
   readonly onSignIn: () => void;
@@ -52,7 +49,7 @@ const LandingPage: FC<LandingPageProps> = ({ onSignIn, tenant }) => (
   </div>
 );
 
-function IndexPage() {
+const IndexPage = () => {
   const auth = useAuth();
   const tenant = useTenant();
   const navigate = useNavigate({ from: '/' });
@@ -111,4 +108,8 @@ function IndexPage() {
   }
 
   return <LandingPage onSignIn={() => void auth.signinRedirect()} tenant={tenant} />;
-}
+};
+
+export const Route = createFileRoute('/')({
+  component: IndexPage,
+});

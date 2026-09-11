@@ -7,9 +7,9 @@ export const API_BASE_URL: string = env.VITE_API_URL;
  * Fires a custom event that the app shell catches to force a login redirect
  * when the resource server rejects the access token.
  */
-function dispatchUnauthorized(): void {
+const dispatchUnauthorized = (): void => {
   globalThis.dispatchEvent(new CustomEvent('auth:unauthorized'));
-}
+};
 
 /**
  * Authenticated `GET` helper — attaches a bearer token and dispatches
@@ -21,11 +21,11 @@ function dispatchUnauthorized(): void {
  * @param signal - Optional `AbortSignal` forwarded to `fetch`.
  * @throws When the endpoint responds with a non-2xx status.
  */
-export async function apiGet<T>(
+export const apiGet = async <T>(
   path: string,
   accessToken: string,
   signal?: AbortSignal,
-): Promise<T> {
+): Promise<T> => {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     headers: { Authorization: `Bearer ${accessToken}` },
     signal,
@@ -40,7 +40,7 @@ export async function apiGet<T>(
   }
 
   return (await response.json()) as T;
-}
+};
 
 /**
  * Authenticated `POST` helper — serialises the body as JSON, attaches a bearer
@@ -52,7 +52,7 @@ export async function apiGet<T>(
  * @param body - Payload to serialise as JSON.
  * @throws When the endpoint responds with a non-2xx status.
  */
-export async function apiPost<T>(path: string, accessToken: string, body: unknown): Promise<T> {
+export const apiPost = async <T>(path: string, accessToken: string, body: unknown): Promise<T> => {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: 'POST',
     headers: {
@@ -76,7 +76,7 @@ export async function apiPost<T>(path: string, accessToken: string, body: unknow
   }
 
   return (await response.json()) as T;
-}
+};
 
 /**
  * Authenticated `PATCH` helper — serialises the body as JSON, attaches a bearer
@@ -88,7 +88,7 @@ export async function apiPost<T>(path: string, accessToken: string, body: unknow
  * @param body - Payload to serialise as JSON.
  * @throws When the endpoint responds with a non-2xx status.
  */
-export async function apiPatch<T>(path: string, accessToken: string, body: unknown): Promise<T> {
+export const apiPatch = async <T>(path: string, accessToken: string, body: unknown): Promise<T> => {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: 'PATCH',
     headers: {
@@ -112,4 +112,4 @@ export async function apiPatch<T>(path: string, accessToken: string, body: unkno
   }
 
   return (await response.json()) as T;
-}
+};
