@@ -14,6 +14,10 @@ const allowedRuntimeEnvConfigSchema = z
     VITE_API_URL: z.string().min(1),
     VITE_KEYCLOAK_URL: z.string().min(1),
     VITE_FRONTEND_URL: z.string().min(1).optional(),
+    VITE_ENABLE_SW: z
+      .string()
+      .transform((v) => v === 'true')
+      .optional(),
   })
   .partial()
   .strict();
@@ -25,9 +29,11 @@ const appEnvSchema = z.object({
   VITE_API_URL: z.string().min(1).default('http://localhost:8080'),
   VITE_KEYCLOAK_URL: z.string().min(1).default('http://localhost:8081'),
   VITE_FRONTEND_URL: z.string().min(1).optional(),
+  // Coerces both string ("true"/"false") and boolean values from Vite env or runtime config.
+  VITE_ENABLE_SW: z.union([z.boolean(), z.string().transform((v) => v === 'true')]).default(false),
 });
 
-type AppEnv = Record<string, string> & z.infer<typeof appEnvSchema>;
+type AppEnv = z.infer<typeof appEnvSchema>;
 type RuntimeConfig = z.infer<typeof allowedRuntimeEnvConfigSchema>;
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
@@ -61,7 +67,7 @@ const getValidatedRuntimeConfig = (config: unknown): RuntimeConfig => {
   return parsed.data;
 };
 
-const getValidatedAppEnv = (config: Record<string, string>): AppEnv => {
+const getValidatedAppEnv = (config: Record<string, unknown>): AppEnv => {
   const parsed = appEnvSchema.safeParse(config);
   if (!parsed.success) {
     const issues = parsed.error.issues

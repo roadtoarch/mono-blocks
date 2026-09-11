@@ -10,6 +10,7 @@ import { resolveTenant } from './tenant/resolveTenant';
 import TenantProvider from './tenant/TenantProvider';
 
 import { createOidcConfig } from '@/auth/createOidcConfig';
+import { env } from '@/env';
 import { setDefaultTokenProvider } from '@/http/api-client';
 import { createAppRouter } from '@/router';
 
@@ -54,3 +55,21 @@ void (async () => {
     </StrictMode>,
   );
 })();
+
+/**
+ * Service Worker registration (DEC-11).
+ *
+ * Disabled by default in development to avoid caching conflicts with HMR.
+ * Enable with `VITE_ENABLE_SW=true` (env var or window.config).
+ * In production, the SW registers automatically if the browser supports it.
+ */
+if (env.VITE_ENABLE_SW && 'serviceWorker' in navigator) {
+  navigator.serviceWorker
+    .register('/sw.js', { scope: '/' })
+    .then((reg) => {
+      console.log('[SW] registered', reg.scope);
+    })
+    .catch((err: unknown) => {
+      console.error('[SW] registration failed', err);
+    });
+}

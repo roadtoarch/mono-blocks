@@ -1,6 +1,7 @@
 import path from 'node:path';
 
 import babel from '@rolldown/plugin-babel';
+import { serwist } from '@serwist/vite';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
@@ -19,6 +20,15 @@ export default defineConfig({
     react(),
     // React Compiler — auto-memoizes components/hooks; see react.dev/learn/react-compiler
     babel({ presets: [reactCompilerPreset()] }),
+    // Serwist — PWA service worker with precaching (Phase 1) and runtime caching (Phase 2).
+    // Registration is gated by VITE_ENABLE_SW=true in dev (DEC-11); always on in production.
+    serwist({
+      swSrc: './src/sw.ts',
+      swDest: 'sw.js',
+      globDirectory: 'dist',
+      injectionPoint: 'self.__SW_MANIFEST',
+      rollupFormat: 'iife',
+    }),
   ],
   server: {
     // Allow *.localhost subdomains so acme.localhost and northpac.localhost
