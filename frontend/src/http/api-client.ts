@@ -2,9 +2,9 @@
  * ApiClient — configured middleware pipeline for one backend.
  *
  * `createApiClient(config)` composes the standard middleware stack
- * (auth → trace → retry → headers → transport) and returns a
- * `request()` function that is the single entry-point for all HTTP
- * calls to that backend.
+ * (auth → trace → retry → headers → cache → offline → transport)
+ * and returns a `request()` function that is the single entry-point
+ * for all HTTP calls to that backend.
  *
  * A default instance is exported for the primary backend, built from
  * the application's `VITE_API_URL` env var.  A second backend would
@@ -15,15 +15,20 @@
 
 import { compose } from './compose';
 import { createAuthMiddleware } from './middlewares/auth';
+import { createCacheMiddleware } from './middlewares/cache';
 import { createHeadersMiddleware } from './middlewares/headers';
+import { createOfflineMiddleware } from './middlewares/offline';
 import { createRetryMiddleware } from './middlewares/retry';
 import { createTraceMiddleware } from './middlewares/trace';
 import { transport } from './transport';
 
 import type { TokenProvider } from './middlewares/auth';
 import type { TraceProvider } from './middlewares/trace';
+import type { CacheAdapter, OutboxAdapter } from './middlewares/types';
 import type { Middleware, RequestContext, ResponseContext, Transport } from './types';
 
+import { cacheAdapter as defaultCacheAdapter } from '@/db/cache-adapter';
+import { outboxAdapter as defaultOutboxAdapter } from '@/db/outbox-adapter';
 import { env } from '@/env';
 
 // ── Configuration ───────────────────────────────────────────────────
@@ -40,6 +45,20 @@ export interface ApiClientConfig {
   traceProvider?: TraceProvider;
   /** Response header names to extract into `res.meta.headers`. */
   extractHeaders?: readonly string[];
+  /** Cache adapter for the cache middleware. Defaults to DexieCacheAdapter. */
+  cacheAdapter?: CacheAdapter;
+  /** TTL in ms for cached GET responses. Defaults to VITE_OFFLINE_STALE_AGE_MS. */
+  cacheTtlMs?: number;
+  /** Max entries in the HTTP cache. Defaults to 200. */
+  cacheMaxEntries?: number;
+  /** Outbox adapter for the offline middleware. Defaults to DexieOutboxAdapter. */
+  outboxAdapter?: OutboxAdapter;
+  /** Predicate: returns true when browser is online. Defaults to `() => navigator.onLine`. */
+  onlinePredicate?: () => boolean;
+  /** Predicate: returns true when user has OFFLINE_ALLOWED role. */
+  isOfflineAllowed?: () => boolean | Promise<boolean>;
+  /** Async function returning the current user's OIDC `sub` claim. */
+  getUserId?: () => Promise<string | undefined>;
   /** Additional middlewares inserted **before** the standard stack. */
   middlewares?: readonly Middleware[];
 }
@@ -50,11 +69,13 @@ export interface ApiClientConfig {
  * Creates an ApiClient for a specific backend.
  *
  * Builds the standard middleware stack in execution order:
- * 1. `auth`   — injects `Authorization: Bearer` header
- * 2. `trace`  — injects `X-B3-TraceId` / `X-B3-SpanId` headers
- * 3. `retry`  — retries 5xx / network errors with exponential back-off
+ * 1. `auth`    — injects `Authorization: Bearer` header
+ * 2. `trace`   — injects `X-B3-TraceId` / `X-B3-SpanId` headers
+ * 3. `retry`   — retries 5xx / network errors with exponential back-off
  * 4. `headers` — extracts named response headers into `res.meta.headers`
- * 5. `transport` — performs the actual HTTP request via axios
+ * 5. `cache`   — read-through HTTP response cache with TTL and dedup
+ * 6. `offline` — queues mutations when offline (OFFLINE_ALLOWED users)
+ * 7. `transport` — performs the actual HTTP request via axios
  *
  * Additional middlewares from `config.middlewares` are prepended
  * before the auth middleware (so they run first on the request path
@@ -62,22 +83,6 @@ export interface ApiClientConfig {
  *
  * @param config - Client configuration.
  * @returns A typed `request()` function.
- *
- * @example
- * ```ts
- * // Primary backend (default export handles this)
- * const request = createApiClient({
- *   baseURL: env.VITE_API_URL,
- *   tokenProvider: oidcTokenProvider,
- * });
- *
- * // Second backend
- * const analyticsRequest = createApiClient({
- *   baseURL: 'https://analytics.example.com',
- *   tokenProvider: oidcTokenProvider,
- *   extractHeaders: ['X-RateLimit-Remaining'],
- * });
- * ```
  */
 export const createApiClient = (config: ApiClientConfig): Transport => {
   const auth = createAuthMiddleware(config.tokenProvider);
@@ -85,7 +90,20 @@ export const createApiClient = (config: ApiClientConfig): Transport => {
   const retry = createRetryMiddleware();
   const parseHeaders = createHeadersMiddleware(config.extractHeaders ?? []);
 
-  const standardStack: Middleware[] = [auth, trace, retry, parseHeaders];
+  const cache = createCacheMiddleware({
+    adapter: config.cacheAdapter ?? defaultCacheAdapter,
+    ttlMs: config.cacheTtlMs ?? env.VITE_OFFLINE_STALE_AGE_MS,
+    maxEntries: config.cacheMaxEntries ?? 200,
+  });
+
+  const offline = createOfflineMiddleware({
+    adapter: config.outboxAdapter ?? defaultOutboxAdapter,
+    onlinePredicate: config.onlinePredicate ?? (() => navigator.onLine),
+    isOfflineAllowed: config.isOfflineAllowed ?? (() => defaultOfflineAllowed()),
+    getUserId: config.getUserId ?? (() => defaultUserIdProvider()),
+  });
+
+  const standardStack: Middleware[] = [auth, trace, retry, parseHeaders, cache, offline];
 
   const allMiddlewares = [...(config.middlewares ?? []), ...standardStack];
 
@@ -107,7 +125,7 @@ export const createApiClient = (config: ApiClientConfig): Transport => {
   return client;
 };
 
-// ── Default instance ────────────────────────────────────────────────
+// ── Default instance providers ───────────────────────────────────────
 
 /**
  * Placeholder token provider used before OIDC is initialised.
@@ -116,6 +134,24 @@ export const createApiClient = (config: ApiClientConfig): Transport => {
  * `setDefaultTokenProvider()` once the OIDC UserManager is ready.
  */
 let defaultTokenProvider: TokenProvider = () => Promise.resolve(null);
+
+/**
+ * Placeholder offline-allowed predicate.
+ *
+ * Returns `false` until `setDefaultOfflinePredicate()` is called
+ * during app bootstrap with the real OIDC-backed check.
+ */
+let defaultOfflineAllowed = (): boolean | Promise<boolean> => false;
+
+/**
+ * Placeholder user ID provider.
+ *
+ * Returns `undefined` until `setDefaultUserIdProvider()` is called
+ * during app bootstrap.
+ */
+let defaultUserIdProvider = (): Promise<string | undefined> => Promise.resolve(undefined);
+
+// ── Setters (called during app bootstrap) ────────────────────────────
 
 /**
  * Replaces the default instance's token provider.
@@ -128,6 +164,32 @@ let defaultTokenProvider: TokenProvider = () => Promise.resolve(null);
 export const setDefaultTokenProvider = (provider: TokenProvider): void => {
   defaultTokenProvider = provider;
 };
+
+/**
+ * Replaces the default instance's offline-allowed predicate.
+ *
+ * Called once during app initialisation after the OIDC UserManager
+ * is created and the user's roles can be inspected.
+ *
+ * @param predicate - Returns `true` when the user has OFFLINE_ALLOWED role.
+ */
+export const setDefaultOfflinePredicate = (predicate: () => boolean | Promise<boolean>): void => {
+  defaultOfflineAllowed = predicate;
+};
+
+/**
+ * Replaces the default instance's user ID provider.
+ *
+ * Called once during app initialisation after the OIDC UserManager
+ * is created.
+ *
+ * @param provider - Async function returning the current user's OIDC `sub` claim.
+ */
+export const setDefaultUserIdProvider = (provider: () => Promise<string | undefined>): void => {
+  defaultUserIdProvider = provider;
+};
+
+// ── Default instance ────────────────────────────────────────────────
 
 /**
  * Default ApiClient for the primary backend.
