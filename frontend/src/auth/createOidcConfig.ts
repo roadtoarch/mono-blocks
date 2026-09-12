@@ -30,7 +30,10 @@ export const createOidcConfig = (
     client_id: tenant.keycloakClientId,
     redirect_uri: origin,
     post_logout_redirect_uri: origin,
-    scope: 'openid profile email',
+    // 'roles' scope enables realm_access.roles in the ID token
+    // (requires Keycloak's oidc-usermodel-realm-role-mapper to have
+    // "Add to ID token" enabled — DEC-7 / OQ-5 Approach A).
+    scope: 'openid profile email roles',
     loadUserInfo: true,
     automaticSilentRenew: true,
     userStore: new WebStorageStateStore({ store: globalThis.localStorage }),
