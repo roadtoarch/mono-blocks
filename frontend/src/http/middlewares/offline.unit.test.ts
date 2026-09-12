@@ -33,6 +33,9 @@ function createMockOutboxAdapter(): OutboxAdapter & { enqueued: Omit<PendingMuta
     async dequeue() {},
     async markSyncing() {},
     async markFailed() {},
+    async retry() {
+      return 0;
+    },
     async getPending() {
       return [];
     },
@@ -41,6 +44,9 @@ function createMockOutboxAdapter(): OutboxAdapter & { enqueued: Omit<PendingMuta
     },
     async count() {
       return enqueued.length;
+    },
+    async failedCount() {
+      return 0;
     },
   };
 }

@@ -14,13 +14,18 @@ vi.mock('./use-offline-allowed', () => ({
 vi.mock('./use-record-pin', () => ({
   useRecordPin: vi.fn(),
 }));
+vi.mock('./use-storage-budget', () => ({
+  useStorageBudget: vi.fn(),
+}));
 
 import { PinButton } from './pin-button';
 import { useOfflineAllowed } from './use-offline-allowed';
 import { useRecordPin } from './use-record-pin';
+import { useStorageBudget } from './use-storage-budget';
 
 const mockOfflineAllowed = vi.mocked(useOfflineAllowed);
 const mockRecordPin = vi.mocked(useRecordPin);
+const mockStorageBudget = vi.mocked(useStorageBudget);
 
 // ── Default mock returns ───────────────────────────────────────────
 
@@ -28,6 +33,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 
   mockOfflineAllowed.mockReturnValue(true);
+  mockStorageBudget.mockReturnValue({ canPin: true, isWarning: false, usagePercent: 0 });
   mockRecordPin.mockReturnValue({
     isPinned: false,
     toggle: vi.fn().mockResolvedValue(undefined),
@@ -88,13 +94,14 @@ describe('PinButton — interaction', () => {
 // ── Props forwarding ───────────────────────────────────────────────
 
 describe('PinButton — props', () => {
-  it('passes contentType, contentId, and userId to useRecordPin', () => {
+  it('passes contentType, contentId, userId, and canPin to useRecordPin', () => {
     render(<PinButton contentType="order" contentId="99" userId="u2" />);
 
     expect(mockRecordPin).toHaveBeenCalledWith({
       contentType: 'order',
       contentId: '99',
       userId: 'u2',
+      canPin: true,
     });
   });
 });

@@ -47,6 +47,21 @@ function createMockAdapter(): OutboxAdapter & {
       if (m) mutations.set(id, { ...m, status: 'failed' });
     },
 
+    async retry(id, maxRetries) {
+      const m = mutations.get(id);
+      if (!m) return 0;
+
+      const newRetryCount = m.retryCount + 1;
+
+      if (newRetryCount >= maxRetries) {
+        mutations.set(id, { ...m, status: 'failed', retryCount: newRetryCount });
+      } else {
+        mutations.set(id, { ...m, status: 'pending', retryCount: newRetryCount });
+      }
+
+      return newRetryCount;
+    },
+
     async getPending() {
       return Array.from(mutations.values())
         .filter((m) => m.status === 'pending')
@@ -61,6 +76,10 @@ function createMockAdapter(): OutboxAdapter & {
 
     async count() {
       return Array.from(mutations.values()).filter((m) => m.status === 'pending').length;
+    },
+
+    async failedCount() {
+      return Array.from(mutations.values()).filter((m) => m.status === 'failed').length;
     },
   };
 }
@@ -112,6 +131,7 @@ function addMutation(
     body: JSON.stringify({ name: 'Alice' }),
     createdAt: new Date(Date.now() + id * 1000).toISOString(),
     status: 'pending',
+    retryCount: 0,
     ...overrides,
   };
   adapter.mutations.set(id, mutation);
@@ -153,7 +173,7 @@ describe('createOutboxSyncEngine', () => {
     const transport = createMockTransport(failUrls);
     const invalidated = new Set<string>();
 
-    addMutation(adapter, { contentType: 'user', url: '/api/users/42' });
+    addMutation(adapter, { contentType: 'user', url: '/api/users/42', retryCount: 2 });
     addMutation(adapter, { contentType: 'user', url: '/api/users/43' });
 
     const engine = createOutboxSyncEngine({
@@ -169,10 +189,11 @@ describe('createOutboxSyncEngine', () => {
     expect(result.replayed).toBe(1);
     expect(result.failed).toBe(1);
 
-    // Failed entry should be marked as 'failed'.
+    // Failed entry should be marked as 'failed' after max retries (3).
     const failed = await adapter.getFailed();
     expect(failed).toHaveLength(1);
     expect(failed[0].url).toBe('/api/users/42');
+    expect(failed[0].retryCount).toBe(3);
   });
 
   it('stops draining after maxConsecutiveFailures', async () => {
@@ -183,9 +204,9 @@ describe('createOutboxSyncEngine', () => {
     );
     const invalidated = new Set<string>();
 
-    addMutation(adapter, { contentType: 'user', url: '/api/users/42' });
-    addMutation(adapter, { contentType: 'user', url: '/api/users/43' });
-    addMutation(adapter, { contentType: 'user', url: '/api/users/44' });
+    addMutation(adapter, { contentType: 'user', url: '/api/users/42', retryCount: 2 });
+    addMutation(adapter, { contentType: 'user', url: '/api/users/43', retryCount: 2 });
+    addMutation(adapter, { contentType: 'user', url: '/api/users/44', retryCount: 2 });
 
     const engine = createOutboxSyncEngine({
       adapter,
@@ -194,6 +215,7 @@ describe('createOutboxSyncEngine', () => {
         types.forEach((t) => invalidated.add(t));
       },
       maxConsecutiveFailures: 2,
+      maxRetries: 3,
     });
 
     const result = await engine.sync();
@@ -201,10 +223,7 @@ describe('createOutboxSyncEngine', () => {
     // After 2 consecutive failures, the engine stops.
     expect(result.failed).toBe(2);
     expect(result.replayed).toBe(0);
-    // Third mutation should remain pending (not attempted).
-    const _remaining = await adapter.getPending();
-    // The first two are now 'failed'; the third might still be 'pending'
-    // or might have been processed depending on ordering.
+    // Third mutation should remain in the outbox (not attempted).
     expect(adapter.mutations.size).toBeGreaterThanOrEqual(1);
   });
 

@@ -30,6 +30,7 @@ function makeMutation(
     body: overrides?.body ?? JSON.stringify({ name: 'Alice' }),
     createdAt: overrides?.createdAt ?? new Date().toISOString(),
     status: 'pending',
+    retryCount: 0,
   };
 }
 
