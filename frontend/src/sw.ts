@@ -28,7 +28,10 @@ declare const self: ServiceWorkerGlobalScope;
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
-  skipWaiting: true,
+  // skipWaiting is deferred to the app's SwUpdateProvider, which sends
+  // a SKIP_WAITING message when the user clicks "Refresh". This enables
+  // the update-prompt UX (6.1). The SW will not auto-activate.
+  skipWaiting: false,
   clientsClaim: true,
   navigationPreload: true,
   disableDevLogs: import.meta.env.PROD,
@@ -68,6 +71,34 @@ const serwist = new Serwist({
       }),
     },
   ],
+});
+
+// Handle SKIP_WAITING message from the app's SwUpdateProvider (6.1).
+// The app prompts the user to refresh when a new SW is installed;
+// clicking "Refresh" sends this message to activate the new SW.
+self.addEventListener('message', (event: ExtendableMessageEvent) => {
+  if ((event.data as { type: string }).type === 'SKIP_WAITING') {
+    void self.skipWaiting();
+  }
+});
+
+// Cache cleanup on activate (6.2 / NFR-4): delete any cache that is
+// not in the current allowlist. This removes stale caches from previous
+// SW versions within 24h of a new SW taking control.
+const CACHE_ALLOWLIST = new Set(['navigation', 'api-data', 'static-assets', 'images']);
+
+self.addEventListener('activate', (event: ExtendableEvent) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((names) =>
+        Promise.all(
+          names
+            .filter((name) => !CACHE_ALLOWLIST.has(name) && !name.startsWith('serwist-'))
+            .map((name) => caches.delete(name)),
+        ),
+      ),
+  );
 });
 
 serwist.addEventListeners();

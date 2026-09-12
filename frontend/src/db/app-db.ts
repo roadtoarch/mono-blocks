@@ -44,6 +44,12 @@ class AppDB extends Dexie {
     this.version(2).stores({
       httpCache: 'key, cachedAt',
     });
+
+    // Version 3: add retryCount to mutations for per-mutation retry tracking (6.3).
+    // Adds 'retryCount' to the index for querying failed-by-retry-count.
+    this.version(3).stores({
+      mutations: '++id, status, [userId+status], createdAt, retryCount',
+    });
   }
 }
 

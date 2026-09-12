@@ -2,7 +2,11 @@
  * Dexie-backed OutboxAdapter for the offline middleware.
  *
  * Stores pending mutations in the `mutations` Dexie table and
- * manages the `pending → syncing → (dequeue | failed)` lifecycle.
+ * manages the `pending → syncing → (dequeue | retry → failed)` lifecycle.
+ *
+ * Per-mutation retry tracking (6.3): each failed replay increments
+ * `retryCount` and resets to `pending`. After `maxRetries` attempts,
+ * the mutation is marked `failed` and surfaced to the user.
  *
  * @module db/outbox-adapter
  */
@@ -32,7 +36,33 @@ export class DexieOutboxAdapter implements OutboxAdapter {
   }
 
   async markFailed(id: number): Promise<void> {
-    await db.mutations.update(id, { status: 'failed' });
+    await db.mutations.update(id, {
+      status: 'failed',
+      retriedAt: new Date().toISOString(),
+    });
+  }
+
+  async retry(id: number, maxRetries: number): Promise<number> {
+    const mutation = await db.mutations.get(id);
+    if (!mutation) return 0;
+
+    const newRetryCount = mutation.retryCount + 1;
+
+    if (newRetryCount >= maxRetries) {
+      await db.mutations.update(id, {
+        status: 'failed',
+        retryCount: newRetryCount,
+        retriedAt: new Date().toISOString(),
+      });
+    } else {
+      await db.mutations.update(id, {
+        status: 'pending',
+        retryCount: newRetryCount,
+        retriedAt: new Date().toISOString(),
+      });
+    }
+
+    return newRetryCount;
   }
 
   async getPending(): Promise<PendingMutation[]> {
@@ -45,6 +75,10 @@ export class DexieOutboxAdapter implements OutboxAdapter {
 
   async count(): Promise<number> {
     return db.mutations.where('status').equals('pending').count();
+  }
+
+  async failedCount(): Promise<number> {
+    return db.mutations.where('status').equals('failed').count();
   }
 }
 

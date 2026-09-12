@@ -91,6 +91,7 @@ const toPendingMutation = (ctx: RequestContext, userId: string): Omit<PendingMut
     body: JSON.stringify(ctx.config.data ?? null),
     createdAt: new Date().toISOString(),
     status: 'pending',
+    retryCount: 0,
   };
 };
 

@@ -9,10 +9,11 @@
  */
 
 import { Pin, PinFilled } from '@carbon/icons-react';
-import { IconButton } from '@carbon/react';
+import { IconButton, Tooltip } from '@carbon/react';
 
 import { useOfflineAllowed } from './use-offline-allowed';
 import { useRecordPin } from './use-record-pin';
+import { useStorageBudget } from './use-storage-budget';
 
 export interface PinButtonProps {
   /** Singular entity type (e.g. `'user'`). */
@@ -32,10 +33,20 @@ export interface PinButtonProps {
  *
  * Returns `null` if the user does not have the `OFFLINE_ALLOWED` role,
  * so it can be placed unconditionally in any component tree.
+ *
+ * When storage usage is ≥90%, the button is disabled and a tooltip
+ * explains that the user must unpin other records first. Unpinning
+ * is always allowed even at critical storage levels.
  */
 export function PinButton({ contentType, contentId, userId, className, label }: PinButtonProps) {
   const offlineAllowed = useOfflineAllowed();
-  const { isPinned, toggle } = useRecordPin({ contentType, contentId, userId });
+  const { canPin } = useStorageBudget();
+  const { isPinned, toggle } = useRecordPin({
+    contentType,
+    contentId,
+    userId,
+    canPin,
+  });
 
   if (!offlineAllowed) {
     return null;
@@ -43,16 +54,28 @@ export function PinButton({ contentType, contentId, userId, className, label }: 
 
   const iconDescription = label ?? (isPinned ? 'Unpin from offline' : 'Pin for offline');
 
-  return (
+  const button = (
     <IconButton
       kind="ghost"
       size="sm"
       label={iconDescription}
       align="bottom"
       className={className}
+      disabled={!canPin && !isPinned}
       onClick={() => void toggle()}
     >
       {isPinned ? <PinFilled size={20} /> : <Pin size={20} />}
     </IconButton>
   );
+
+  // Wrap in tooltip when pinning is blocked but unpinning is still possible.
+  if (!canPin && !isPinned) {
+    return (
+      <Tooltip label="Storage is nearly full — unpin other records first" align="bottom">
+        {button}
+      </Tooltip>
+    );
+  }
+
+  return button;
 }

@@ -45,6 +45,16 @@ export interface UseRecordPinOptions {
   contentId: string;
   /** OIDC subject (sub claim) of the current user. */
   userId: string | undefined;
+  /**
+   * Whether new pins are allowed (storage budget check).
+   *
+   * When `false`, `toggle()` will only unpin — it will NOT create
+   * new pins. This prevents over-committing storage when usage is
+   * at or above 90% of the browser quota.
+   *
+   * @default true
+   */
+  canPin?: boolean;
 }
 
 export interface UseRecordPinResult {
@@ -80,6 +90,7 @@ export function useRecordPin({
   contentType,
   contentId,
   userId,
+  canPin = true,
 }: UseRecordPinOptions): UseRecordPinResult {
   const offlineAllowed = useOfflineAllowed();
 
@@ -101,15 +112,18 @@ export function useRecordPin({
     const currentlyPinned = pinCache.get(key) ?? false;
 
     if (currentlyPinned) {
+      // Unpinning is always allowed — even at critical storage levels.
       await pinAdapter.unpin(userId, contentType, contentId);
       pinCache.set(key, false);
     } else {
+      // Pinning is blocked when storage usage is ≥90%.
+      if (!canPin) return;
       await pinAdapter.pin({ userId, contentType, contentId });
       pinCache.set(key, true);
     }
 
     emitChange();
-  }, [offlineAllowed, userId, contentType, contentId]);
+  }, [offlineAllowed, userId, contentType, contentId, canPin]);
 
   // Kick off an async read on mount / when deps change.
   // This bridges the gap between useSyncExternalStore's synchronous

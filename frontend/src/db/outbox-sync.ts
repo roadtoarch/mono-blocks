@@ -32,6 +32,12 @@ export interface OutboxSyncConfig {
   invalidateQueries: (entityTypes: Set<string>) => void;
   /** Maximum consecutive failures before stopping the drain (prevents infinite loops). */
   maxConsecutiveFailures?: number;
+  /**
+   * Maximum per-mutation retry attempts before marking as `failed` (6.3).
+   * Defaults to 3. After this many replay attempts, the mutation is
+   * permanently marked `failed` and surfaced to the user.
+   */
+  maxRetries?: number;
 }
 
 /**
@@ -72,7 +78,7 @@ export interface SyncResult {
  * ```
  */
 export const createOutboxSyncEngine = (config: OutboxSyncConfig) => {
-  const { adapter, client, invalidateQueries, maxConsecutiveFailures = 5 } = config;
+  const { adapter, client, invalidateQueries, maxConsecutiveFailures = 5, maxRetries = 3 } = config;
 
   let isSyncing = false;
   let onlineHandler: (() => void) | undefined;
@@ -145,8 +151,12 @@ export const createOutboxSyncEngine = (config: OutboxSyncConfig) => {
           replayed++;
           consecutiveFailures = 0;
         } else {
-          await adapter.markFailed(mutation.id);
-          failed++;
+          // Increment retry count and either reset to pending for the
+          // next cycle or mark as permanently failed (6.3).
+          const newRetryCount = await adapter.retry(mutation.id, maxRetries);
+          if (newRetryCount >= maxRetries) {
+            failed++;
+          }
           consecutiveFailures++;
 
           if (consecutiveFailures >= maxConsecutiveFailures) {

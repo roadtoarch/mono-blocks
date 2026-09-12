@@ -79,10 +79,20 @@ export interface OutboxAdapter {
   markSyncing(id: number): Promise<void>;
   /** Mark a mutation as failed after replay attempts are exhausted. */
   markFailed(id: number): Promise<void>;
+  /**
+   * Increment a mutation's `retryCount` and reset it to `pending`
+   * for the next sync cycle. Returns the updated retry count.
+   *
+   * If `retryCount` already equals `maxRetries`, the mutation
+   * should be marked `failed` instead of retried.
+   */
+  retry(id: number, maxRetries: number): Promise<number>;
   /** Return all mutations in `pending` status (for sync engine). */
   getPending(): Promise<PendingMutation[]>;
   /** Return all mutations in `failed` status (for UI / retry). */
   getFailed(): Promise<PendingMutation[]>;
   /** Return the count of pending mutations (for badge / indicator). */
   count(): Promise<number>;
+  /** Return the count of failed mutations (for error notification). */
+  failedCount(): Promise<number>;
 }

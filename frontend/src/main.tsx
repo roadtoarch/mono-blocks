@@ -10,7 +10,11 @@ import { applyTenantTheme, applyTenantTypography } from './tenant/applyTheme';
 import { resolveTenant } from './tenant/resolveTenant';
 import TenantProvider from './tenant/TenantProvider';
 
+import '@/auth/keycloak-claims';
+
 import { createOidcConfig } from '@/auth/createOidcConfig';
+import { ConnectivityProvider } from '@/components/connectivity/connectivity-provider';
+import { SwUpdateProvider } from '@/components/connectivity/sw-update-provider';
 import { outboxAdapter } from '@/db/outbox-adapter';
 import { createOutboxSyncEngine } from '@/db/outbox-sync';
 import { env } from '@/env';
@@ -90,12 +94,10 @@ void (async () => {
   // Wire the OFFLINE_ALLOWED predicate for the offline middleware (DEC-7).
   // Reads OIDC realm_access.roles from the ID token (Approach A requires
   // the 'roles' scope in the OIDC config — see createOidcConfig.ts).
-  // Profile type does not include realm_access — cast through unknown.
+  // Type-safe via keycloak-claims module augmentation.
   setDefaultOfflinePredicate(async () => {
     const user = await userManager.getUser();
-    const profile = user?.profile as Record<string, unknown> | undefined;
-    const realmAccess = profile?.realm_access as { roles?: string[] } | undefined;
-    const roles: readonly string[] = realmAccess?.roles ?? [];
+    const roles: readonly string[] = user?.profile.realm_access?.roles ?? [];
     return roles.includes('OFFLINE_ALLOWED');
   });
 
@@ -121,7 +123,11 @@ void (async () => {
       <TenantProvider value={tenant}>
         <AuthProvider {...authProviderProps}>
           <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
+            <ConnectivityProvider>
+              <SwUpdateProvider>
+                <RouterProvider router={router} />
+              </SwUpdateProvider>
+            </ConnectivityProvider>
           </QueryClientProvider>
         </AuthProvider>
       </TenantProvider>

@@ -12,20 +12,12 @@
  * @module offline/use-offline-allowed
  */
 
+import '@/auth/keycloak-claims';
+
 import { useAuth } from 'react-oidc-context';
 
 /** Keycloak realm role that grants offline feature access. */
 const OFFLINE_ALLOWED_ROLE = 'OFFLINE_ALLOWED';
-
-/**
- * Shape of the `realm_access` claim in the OIDC ID token.
- *
- * Present only when the Keycloak `oidc-usermodel-realm-role-mapper`
- * has "Add to ID token" enabled and the `roles` scope is requested.
- */
-interface RealmAccess {
-  roles: string[];
-}
 
 /**
  * Returns `true` if the authenticated user has the `OFFLINE_ALLOWED`
@@ -38,11 +30,7 @@ export function useOfflineAllowed(): boolean {
     return false;
   }
 
-  // The realm_access claim is not typed on the oidc-client-ts profile.
-  // Approach A (preferred): read from ID token profile after adding
-  // 'roles' scope + enabling "Add to ID token" in Keycloak mapper.
-  // Approach B (fallback): decode the access token JWT payload.
-  const realmAccess = auth.user.profile.realm_access as RealmAccess | undefined;
+  const realmAccess = auth.user.profile.realm_access;
 
   if (!realmAccess?.roles) {
     return false;

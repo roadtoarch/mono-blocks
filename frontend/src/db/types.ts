@@ -119,4 +119,13 @@ export interface PendingMutation {
   createdAt: string;
   /** Current lifecycle status. */
   status: 'pending' | 'syncing' | 'failed';
+  /**
+   * How many times the sync engine has attempted to replay this mutation.
+   *
+   * After `MAX_RETRY_COUNT` (3) attempts, the mutation is marked `failed`
+   * and surfaced to the user for manual action (6.3).
+   */
+  retryCount: number;
+  /** ISO timestamp of the most recent replay attempt (undefined on first attempt). */
+  retriedAt?: string;
 }
