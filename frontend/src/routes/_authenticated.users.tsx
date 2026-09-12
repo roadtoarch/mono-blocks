@@ -387,5 +387,6 @@ const UsersPage = () => {
 };
 
 export const Route = createFileRoute('/_authenticated/users')({
+  staticData: { offlineAvailable: true },
   component: UsersPage,
 });

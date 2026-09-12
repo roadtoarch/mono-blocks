@@ -68,5 +68,6 @@ const DashboardPage = () => {
 };
 
 export const Route = createFileRoute('/_authenticated/dashboard')({
+  staticData: { offlineAvailable: true },
   component: DashboardPage,
 });
