@@ -18,6 +18,11 @@ const allowedRuntimeEnvConfigSchema = z
       .string()
       .transform((v) => v === 'true')
       .optional(),
+    VITE_OFFLINE_STALE_AGE_MS: z
+      .string()
+      .transform((v) => Number(v))
+      .pipe(z.number().int().positive())
+      .optional(),
   })
   .partial()
   .strict();
@@ -31,6 +36,16 @@ const appEnvSchema = z.object({
   VITE_FRONTEND_URL: z.string().min(1).optional(),
   // Coerces both string ("true"/"false") and boolean values from Vite env or runtime config.
   VITE_ENABLE_SW: z.union([z.boolean(), z.string().transform((v) => v === 'true')]).default(false),
+  // Maximum age (ms) for restored offline cache entries (NFR-9).
+  VITE_OFFLINE_STALE_AGE_MS: z
+    .union([
+      z.number().int().positive(),
+      z
+        .string()
+        .transform((v) => Number(v))
+        .pipe(z.number().int().positive()),
+    ])
+    .default(86_400_000), // 24 hours
 });
 
 type AppEnv = z.infer<typeof appEnvSchema>;

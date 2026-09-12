@@ -45,6 +45,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     clearMocks: true,
+    setupFiles: ['src/test-setup.ts'],
     include: ['src/**/*.unit.test.{ts,tsx}'],
     coverage: {
       provider: 'v8',

@@ -3,6 +3,6 @@
   "compilerOptions": {
     "types": ["vitest/globals"]
   },
-  "include": ["src/**/*.unit.test.ts", "src/**/*.unit.test.tsx"],
+  "include": ["src/test-setup.ts", "src/**/*.unit.test.ts", "src/**/*.unit.test.tsx"],
   "exclude": []
 }
