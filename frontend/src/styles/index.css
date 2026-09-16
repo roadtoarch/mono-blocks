@@ -1,0 +1,10 @@
+/**
+ * MonoBlocks — styles/index.css
+ *
+ * Single entry point for all MonoBlocks styles.
+ * Import order matters: tokens → base → shell → components.
+ */
+@import './tokens.css';
+@import './base.css';
+@import './shell.css';
+@import './components.css';

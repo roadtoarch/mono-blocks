@@ -1,0 +1,117 @@
+/**
+ * MonoBlocks — hooks/useEntityList.ts
+ *
+ * TanStack Query hooks for the entity list page:
+ * - useEntityList: fetches filtered/sorted entity records
+ * - useRefCaches: resolves foreign-key columns to display titles
+ * - useInvalidateList: invalidation helper after mutations
+ */
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+
+import type { EntityType, ListOptions, SortDef } from '@/schema/types';
+
+import * as api from '@/api/mockDb';
+import { get, listFields, titleOf } from '@/schema/api';
+
+// ── Query key factory ─────────────────────────────────────────────────────
+
+const listKey = (type: EntityType, opts: ListOptions): unknown[] => [
+  'list',
+  type,
+  opts.q ?? '',
+  opts.filters ?? {},
+  opts.sort ?? {},
+];
+
+const refKey = (type: EntityType): unknown[] => ['ref-cache', type];
+
+// ── Ref cache helper ──────────────────────────────────────────────────────
+
+/** Single ref-type cache query. Returns id→title map. */
+function useRefCache(type: EntityType | undefined): Record<string, string> {
+  const { data = {} } = useQuery({
+    queryKey: type ? refKey(type) : ['ref-cache', '__none__'],
+    queryFn: async () => {
+      if (!type) return {};
+      const rows = await api.list(type, {});
+      const map: Record<string, string> = {};
+      for (const r of rows) {
+        map[r.id] = titleOf(type, r);
+      }
+      return map;
+    },
+    enabled: !!type,
+    staleTime: 5 * 60 * 1000,
+  });
+  return data;
+}
+
+// ── Ref caches ────────────────────────────────────────────────────────────
+
+/**
+ * Preload ALL entity types that this entity type references via foreign keys
+ * and return a map of refTypeName → { id → displayTitle }.
+ *
+ * The hook calls a fixed number of sub-hooks (2, padded) so the call count
+ * is stable across entity types. This is safe because the schema is static.
+ */
+export function useRefCaches(type: EntityType): Record<string, Record<string, string>> {
+  const fields = listFields(type);
+  const refTypes: (EntityType | undefined)[] = [];
+  const seen = new Set<EntityType>();
+  for (const f of fields) {
+    if (f.ref && !seen.has(f.ref)) {
+      seen.add(f.ref);
+      refTypes.push(f.ref);
+    }
+  }
+  // Pad to exactly 2 entries for stable hook call count
+  while (refTypes.length < 2) refTypes.push(undefined);
+
+  const cache0 = useRefCache(refTypes[0]);
+  const cache1 = useRefCache(refTypes[1]);
+
+  const caches: Record<string, Record<string, string>> = {};
+  if (refTypes[0] && Object.keys(cache0).length > 0) caches[refTypes[0]] = cache0;
+  if (refTypes[1] && Object.keys(cache1).length > 0) caches[refTypes[1]] = cache1;
+  return caches;
+}
+
+// ── Entity list hook ──────────────────────────────────────────────────────
+
+export interface UseEntityListOptions {
+  q?: string;
+  filters?: Record<string, string>;
+  sort?: SortDef;
+}
+
+/**
+ * Fetch a filtered, sorted list of entity records.
+ * Returns TanStack Query result (data, isLoading, error, refetch, isError).
+ */
+export function useEntityList(type: EntityType, opts: UseEntityListOptions = {}) {
+  const listOpts: ListOptions = {
+    q: opts.q,
+    filters: opts.filters,
+    sort: opts.sort ?? get(type).defaultSort,
+  };
+
+  return useQuery({
+    queryKey: listKey(type, listOpts),
+    queryFn: () => api.list(type, listOpts),
+  });
+}
+
+// ── Invalidation helper ───────────────────────────────────────────────────
+
+/**
+ * Return a function that invalidates list + ref-cache queries for a type.
+ * Call after create/update/delete mutations.
+ */
+export function useInvalidateList() {
+  const qc = useQueryClient();
+  return (type: EntityType) => {
+    void qc.invalidateQueries({ queryKey: ['list', type] });
+    void qc.invalidateQueries({ queryKey: ['ref-cache', type] });
+  };
+}

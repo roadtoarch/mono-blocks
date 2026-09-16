@@ -1,0 +1,287 @@
+/* ==========================================================================
+   MonoBlocks — base.css
+   --------------------------------------------------------------------------
+   Modern reset, document defaults, type utilities, focus ring, selection,
+   skip link, data-formatting utilities, reduced-motion kill switch.
+   Depends on tokens.css being loaded first.
+   ========================================================================== */
+
+/* reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  font-size: var(--cds-root-font-size);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--cds-font-family-sans);
+  font-size: var(--cds-body-01-font-size);
+  line-height: var(--cds-body-01-line-height);
+  font-weight: var(--cds-body-01-weight);
+  letter-spacing: var(--cds-body-01-letter-spacing);
+  background-color: var(--cds-background);
+  color: var(--cds-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+a {
+  color: var(--cds-link-primary);
+  text-decoration: underline;
+  text-underline-offset: var(--cds-spacing-01);
+  transition: color var(--cds-duration-fast-01) var(--cds-easing-standard-productive);
+}
+
+a:hover {
+  color: var(--cds-link-primary-hover);
+}
+
+hr {
+  border: 0;
+  border-top: var(--cds-border-width) solid var(--cds-border-subtle);
+}
+
+table {
+  border-collapse: collapse;
+}
+
+::placeholder {
+  color: var(--cds-text-placeholder);
+  opacity: 1;
+}
+
+::selection {
+  background-color: var(--cds-highlight);
+  color: var(--cds-text-primary);
+}
+
+/* type utilities (13) — Carbon productive set */
+.cds--type-display {
+  font-size: var(--cds-display-font-size);
+  line-height: var(--cds-display-line-height);
+  font-weight: var(--cds-display-weight);
+  letter-spacing: var(--cds-display-letter-spacing);
+}
+
+.cds--type-heading-05 {
+  font-size: var(--cds-heading-05-font-size);
+  line-height: var(--cds-heading-05-line-height);
+  font-weight: var(--cds-heading-05-weight);
+  letter-spacing: var(--cds-heading-05-letter-spacing);
+}
+
+.cds--type-heading-04 {
+  font-size: var(--cds-heading-04-font-size);
+  line-height: var(--cds-heading-04-line-height);
+  font-weight: var(--cds-heading-04-weight);
+  letter-spacing: var(--cds-heading-04-letter-spacing);
+}
+
+.cds--type-heading-03 {
+  font-size: var(--cds-heading-03-font-size);
+  line-height: var(--cds-heading-03-line-height);
+  font-weight: var(--cds-heading-03-weight);
+  letter-spacing: var(--cds-heading-03-letter-spacing);
+}
+
+.cds--type-heading-02 {
+  font-size: var(--cds-heading-02-font-size);
+  line-height: var(--cds-heading-02-line-height);
+  font-weight: var(--cds-heading-02-weight);
+  letter-spacing: var(--cds-heading-02-letter-spacing);
+}
+
+.cds--type-heading-01 {
+  font-size: var(--cds-heading-01-font-size);
+  line-height: var(--cds-heading-01-line-height);
+  font-weight: var(--cds-heading-01-weight);
+  letter-spacing: var(--cds-heading-01-letter-spacing);
+}
+
+.cds--type-body-01 {
+  font-size: var(--cds-body-01-font-size);
+  line-height: var(--cds-body-01-line-height);
+  font-weight: var(--cds-body-01-weight);
+  letter-spacing: var(--cds-body-01-letter-spacing);
+}
+
+.cds--type-body-compact-01 {
+  font-size: var(--cds-body-compact-01-font-size);
+  line-height: var(--cds-body-compact-01-line-height);
+  font-weight: var(--cds-body-compact-01-weight);
+  letter-spacing: var(--cds-body-compact-01-letter-spacing);
+}
+
+.cds--type-body-compact-02 {
+  font-size: var(--cds-body-compact-02-font-size);
+  line-height: var(--cds-body-compact-02-line-height);
+  font-weight: var(--cds-body-compact-02-weight);
+  letter-spacing: var(--cds-body-compact-02-letter-spacing);
+}
+
+.cds--type-label-01 {
+  font-size: var(--cds-label-01-font-size);
+  line-height: var(--cds-label-01-line-height);
+  font-weight: var(--cds-label-01-weight);
+  letter-spacing: var(--cds-label-01-letter-spacing);
+}
+
+.cds--type-helper-text-01 {
+  font-size: var(--cds-helper-text-01-font-size);
+  line-height: var(--cds-helper-text-01-line-height);
+  font-weight: var(--cds-helper-text-01-weight);
+  letter-spacing: var(--cds-helper-text-01-letter-spacing);
+}
+
+.cds--type-code-02 {
+  font-family: var(--cds-font-family-mono);
+  font-size: var(--cds-code-02-font-size);
+  line-height: var(--cds-code-02-line-height);
+  font-weight: var(--cds-code-02-weight);
+  letter-spacing: var(--cds-code-02-letter-spacing);
+}
+
+.cds--type-code-01 {
+  font-family: var(--cds-font-family-mono);
+  font-size: var(--cds-code-01-font-size);
+  line-height: var(--cds-code-01-line-height);
+  font-weight: var(--cds-code-01-weight);
+  letter-spacing: var(--cds-code-01-letter-spacing);
+}
+
+/* data-format utilities */
+.cds--mono {
+  font-family: var(--cds-font-family-mono);
+  letter-spacing: var(--cds-code-02-letter-spacing);
+}
+
+.cds--tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* state helpers */
+.is-hidden,
+[hidden] {
+  display: none;
+}
+
+.cds--visually-hidden {
+  position: absolute;
+  width: var(--cds-spacing-01);
+  height: var(--cds-spacing-01);
+  padding: 0;
+  margin: calc(var(--cds-spacing-01) * -1);
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* icon base */
+.mb-icon {
+  width: var(--cds-icon-size);
+  height: var(--cds-icon-size);
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.mb-icon--lg {
+  width: var(--cds-icon-size-lg);
+  height: var(--cds-icon-size-lg);
+}
+
+/* focus ring */
+:focus-visible {
+  outline: var(--cds-focus-width) solid var(--cds-focus);
+  outline-offset: var(--cds-focus-offset);
+}
+
+[data-carbon-theme='g100'] :focus-visible {
+  outline: var(--cds-focus-width) solid var(--cds-focus);
+  outline-offset: var(--cds-focus-offset);
+  box-shadow: inset 0 0 0 var(--cds-border-width) var(--cds-focus-inset);
+}
+
+/* skip link */
+.mb-skip-link {
+  position: absolute;
+  top: var(--cds-spacing-03);
+  left: var(--cds-spacing-05);
+  z-index: calc(var(--cds-z-header) + 1);
+  display: inline-flex;
+  align-items: center;
+  height: var(--cds-button-height);
+  padding: var(--cds-button-padding-y) var(--cds-button-padding-x);
+  background-color: var(--cds-button-primary);
+  color: var(--cds-text-on-color);
+  font-size: var(--cds-body-compact-02-font-size);
+  line-height: var(--cds-body-compact-02-line-height);
+  text-decoration: none;
+  transform: translateY(calc(-1 * var(--cds-spacing-13)));
+  transition: transform var(--cds-duration-moderate-01) var(--cds-easing-entrance-productive);
+}
+
+.mb-skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* dark scrollbars */
+[data-carbon-theme='g100'] {
+  scrollbar-color: var(--cds-border-strong) var(--cds-background);
+}
+
+/* reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: var(--cds-duration-none);
+    animation-iteration-count: 1;
+    transition-duration: var(--cds-duration-none);
+    scroll-behavior: auto;
+  }
+}

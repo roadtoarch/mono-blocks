@@ -1,115 +1,89 @@
-/* eslint-disable react-refresh/only-export-components -- TanStack Router route files export both Route config and components by design. */
-import { Button, Loading, Tile } from '@carbon/react';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect, useRef } from 'react';
-import { useAuth } from 'react-oidc-context';
+/**
+ * MonoBlocks — routes/index.tsx
+ *
+ * Landing page — outside the _app layout (no chrome).
+ * Shows brand monogram, tagline, enter CTA, and skin switcher.
+ * Port of prototype index.html landing page.
+ */
+import { createFileRoute, Link } from '@tanstack/react-router';
 
-import { useTenant } from '../tenant/useTenant';
+import type { Skin } from '@/stores/theme';
 
-import { clearPersistedRedirect, readPersistedRedirect } from './-redirectStorage';
+import { useTheme } from '@/hooks';
 
-import type { TenantConfig } from '../tenant/tenant.types';
-import type { FC } from 'react';
+const SKINS: { key: Skin; label: string }[] = [
+  { key: 'cornerstone', label: 'Cornerstone Blue' },
+  { key: 'mono', label: 'Graphite Mono' },
+  { key: 'ember', label: 'Ember' },
+];
 
-interface LandingPageProps {
-  readonly onSignIn: () => void;
-  readonly tenant: TenantConfig;
+/**
+ * Landing monogram SVG — 3 stacked rects (2 currentColor, 1 brand accent).
+ * Matches the favicon and header monogram.
+ * Prototype layout: bottom 2 rects (currentColor) + top 1 rect (accent).
+ */
+function LandingMonogram() {
+  return (
+    <div className="mb-landing__logo" aria-hidden="true">
+      <svg viewBox="0 0 48 48" width="64" height="64" focusable="false">
+        <rect x="4" y="28" width="17" height="16" fill="currentColor" />
+        <rect x="27" y="28" width="17" height="16" fill="currentColor" />
+        <rect x="15.5" y="6" width="17" height="16" fill="var(--cds-button-primary)" />
+      </svg>
+    </div>
+  );
 }
 
-/** Unauthenticated landing page with tenant branding and a Carbon sign-in button. */
-const LandingPage: FC<LandingPageProps> = ({ onSignIn, tenant }) => (
-  <div
-    style={{
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh',
-      padding: '2rem',
-    }}
-  >
-    {tenant.theme.logoUrl !== '' && (
-      <img
-        src={tenant.theme.logoUrl}
-        alt={`${tenant.displayName} logo`}
-        style={{ maxHeight: '4rem', marginBottom: '1rem' }}
-      />
-    )}
-    <Tile style={{ maxWidth: '32rem', textAlign: 'center' }}>
-      <h1 style={{ marginBottom: '0.5rem' }}>
-        {tenant.content?.welcomeHeading ?? tenant.displayName}
-      </h1>
-      <p style={{ marginBottom: '1.5rem' }}>
-        {tenant.content?.welcomeBody ?? 'Sign in with your Keycloak account to continue.'}
+/**
+ * Landing page component.
+ */
+function LandingPage() {
+  const { skin, setSkin } = useTheme();
+
+  return (
+    <div className="mb-landing">
+      <LandingMonogram />
+
+      <h1 className="mb-landing__title">Cornerstone Property Services</h1>
+      <p className="mb-landing__tagline">
+        Property management and field maintenance, coordinated in one place: customers, sites,
+        equipment, technicians and work orders — with every journey from search to sign-off.
       </p>
-      <Button kind="primary" onClick={onSignIn}>
-        Sign in
-      </Button>
-    </Tile>
-  </div>
-);
 
-const IndexPage = () => {
-  const auth = useAuth();
-  const tenant = useTenant();
-  const navigate = useNavigate({ from: '/' });
-  const hasHandledRedirect = useRef(false);
+      <Link to="/dashboard" className="mb-btn mb-btn--primary">
+        Enter the app
+      </Link>
 
-  /* Post-login redirect: if the user arrived here after completing OIDC login,
-     restore the pre-login URL from session storage instead of showing the landing page. */
-  useEffect(() => {
-    if (!auth.isAuthenticated || hasHandledRedirect.current) return;
-    hasHandledRedirect.current = true;
-
-    const storedUrl = readPersistedRedirect();
-    clearPersistedRedirect();
-
-    if (storedUrl && storedUrl !== '/') {
-      void navigate({ to: storedUrl as '/', replace: true });
-      return;
-    }
-
-    /* No stored URL — authenticated user arrives via OIDC callback, send to dashboard. */
-    void navigate({ to: '/dashboard' });
-  }, [auth.isAuthenticated, navigate]);
-
-  /* Redirect authenticated users away from the landing page. */
-  useEffect(() => {
-    if (auth.isAuthenticated && !hasHandledRedirect.current) {
-      void navigate({ to: '/dashboard' });
-    }
-  }, [auth.isAuthenticated, navigate]);
-
-  if (auth.isLoading) {
-    return <Loading withOverlay description="Loading authentication…" />;
-  }
-
-  if (auth.error) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-          padding: '2rem',
-        }}
-      >
-        <Tile style={{ maxWidth: '32rem', textAlign: 'center' }}>
-          <h1 style={{ marginBottom: '0.5rem' }}>Authentication error</h1>
-          <p>{auth.error.message}</p>
-        </Tile>
+      <div className="mb-skin-switcher">
+        <p className="mb-skin-switcher__label" id="mb-skin-label">
+          Swap the brand tokens — same app:
+        </p>
+        <div className="mb-skin-switcher__options" role="group" aria-labelledby="mb-skin-label">
+          {SKINS.map((s) => (
+            <button
+              key={s.key}
+              type="button"
+              className={`mb-skin-chip${skin === s.key ? ' is-selected' : ''}`}
+              data-skin={s.key}
+              onClick={() => {
+                setSkin(s.key);
+              }}
+              aria-pressed={skin === s.key}
+            >
+              <span className="mb-skin-chip__swatch" aria-hidden="true" />
+              {s.label}
+            </button>
+          ))}
+        </div>
       </div>
-    );
-  }
 
-  if (auth.isAuthenticated) {
-    return <Loading withOverlay description="Redirecting to dashboard…" />;
-  }
-
-  return <LandingPage onSignIn={() => void auth.signinRedirect()} tenant={tenant} />;
-};
+      <footer>
+        <p className="mb-landing__footer mb-built-on">Built on MonoBlocks</p>
+      </footer>
+    </div>
+  );
+}
 
 export const Route = createFileRoute('/')({
-  component: IndexPage,
+  component: LandingPage,
 });

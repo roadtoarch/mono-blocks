@@ -1,0 +1,272 @@
+/* ==========================================================================
+   MonoBlocks — shell.css
+   --------------------------------------------------------------------------
+   App chrome: fixed 48px header, push-style side nav, main content area,
+   dark-theme chrome seams, and View Transition styling.
+
+   Nav push: .mb-app is a CSS grid whose first track animates 0 → 256px.
+   The side nav element keeps a fixed 256px width; its overflow: hidden
+   clips its CONTENTS but the element itself overflows the collapsed 0px
+   track. NO position: fixed/absolute overlay is used.
+
+   Closed-state: visibility: hidden with deferred transition-delay so the
+   nav stays visible during the 240ms slide-out animation.
+   ========================================================================== */
+
+/* header — fixed 48px, always-dark shell chrome */
+.mb-shell-header {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: var(--cds-z-header);
+  display: flex;
+  align-items: center;
+  height: var(--cds-header-height);
+  padding-inline: var(--cds-spacing-05);
+  background-color: var(--cds-shell-bg);
+  color: var(--cds-shell-text);
+  font-size: var(--cds-body-compact-01-font-size);
+  line-height: var(--cds-body-compact-01-line-height);
+  letter-spacing: var(--cds-body-compact-01-letter-spacing);
+}
+
+[data-carbon-theme='g100'] .mb-shell-header {
+  border-block-end: var(--cds-border-width) solid var(--cds-border-subtle);
+}
+
+.mb-header__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cds-spacing-02);
+  height: 100%;
+  min-width: var(--cds-header-height);
+  padding-inline: var(--cds-spacing-04);
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--cds-radius-none);
+  color: var(--cds-shell-text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--cds-duration-fast-01) var(--cds-easing-standard-productive);
+}
+
+.mb-header__action:hover {
+  background-color: var(--cds-shell-hover);
+}
+
+.mb-header__wordmark {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding-inline: var(--cds-spacing-04);
+  color: var(--cds-shell-text);
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: var(--cds-heading-01-font-size);
+  line-height: var(--cds-heading-01-line-height);
+  font-weight: var(--cds-heading-01-weight);
+  letter-spacing: var(--cds-heading-01-letter-spacing);
+}
+
+.mb-header__wordmark:hover {
+  background-color: var(--cds-shell-hover);
+  color: var(--cds-shell-text);
+}
+
+/* top-level nav links — ≥lg only */
+.mb-header-nav {
+  display: none;
+  align-items: stretch;
+  height: 100%;
+}
+
+.mb-header-nav__link {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--cds-spacing-05);
+  color: var(--cds-shell-text);
+  text-decoration: none;
+  white-space: nowrap;
+  border-block-end: var(--cds-active-edge-width) solid transparent;
+  transition: background-color var(--cds-duration-fast-01) var(--cds-easing-standard-productive);
+}
+
+.mb-header-nav__link:hover {
+  background-color: var(--cds-shell-hover);
+  color: var(--cds-shell-text);
+}
+
+.mb-header-nav__link.is-active,
+.mb-header-nav__link[aria-current='page'] {
+  border-block-end-color: var(--cds-interactive);
+}
+
+/* right-side cluster */
+.mb-header__actions {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  margin-inline-start: auto;
+}
+
+@media (min-width: 1056px) {
+  .mb-header-nav {
+    display: flex;
+  }
+}
+
+/* app grid — push-nav */
+.mb-app {
+  display: grid;
+  grid-template-columns: 0 1fr;
+  margin-block-start: var(--cds-header-height);
+  min-height: calc(100vh - var(--cds-header-height));
+  transition: grid-template-columns var(--cds-duration-moderate-02) var(--cds-easing-standard-productive);
+}
+
+.mb-app[data-nav='open'] {
+  grid-template-columns: var(--cds-sidenav-width) minmax(var(--cds-main-min-width), 1fr);
+}
+
+@media (min-width: 672px) {
+  .mb-app[data-nav='open'] {
+    grid-template-columns: var(--cds-sidenav-width) 1fr;
+  }
+}
+
+/* side nav */
+.mb-sidenav {
+  z-index: var(--cds-z-nav);
+  width: var(--cds-sidenav-width);
+  overflow: hidden;
+  visibility: visible;
+  transition: visibility var(--cds-duration-none) var(--cds-duration-none);
+  background-color: var(--cds-shell-bg);
+  color: var(--cds-shell-text);
+  font-size: var(--cds-body-compact-01-font-size);
+  line-height: var(--cds-body-compact-01-line-height);
+  letter-spacing: var(--cds-body-compact-01-letter-spacing);
+}
+
+.mb-app:not([data-nav='open']) .mb-sidenav {
+  visibility: hidden;
+  transition-delay: var(--cds-duration-moderate-02);
+}
+
+[data-carbon-theme='g100'] .mb-sidenav {
+  border-inline-end: var(--cds-border-width) solid var(--cds-border-subtle);
+}
+
+.mb-sidenav__label {
+  padding: var(--cds-spacing-05) var(--cds-spacing-05) var(--cds-spacing-02);
+  font-size: var(--cds-label-01-font-size);
+  line-height: var(--cds-label-01-line-height);
+  font-weight: var(--cds-label-01-weight);
+  letter-spacing: var(--cds-label-01-letter-spacing);
+  color: var(--cds-shell-text-muted);
+}
+
+.mb-sidenav__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.mb-sidenav__item {
+  display: flex;
+  align-items: center;
+  gap: var(--cds-spacing-03);
+  height: var(--cds-sidenav-item-height);
+  padding-inline: var(--cds-spacing-05);
+  color: var(--cds-shell-text);
+  text-decoration: none;
+  white-space: nowrap;
+  border-inline-start: var(--cds-active-edge-width) solid transparent;
+  transition: background-color var(--cds-duration-fast-01) var(--cds-easing-standard-productive);
+}
+
+.mb-sidenav__item:hover {
+  background-color: var(--cds-shell-hover);
+  color: var(--cds-shell-text);
+}
+
+.mb-sidenav__item.is-active,
+.mb-sidenav__item[aria-current='page'] {
+  background-color: var(--cds-shell-active);
+  border-inline-start-color: var(--cds-interactive);
+}
+
+.mb-sidenav__icon {
+  width: var(--cds-icon-size);
+  height: var(--cds-icon-size);
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* main */
+.mb-main {
+  min-width: 0;
+  padding: var(--cds-spacing-05);
+  background-color: var(--cds-background);
+  color: var(--cds-text-primary);
+}
+
+@media (min-width: 1584px) {
+  .mb-main {
+    padding: var(--cds-spacing-06);
+  }
+}
+
+/* view transitions */
+::view-transition-old(root) {
+  animation: mb-vt-out var(--cds-duration-slow-01) var(--cds-easing-standard-expressive) both;
+}
+
+::view-transition-new(root) {
+  animation: mb-vt-in var(--cds-duration-slow-01) var(--cds-easing-standard-expressive) both;
+}
+
+@keyframes mb-vt-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes mb-vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--cds-spacing-03));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(root) {
+    animation-duration: var(--cds-duration-none);
+  }
+
+  ::view-transition-old(root) {
+    animation: none;
+  }
+
+  ::view-transition-new(root) {
+    animation: none;
+  }
+
+  .mb-app {
+    transition-duration: var(--cds-duration-none);
+  }
+
+  .mb-app:not([data-nav='open']) .mb-sidenav {
+    transition-delay: var(--cds-duration-none);
+  }
+}

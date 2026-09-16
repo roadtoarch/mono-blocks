@@ -2,30 +2,40 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>Cornerstone Property Services</title>
 
-    <!-- Preconnect to Google Fonts CDN so the tenant-specific stylesheet
-         (injected at runtime by applyTenantTypography) resolves faster. -->
+    <!-- Preconnect to Google Fonts CDN for faster font loading. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
 
-    <!-- Inline script: restore saved colour-mode before first paint to
-         avoid a flash of wrong-theme content. -->
+    <!-- Inline script: restore saved theme + skin BEFORE first paint (no flash). -->
     <script>
       (function () {
         try {
-          var t = localStorage.getItem('theme-preference');
-          if (t === 'light' || t === 'dark') {
-            document.documentElement.dataset.theme = t;
+          var theme = window.localStorage.getItem('mb-theme');
+          if (theme !== 'white' && theme !== 'g100') {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'g100' : 'white';
           }
-        } catch (_) {}
+          document.documentElement.setAttribute('data-carbon-theme', theme);
+          var skin = window.localStorage.getItem('mb-skin');
+          if (skin === 'cornerstone' || skin === 'mono' || skin === 'ember') {
+            document.documentElement.setAttribute('data-mb-skin', skin);
+          }
+        } catch (_) {
+          /* storage unavailable — defaults apply */
+        }
       })();
     </script>
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">Loading…</div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

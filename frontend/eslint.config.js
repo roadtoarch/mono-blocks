@@ -1,16 +1,16 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-import importX from 'eslint-plugin-import-x'
-import tanstackQuery from '@tanstack/eslint-plugin-query'
-import tanstackRouter from '@tanstack/eslint-plugin-router'
-import tseslint from 'typescript-eslint'
-import prettierPlugin from 'eslint-plugin-prettier'
-import eslintConfigPrettier from 'eslint-config-prettier'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import reactX from 'eslint-plugin-react-x';
+import reactDom from 'eslint-plugin-react-dom';
+import importX from 'eslint-plugin-import-x';
+import tanstackQuery from '@tanstack/eslint-plugin-query';
+import tanstackRouter from '@tanstack/eslint-plugin-router';
+import tseslint from 'typescript-eslint';
+import prettierPlugin from 'eslint-plugin-prettier';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
   globalIgnores(['dist', 'coverage', 'src/routeTree.gen.ts']),
@@ -44,20 +44,6 @@ export default defineConfig([
           alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
-      // Axios must only be imported from http/transport.ts — all other
-      // files use the pipeline instead.
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: 'axios',
-              message:
-                'axios must only be imported from src/http/transport.ts. Use the middleware pipeline instead.',
-            },
-          ],
-        },
-      ],
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
@@ -71,21 +57,11 @@ export default defineConfig([
       },
     },
   },
-  // Allow axios import in the designated transport boundary file.
+  // Relax strict type-checked rules that conflict with Vitest matchers.
   {
-    files: ['src/http/transport.ts'],
-    rules: {
-      'no-restricted-imports': 'off',
-    },
-  },
-  // Relax require-await for test callbacks — middleware signatures require
-  // async returns even when the body is synchronous.
-  // Also relax strict type-checked rules that conflict with Vitest matchers.
-  {
-    files: ['**/*.unit.test.{ts,tsx}', '**/*.e2e.test.{ts,tsx}'],
+    files: ['**/*.unit.test.{ts,tsx}'],
     rules: {
       '@typescript-eslint/require-await': 'off',
-      'no-restricted-imports': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
@@ -93,4 +69,11 @@ export default defineConfig([
       '@typescript-eslint/unbound-method': 'off',
     },
   },
-])
+  // Route files export Route (createFileRoute) + component — not fast-refresh compatible by design.
+  {
+    files: ['src/routes/**/*.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
+]);

@@ -10,74 +10,357 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
-import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated.users'
-import { Route as AuthenticatedUsersInviteRouteImport } from './routes/_authenticated.users.invite'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
+import { Route as AppCustomersIndexRouteImport } from './routes/_app/customers/index'
+import { Route as AppCustomersIdRouteImport } from './routes/_app/customers/$id'
+import { Route as AppCustomersNewRouteImport } from './routes/_app/customers/new'
+import { Route as AppEquipmentIndexRouteImport } from './routes/_app/equipment/index'
+import { Route as AppEquipmentIdRouteImport } from './routes/_app/equipment/$id'
+import { Route as AppEquipmentNewRouteImport } from './routes/_app/equipment/new'
+import { Route as AppSitesIndexRouteImport } from './routes/_app/sites/index'
+import { Route as AppSitesIdRouteImport } from './routes/_app/sites/$id'
+import { Route as AppSitesNewRouteImport } from './routes/_app/sites/new'
+import { Route as AppTechniciansIndexRouteImport } from './routes/_app/technicians/index'
+import { Route as AppTechniciansIdRouteImport } from './routes/_app/technicians/$id'
+import { Route as AppTechniciansNewRouteImport } from './routes/_app/technicians/new'
+import { Route as AppWorkOrdersIndexRouteImport } from './routes/_app/work-orders/index'
+import { Route as AppWorkOrdersIdRouteImport } from './routes/_app/work-orders/$id'
+import { Route as AppWorkOrdersNewRouteImport } from './routes/_app/work-orders/new'
+import { Route as AppCustomersIdDeleteRouteImport } from './routes/_app/customers/$id.delete'
+import { Route as AppCustomersIdEditRouteImport } from './routes/_app/customers/$id.edit'
+import { Route as AppEquipmentIdDeleteRouteImport } from './routes/_app/equipment/$id.delete'
+import { Route as AppEquipmentIdEditRouteImport } from './routes/_app/equipment/$id.edit'
+import { Route as AppSitesIdDeleteRouteImport } from './routes/_app/sites/$id.delete'
+import { Route as AppSitesIdEditRouteImport } from './routes/_app/sites/$id.edit'
+import { Route as AppTechniciansIdDeleteRouteImport } from './routes/_app/technicians/$id.delete'
+import { Route as AppTechniciansIdEditRouteImport } from './routes/_app/technicians/$id.edit'
+import { Route as AppWorkOrdersIdDeleteRouteImport } from './routes/_app/work-orders/$id.delete'
+import { Route as AppWorkOrdersIdEditRouteImport } from './routes/_app/work-orders/$id.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => AuthenticatedRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AuthenticatedRoute,
+const AppCustomersIndexRoute = AppCustomersIndexRouteImport.update({
+  id: '/customers/',
+  path: '/customers/',
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthenticatedUsersInviteRoute =
-  AuthenticatedUsersInviteRouteImport.update({
-    id: '/invite',
-    path: '/invite',
-    getParentRoute: () => AuthenticatedUsersRoute,
-  } as any)
+const AppCustomersIdRoute = AppCustomersIdRouteImport.update({
+  id: '/customers/$id',
+  path: '/customers/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCustomersNewRoute = AppCustomersNewRouteImport.update({
+  id: '/customers/new',
+  path: '/customers/new',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEquipmentIndexRoute = AppEquipmentIndexRouteImport.update({
+  id: '/equipment/',
+  path: '/equipment/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEquipmentIdRoute = AppEquipmentIdRouteImport.update({
+  id: '/equipment/$id',
+  path: '/equipment/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEquipmentNewRoute = AppEquipmentNewRouteImport.update({
+  id: '/equipment/new',
+  path: '/equipment/new',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSitesIndexRoute = AppSitesIndexRouteImport.update({
+  id: '/sites/',
+  path: '/sites/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSitesIdRoute = AppSitesIdRouteImport.update({
+  id: '/sites/$id',
+  path: '/sites/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSitesNewRoute = AppSitesNewRouteImport.update({
+  id: '/sites/new',
+  path: '/sites/new',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTechniciansIndexRoute = AppTechniciansIndexRouteImport.update({
+  id: '/technicians/',
+  path: '/technicians/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTechniciansIdRoute = AppTechniciansIdRouteImport.update({
+  id: '/technicians/$id',
+  path: '/technicians/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTechniciansNewRoute = AppTechniciansNewRouteImport.update({
+  id: '/technicians/new',
+  path: '/technicians/new',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkOrdersIndexRoute = AppWorkOrdersIndexRouteImport.update({
+  id: '/work-orders/',
+  path: '/work-orders/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkOrdersIdRoute = AppWorkOrdersIdRouteImport.update({
+  id: '/work-orders/$id',
+  path: '/work-orders/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkOrdersNewRoute = AppWorkOrdersNewRouteImport.update({
+  id: '/work-orders/new',
+  path: '/work-orders/new',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCustomersIdDeleteRoute = AppCustomersIdDeleteRouteImport.update({
+  id: '/delete',
+  path: '/delete',
+  getParentRoute: () => AppCustomersIdRoute,
+} as any)
+const AppCustomersIdEditRoute = AppCustomersIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppCustomersIdRoute,
+} as any)
+const AppEquipmentIdDeleteRoute = AppEquipmentIdDeleteRouteImport.update({
+  id: '/delete',
+  path: '/delete',
+  getParentRoute: () => AppEquipmentIdRoute,
+} as any)
+const AppEquipmentIdEditRoute = AppEquipmentIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppEquipmentIdRoute,
+} as any)
+const AppSitesIdDeleteRoute = AppSitesIdDeleteRouteImport.update({
+  id: '/delete',
+  path: '/delete',
+  getParentRoute: () => AppSitesIdRoute,
+} as any)
+const AppSitesIdEditRoute = AppSitesIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppSitesIdRoute,
+} as any)
+const AppTechniciansIdDeleteRoute = AppTechniciansIdDeleteRouteImport.update({
+  id: '/delete',
+  path: '/delete',
+  getParentRoute: () => AppTechniciansIdRoute,
+} as any)
+const AppTechniciansIdEditRoute = AppTechniciansIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppTechniciansIdRoute,
+} as any)
+const AppWorkOrdersIdDeleteRoute = AppWorkOrdersIdDeleteRouteImport.update({
+  id: '/delete',
+  path: '/delete',
+  getParentRoute: () => AppWorkOrdersIdRoute,
+} as any)
+const AppWorkOrdersIdEditRoute = AppWorkOrdersIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppWorkOrdersIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/users': typeof AuthenticatedUsersRouteWithChildren
-  '/users/invite': typeof AuthenticatedUsersInviteRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/customers/$id': typeof AppCustomersIdRouteWithChildren
+  '/customers/new': typeof AppCustomersNewRoute
+  '/equipment/$id': typeof AppEquipmentIdRouteWithChildren
+  '/equipment/new': typeof AppEquipmentNewRoute
+  '/sites/$id': typeof AppSitesIdRouteWithChildren
+  '/sites/new': typeof AppSitesNewRoute
+  '/technicians/$id': typeof AppTechniciansIdRouteWithChildren
+  '/technicians/new': typeof AppTechniciansNewRoute
+  '/work-orders/$id': typeof AppWorkOrdersIdRouteWithChildren
+  '/work-orders/new': typeof AppWorkOrdersNewRoute
+  '/customers/': typeof AppCustomersIndexRoute
+  '/equipment/': typeof AppEquipmentIndexRoute
+  '/sites/': typeof AppSitesIndexRoute
+  '/technicians/': typeof AppTechniciansIndexRoute
+  '/work-orders/': typeof AppWorkOrdersIndexRoute
+  '/customers/$id/delete': typeof AppCustomersIdDeleteRoute
+  '/customers/$id/edit': typeof AppCustomersIdEditRoute
+  '/equipment/$id/delete': typeof AppEquipmentIdDeleteRoute
+  '/equipment/$id/edit': typeof AppEquipmentIdEditRoute
+  '/sites/$id/delete': typeof AppSitesIdDeleteRoute
+  '/sites/$id/edit': typeof AppSitesIdEditRoute
+  '/technicians/$id/delete': typeof AppTechniciansIdDeleteRoute
+  '/technicians/$id/edit': typeof AppTechniciansIdEditRoute
+  '/work-orders/$id/delete': typeof AppWorkOrdersIdDeleteRoute
+  '/work-orders/$id/edit': typeof AppWorkOrdersIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/users': typeof AuthenticatedUsersRouteWithChildren
-  '/users/invite': typeof AuthenticatedUsersInviteRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/customers/$id': typeof AppCustomersIdRouteWithChildren
+  '/customers/new': typeof AppCustomersNewRoute
+  '/equipment/$id': typeof AppEquipmentIdRouteWithChildren
+  '/equipment/new': typeof AppEquipmentNewRoute
+  '/sites/$id': typeof AppSitesIdRouteWithChildren
+  '/sites/new': typeof AppSitesNewRoute
+  '/technicians/$id': typeof AppTechniciansIdRouteWithChildren
+  '/technicians/new': typeof AppTechniciansNewRoute
+  '/work-orders/$id': typeof AppWorkOrdersIdRouteWithChildren
+  '/work-orders/new': typeof AppWorkOrdersNewRoute
+  '/customers': typeof AppCustomersIndexRoute
+  '/equipment': typeof AppEquipmentIndexRoute
+  '/sites': typeof AppSitesIndexRoute
+  '/technicians': typeof AppTechniciansIndexRoute
+  '/work-orders': typeof AppWorkOrdersIndexRoute
+  '/customers/$id/delete': typeof AppCustomersIdDeleteRoute
+  '/customers/$id/edit': typeof AppCustomersIdEditRoute
+  '/equipment/$id/delete': typeof AppEquipmentIdDeleteRoute
+  '/equipment/$id/edit': typeof AppEquipmentIdEditRoute
+  '/sites/$id/delete': typeof AppSitesIdDeleteRoute
+  '/sites/$id/edit': typeof AppSitesIdEditRoute
+  '/technicians/$id/delete': typeof AppTechniciansIdDeleteRoute
+  '/technicians/$id/edit': typeof AppTechniciansIdEditRoute
+  '/work-orders/$id/delete': typeof AppWorkOrdersIdDeleteRoute
+  '/work-orders/$id/edit': typeof AppWorkOrdersIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/users': typeof AuthenticatedUsersRouteWithChildren
-  '/_authenticated/users/invite': typeof AuthenticatedUsersInviteRoute
+  '/_app': typeof AppRouteWithChildren
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/customers/$id': typeof AppCustomersIdRouteWithChildren
+  '/_app/customers/new': typeof AppCustomersNewRoute
+  '/_app/equipment/$id': typeof AppEquipmentIdRouteWithChildren
+  '/_app/equipment/new': typeof AppEquipmentNewRoute
+  '/_app/sites/$id': typeof AppSitesIdRouteWithChildren
+  '/_app/sites/new': typeof AppSitesNewRoute
+  '/_app/technicians/$id': typeof AppTechniciansIdRouteWithChildren
+  '/_app/technicians/new': typeof AppTechniciansNewRoute
+  '/_app/work-orders/$id': typeof AppWorkOrdersIdRouteWithChildren
+  '/_app/work-orders/new': typeof AppWorkOrdersNewRoute
+  '/_app/customers/': typeof AppCustomersIndexRoute
+  '/_app/equipment/': typeof AppEquipmentIndexRoute
+  '/_app/sites/': typeof AppSitesIndexRoute
+  '/_app/technicians/': typeof AppTechniciansIndexRoute
+  '/_app/work-orders/': typeof AppWorkOrdersIndexRoute
+  '/_app/customers/$id/delete': typeof AppCustomersIdDeleteRoute
+  '/_app/customers/$id/edit': typeof AppCustomersIdEditRoute
+  '/_app/equipment/$id/delete': typeof AppEquipmentIdDeleteRoute
+  '/_app/equipment/$id/edit': typeof AppEquipmentIdEditRoute
+  '/_app/sites/$id/delete': typeof AppSitesIdDeleteRoute
+  '/_app/sites/$id/edit': typeof AppSitesIdEditRoute
+  '/_app/technicians/$id/delete': typeof AppTechniciansIdDeleteRoute
+  '/_app/technicians/$id/edit': typeof AppTechniciansIdEditRoute
+  '/_app/work-orders/$id/delete': typeof AppWorkOrdersIdDeleteRoute
+  '/_app/work-orders/$id/edit': typeof AppWorkOrdersIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/users' | '/users/invite'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/customers/$id'
+    | '/customers/new'
+    | '/equipment/$id'
+    | '/equipment/new'
+    | '/sites/$id'
+    | '/sites/new'
+    | '/technicians/$id'
+    | '/technicians/new'
+    | '/work-orders/$id'
+    | '/work-orders/new'
+    | '/customers/'
+    | '/equipment/'
+    | '/sites/'
+    | '/technicians/'
+    | '/work-orders/'
+    | '/customers/$id/delete'
+    | '/customers/$id/edit'
+    | '/equipment/$id/delete'
+    | '/equipment/$id/edit'
+    | '/sites/$id/delete'
+    | '/sites/$id/edit'
+    | '/technicians/$id/delete'
+    | '/technicians/$id/edit'
+    | '/work-orders/$id/delete'
+    | '/work-orders/$id/edit'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/users' | '/users/invite'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/customers/$id'
+    | '/customers/new'
+    | '/equipment/$id'
+    | '/equipment/new'
+    | '/sites/$id'
+    | '/sites/new'
+    | '/technicians/$id'
+    | '/technicians/new'
+    | '/work-orders/$id'
+    | '/work-orders/new'
+    | '/customers'
+    | '/equipment'
+    | '/sites'
+    | '/technicians'
+    | '/work-orders'
+    | '/customers/$id/delete'
+    | '/customers/$id/edit'
+    | '/equipment/$id/delete'
+    | '/equipment/$id/edit'
+    | '/sites/$id/delete'
+    | '/sites/$id/edit'
+    | '/technicians/$id/delete'
+    | '/technicians/$id/edit'
+    | '/work-orders/$id/delete'
+    | '/work-orders/$id/edit'
   id:
     | '__root__'
     | '/'
-    | '/_authenticated'
-    | '/_authenticated/dashboard'
-    | '/_authenticated/users'
-    | '/_authenticated/users/invite'
+    | '/_app'
+    | '/_app/dashboard'
+    | '/_app/customers/$id'
+    | '/_app/customers/new'
+    | '/_app/equipment/$id'
+    | '/_app/equipment/new'
+    | '/_app/sites/$id'
+    | '/_app/sites/new'
+    | '/_app/technicians/$id'
+    | '/_app/technicians/new'
+    | '/_app/work-orders/$id'
+    | '/_app/work-orders/new'
+    | '/_app/customers/'
+    | '/_app/equipment/'
+    | '/_app/sites/'
+    | '/_app/technicians/'
+    | '/_app/work-orders/'
+    | '/_app/customers/$id/delete'
+    | '/_app/customers/$id/edit'
+    | '/_app/equipment/$id/delete'
+    | '/_app/equipment/$id/edit'
+    | '/_app/sites/$id/delete'
+    | '/_app/sites/$id/edit'
+    | '/_app/technicians/$id/delete'
+    | '/_app/technicians/$id/edit'
+    | '/_app/work-orders/$id/delete'
+    | '/_app/work-orders/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AppRoute: typeof AppRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -89,65 +372,310 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated': {
-      id: '/_authenticated'
+    '/_app': {
+      id: '/_app'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteImport
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/users': {
-      id: '/_authenticated/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AuthenticatedUsersRouteImport
-      parentRoute: typeof AuthenticatedRoute
+    '/_app/customers/': {
+      id: '/_app/customers/'
+      path: '/customers'
+      fullPath: '/customers/'
+      preLoaderRoute: typeof AppCustomersIndexRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/users/invite': {
-      id: '/_authenticated/users/invite'
-      path: '/invite'
-      fullPath: '/users/invite'
-      preLoaderRoute: typeof AuthenticatedUsersInviteRouteImport
-      parentRoute: typeof AuthenticatedUsersRoute
+    '/_app/customers/$id': {
+      id: '/_app/customers/$id'
+      path: '/customers/$id'
+      fullPath: '/customers/$id'
+      preLoaderRoute: typeof AppCustomersIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/customers/new': {
+      id: '/_app/customers/new'
+      path: '/customers/new'
+      fullPath: '/customers/new'
+      preLoaderRoute: typeof AppCustomersNewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/equipment/': {
+      id: '/_app/equipment/'
+      path: '/equipment'
+      fullPath: '/equipment/'
+      preLoaderRoute: typeof AppEquipmentIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/equipment/$id': {
+      id: '/_app/equipment/$id'
+      path: '/equipment/$id'
+      fullPath: '/equipment/$id'
+      preLoaderRoute: typeof AppEquipmentIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/equipment/new': {
+      id: '/_app/equipment/new'
+      path: '/equipment/new'
+      fullPath: '/equipment/new'
+      preLoaderRoute: typeof AppEquipmentNewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/sites/': {
+      id: '/_app/sites/'
+      path: '/sites'
+      fullPath: '/sites/'
+      preLoaderRoute: typeof AppSitesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/sites/$id': {
+      id: '/_app/sites/$id'
+      path: '/sites/$id'
+      fullPath: '/sites/$id'
+      preLoaderRoute: typeof AppSitesIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/sites/new': {
+      id: '/_app/sites/new'
+      path: '/sites/new'
+      fullPath: '/sites/new'
+      preLoaderRoute: typeof AppSitesNewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/technicians/': {
+      id: '/_app/technicians/'
+      path: '/technicians'
+      fullPath: '/technicians/'
+      preLoaderRoute: typeof AppTechniciansIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/technicians/$id': {
+      id: '/_app/technicians/$id'
+      path: '/technicians/$id'
+      fullPath: '/technicians/$id'
+      preLoaderRoute: typeof AppTechniciansIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/technicians/new': {
+      id: '/_app/technicians/new'
+      path: '/technicians/new'
+      fullPath: '/technicians/new'
+      preLoaderRoute: typeof AppTechniciansNewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/work-orders/': {
+      id: '/_app/work-orders/'
+      path: '/work-orders'
+      fullPath: '/work-orders/'
+      preLoaderRoute: typeof AppWorkOrdersIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/work-orders/$id': {
+      id: '/_app/work-orders/$id'
+      path: '/work-orders/$id'
+      fullPath: '/work-orders/$id'
+      preLoaderRoute: typeof AppWorkOrdersIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/work-orders/new': {
+      id: '/_app/work-orders/new'
+      path: '/work-orders/new'
+      fullPath: '/work-orders/new'
+      preLoaderRoute: typeof AppWorkOrdersNewRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/customers/$id/delete': {
+      id: '/_app/customers/$id/delete'
+      path: '/delete'
+      fullPath: '/customers/$id/delete'
+      preLoaderRoute: typeof AppCustomersIdDeleteRouteImport
+      parentRoute: typeof AppCustomersIdRoute
+    }
+    '/_app/customers/$id/edit': {
+      id: '/_app/customers/$id/edit'
+      path: '/edit'
+      fullPath: '/customers/$id/edit'
+      preLoaderRoute: typeof AppCustomersIdEditRouteImport
+      parentRoute: typeof AppCustomersIdRoute
+    }
+    '/_app/equipment/$id/delete': {
+      id: '/_app/equipment/$id/delete'
+      path: '/delete'
+      fullPath: '/equipment/$id/delete'
+      preLoaderRoute: typeof AppEquipmentIdDeleteRouteImport
+      parentRoute: typeof AppEquipmentIdRoute
+    }
+    '/_app/equipment/$id/edit': {
+      id: '/_app/equipment/$id/edit'
+      path: '/edit'
+      fullPath: '/equipment/$id/edit'
+      preLoaderRoute: typeof AppEquipmentIdEditRouteImport
+      parentRoute: typeof AppEquipmentIdRoute
+    }
+    '/_app/sites/$id/delete': {
+      id: '/_app/sites/$id/delete'
+      path: '/delete'
+      fullPath: '/sites/$id/delete'
+      preLoaderRoute: typeof AppSitesIdDeleteRouteImport
+      parentRoute: typeof AppSitesIdRoute
+    }
+    '/_app/sites/$id/edit': {
+      id: '/_app/sites/$id/edit'
+      path: '/edit'
+      fullPath: '/sites/$id/edit'
+      preLoaderRoute: typeof AppSitesIdEditRouteImport
+      parentRoute: typeof AppSitesIdRoute
+    }
+    '/_app/technicians/$id/delete': {
+      id: '/_app/technicians/$id/delete'
+      path: '/delete'
+      fullPath: '/technicians/$id/delete'
+      preLoaderRoute: typeof AppTechniciansIdDeleteRouteImport
+      parentRoute: typeof AppTechniciansIdRoute
+    }
+    '/_app/technicians/$id/edit': {
+      id: '/_app/technicians/$id/edit'
+      path: '/edit'
+      fullPath: '/technicians/$id/edit'
+      preLoaderRoute: typeof AppTechniciansIdEditRouteImport
+      parentRoute: typeof AppTechniciansIdRoute
+    }
+    '/_app/work-orders/$id/delete': {
+      id: '/_app/work-orders/$id/delete'
+      path: '/delete'
+      fullPath: '/work-orders/$id/delete'
+      preLoaderRoute: typeof AppWorkOrdersIdDeleteRouteImport
+      parentRoute: typeof AppWorkOrdersIdRoute
+    }
+    '/_app/work-orders/$id/edit': {
+      id: '/_app/work-orders/$id/edit'
+      path: '/edit'
+      fullPath: '/work-orders/$id/edit'
+      preLoaderRoute: typeof AppWorkOrdersIdEditRouteImport
+      parentRoute: typeof AppWorkOrdersIdRoute
     }
   }
 }
 
-interface AuthenticatedUsersRouteChildren {
-  AuthenticatedUsersInviteRoute: typeof AuthenticatedUsersInviteRoute
+interface AppCustomersIdRouteChildren {
+  AppCustomersIdDeleteRoute: typeof AppCustomersIdDeleteRoute
+  AppCustomersIdEditRoute: typeof AppCustomersIdEditRoute
 }
 
-const AuthenticatedUsersRouteChildren: AuthenticatedUsersRouteChildren = {
-  AuthenticatedUsersInviteRoute: AuthenticatedUsersInviteRoute,
+const AppCustomersIdRouteChildren: AppCustomersIdRouteChildren = {
+  AppCustomersIdDeleteRoute: AppCustomersIdDeleteRoute,
+  AppCustomersIdEditRoute: AppCustomersIdEditRoute,
 }
 
-const AuthenticatedUsersRouteWithChildren =
-  AuthenticatedUsersRoute._addFileChildren(AuthenticatedUsersRouteChildren)
-
-interface AuthenticatedRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedUsersRoute: typeof AuthenticatedUsersRouteWithChildren
-}
-
-const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedUsersRoute: AuthenticatedUsersRouteWithChildren,
-}
-
-const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
-  AuthenticatedRouteChildren,
+const AppCustomersIdRouteWithChildren = AppCustomersIdRoute._addFileChildren(
+  AppCustomersIdRouteChildren,
 )
+
+interface AppEquipmentIdRouteChildren {
+  AppEquipmentIdDeleteRoute: typeof AppEquipmentIdDeleteRoute
+  AppEquipmentIdEditRoute: typeof AppEquipmentIdEditRoute
+}
+
+const AppEquipmentIdRouteChildren: AppEquipmentIdRouteChildren = {
+  AppEquipmentIdDeleteRoute: AppEquipmentIdDeleteRoute,
+  AppEquipmentIdEditRoute: AppEquipmentIdEditRoute,
+}
+
+const AppEquipmentIdRouteWithChildren = AppEquipmentIdRoute._addFileChildren(
+  AppEquipmentIdRouteChildren,
+)
+
+interface AppSitesIdRouteChildren {
+  AppSitesIdDeleteRoute: typeof AppSitesIdDeleteRoute
+  AppSitesIdEditRoute: typeof AppSitesIdEditRoute
+}
+
+const AppSitesIdRouteChildren: AppSitesIdRouteChildren = {
+  AppSitesIdDeleteRoute: AppSitesIdDeleteRoute,
+  AppSitesIdEditRoute: AppSitesIdEditRoute,
+}
+
+const AppSitesIdRouteWithChildren = AppSitesIdRoute._addFileChildren(
+  AppSitesIdRouteChildren,
+)
+
+interface AppTechniciansIdRouteChildren {
+  AppTechniciansIdDeleteRoute: typeof AppTechniciansIdDeleteRoute
+  AppTechniciansIdEditRoute: typeof AppTechniciansIdEditRoute
+}
+
+const AppTechniciansIdRouteChildren: AppTechniciansIdRouteChildren = {
+  AppTechniciansIdDeleteRoute: AppTechniciansIdDeleteRoute,
+  AppTechniciansIdEditRoute: AppTechniciansIdEditRoute,
+}
+
+const AppTechniciansIdRouteWithChildren =
+  AppTechniciansIdRoute._addFileChildren(AppTechniciansIdRouteChildren)
+
+interface AppWorkOrdersIdRouteChildren {
+  AppWorkOrdersIdDeleteRoute: typeof AppWorkOrdersIdDeleteRoute
+  AppWorkOrdersIdEditRoute: typeof AppWorkOrdersIdEditRoute
+}
+
+const AppWorkOrdersIdRouteChildren: AppWorkOrdersIdRouteChildren = {
+  AppWorkOrdersIdDeleteRoute: AppWorkOrdersIdDeleteRoute,
+  AppWorkOrdersIdEditRoute: AppWorkOrdersIdEditRoute,
+}
+
+const AppWorkOrdersIdRouteWithChildren = AppWorkOrdersIdRoute._addFileChildren(
+  AppWorkOrdersIdRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppCustomersIdRoute: typeof AppCustomersIdRouteWithChildren
+  AppCustomersNewRoute: typeof AppCustomersNewRoute
+  AppEquipmentIdRoute: typeof AppEquipmentIdRouteWithChildren
+  AppEquipmentNewRoute: typeof AppEquipmentNewRoute
+  AppSitesIdRoute: typeof AppSitesIdRouteWithChildren
+  AppSitesNewRoute: typeof AppSitesNewRoute
+  AppTechniciansIdRoute: typeof AppTechniciansIdRouteWithChildren
+  AppTechniciansNewRoute: typeof AppTechniciansNewRoute
+  AppWorkOrdersIdRoute: typeof AppWorkOrdersIdRouteWithChildren
+  AppWorkOrdersNewRoute: typeof AppWorkOrdersNewRoute
+  AppCustomersIndexRoute: typeof AppCustomersIndexRoute
+  AppEquipmentIndexRoute: typeof AppEquipmentIndexRoute
+  AppSitesIndexRoute: typeof AppSitesIndexRoute
+  AppTechniciansIndexRoute: typeof AppTechniciansIndexRoute
+  AppWorkOrdersIndexRoute: typeof AppWorkOrdersIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppDashboardRoute: AppDashboardRoute,
+  AppCustomersIdRoute: AppCustomersIdRouteWithChildren,
+  AppCustomersNewRoute: AppCustomersNewRoute,
+  AppEquipmentIdRoute: AppEquipmentIdRouteWithChildren,
+  AppEquipmentNewRoute: AppEquipmentNewRoute,
+  AppSitesIdRoute: AppSitesIdRouteWithChildren,
+  AppSitesNewRoute: AppSitesNewRoute,
+  AppTechniciansIdRoute: AppTechniciansIdRouteWithChildren,
+  AppTechniciansNewRoute: AppTechniciansNewRoute,
+  AppWorkOrdersIdRoute: AppWorkOrdersIdRouteWithChildren,
+  AppWorkOrdersNewRoute: AppWorkOrdersNewRoute,
+  AppCustomersIndexRoute: AppCustomersIndexRoute,
+  AppEquipmentIndexRoute: AppEquipmentIndexRoute,
+  AppSitesIndexRoute: AppSitesIndexRoute,
+  AppTechniciansIndexRoute: AppTechniciansIndexRoute,
+  AppWorkOrdersIndexRoute: AppWorkOrdersIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AppRoute: AppRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
