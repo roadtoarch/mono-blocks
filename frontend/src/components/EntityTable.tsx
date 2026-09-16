@@ -1,12 +1,21 @@
 /**
  * MonoBlocks — components/EntityTable.tsx
  *
- * Schema-driven data table for entity list pages.
- * Features: sortable column headers (aria-sort), entity link in first column,
- * tags for tagged fields, date/numeric/mono formatting, row click navigation,
- * row action buttons (edit/delete ghost buttons), and skeleton loading state.
+ * Schema-driven entity data table. Proof-of-concept for container-aware
+ * responsive Carbon components: below the `md` container breakpoint the table
+ * switches to a stacked card layout, both built from Carbon components.
  */
 import { Edit, TrashCan } from '@carbon/icons-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableHeader,
+  TableRow,
+  Tile,
+} from '@carbon/react';
 import { Link } from '@tanstack/react-router';
 
 import type {
@@ -18,7 +27,15 @@ import type {
   TagColor,
 } from '@/schema/types';
 
-import { optionLabel, tagFamily, titleOf } from '@/schema/helpers';
+import { useContainerWidth } from '@/hooks/useContainerWidth';
+import {
+  deletePath,
+  detailPath,
+  editPath,
+  optionLabel,
+  tagFamily,
+  titleOf,
+} from '@/schema/helpers';
 import { date as fmtDate, number as fmtNumber } from '@/utils/format';
 
 // ── Types ─────────────────────────────────────────────────────────────────
@@ -32,55 +49,68 @@ export interface EntityTableProps {
   onSort: (sort: SortDef) => void;
 }
 
-// ── Sort icon ─────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────
 
-function SortIcon({ active, dir }: { active: boolean; dir: 'asc' | 'desc' }) {
-  // Simple text arrows — CSS handles styling via .mb-table__sort-icon
-  return (
-    <span className="mb-table__sort-icon" aria-hidden="true">
-      {active ? (dir === 'asc' ? '↑' : '↓') : '↕'}
-    </span>
-  );
+/** Resolve a raw cell value to a display-ready React node. */
+function resolveCellValue(
+  field: FieldDef,
+  record: EntityRecord,
+  type: EntityType,
+  refCaches: Record<string, Record<string, string>>,
+): { content: React.ReactNode; numeric?: boolean; mono?: boolean } {
+  const value = record[field.key];
+
+  if (field.ref) {
+    const cache = refCaches[field.ref];
+    const refId = typeof value === 'string' ? value : null;
+    const resolved = refId ? cache[refId] : undefined;
+    return { content: resolved ?? refId ?? '—' };
+  }
+
+  const strValue = typeof value === 'string' ? value : null;
+  const family: TagColor | null = strValue ? tagFamily(type, field.key, strValue) : null;
+  if (family) {
+    return {
+      content: <span className={`mb-tag mb-tag--${family}`}>{optionLabel(field, value)}</span>,
+    };
+  }
+
+  if (field.type === 'date') {
+    return { content: fmtDate(value as string | null), mono: true };
+  }
+
+  if (field.numeric || field.type === 'number') {
+    return { content: fmtNumber(value as number | null), numeric: true };
+  }
+
+  if (field.mono && value != null) {
+    const display =
+      typeof value === 'string'
+        ? value
+        : typeof value === 'number' || typeof value === 'boolean'
+          ? String(value)
+          : JSON.stringify(value);
+    return { content: display, mono: true };
+  }
+
+  if (Array.isArray(value)) {
+    return { content: optionLabel(field, value) };
+  }
+
+  const fallback =
+    value == null
+      ? '—'
+      : typeof value === 'string'
+        ? value
+        : typeof value === 'number' || typeof value === 'boolean'
+          ? String(value)
+          : JSON.stringify(value);
+  return { content: fallback };
 }
 
-// ── Column header ─────────────────────────────────────────────────────────
+// ── Wide table cell / header ───────────────────────────────────────────────
 
-function SortableHeader({
-  field,
-  sort,
-  onSort,
-}: {
-  field: FieldDef;
-  sort: SortDef;
-  onSort: (sort: SortDef) => void;
-}) {
-  const isActive = sort.key === field.key;
-  const ariaSort = isActive ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none';
-  const cls = `mb-table__th--sortable${field.numeric ? ' mb-table__th--numeric' : ''}`;
-
-  return (
-    <th scope="col" className={cls} aria-sort={ariaSort}>
-      <button
-        className="mb-table__sort"
-        type="button"
-        onClick={() => {
-          if (isActive) {
-            onSort({ key: field.key, dir: sort.dir === 'asc' ? 'desc' : 'asc' });
-          } else {
-            onSort({ key: field.key, dir: 'asc' });
-          }
-        }}
-      >
-        {field.label}
-        <SortIcon active={isActive} dir={isActive ? sort.dir : 'asc'} />
-      </button>
-    </th>
-  );
-}
-
-// ── Cell rendering ────────────────────────────────────────────────────────
-
-function Cell({
+function EntityTableCell({
   field,
   record,
   type,
@@ -93,96 +123,67 @@ function Cell({
   refCaches: Record<string, Record<string, string>>;
   isFirst: boolean;
 }) {
-  const value = record[field.key];
+  const { content, mono, numeric } = resolveCellValue(field, record, type, refCaches);
 
-  // First column: entity link using titleOf
   if (isFirst) {
     return (
-      <td>
-        <Link
-          to="/$type/$id"
-          params={{ type: type === 'work_order' ? 'work-orders' : `${type}s`, id: record.id }}
-          className="mb-table__entity-link"
-        >
+      <TableCell>
+        <Link to={detailPath(type, record.id)} className="mb-table__entity-link">
           {titleOf(type, record)}
         </Link>
-      </td>
+      </TableCell>
     );
   }
 
-  // Ref field: resolve to title
-  if (field.ref) {
-    const cache = refCaches[field.ref];
-    const refId = typeof value === 'string' ? value : null;
-    const resolved = refId ? cache[refId] : undefined;
-    const title = resolved ?? refId ?? '—';
-    return <td>{title}</td>;
-  }
+  const className = [
+    mono ? 'cds--mono' : undefined,
+    numeric ? 'mb-table__cell--numeric' : undefined,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
-  // Tagged field (status, priority, tier)
-  const strValue = typeof value === 'string' ? value : null;
-  const family: TagColor | null = strValue ? tagFamily(type, field.key, strValue) : null;
-  if (family) {
-    return (
-      <td>
-        <span className={`mb-tag mb-tag--${family}`}>{optionLabel(field, value)}</span>
-      </td>
-    );
-  }
-
-  // Date field
-  if (field.type === 'date') {
-    return <td className="cds--mono">{fmtDate(value as string | null)}</td>;
-  }
-
-  // Numeric field
-  if (field.numeric || field.type === 'number') {
-    return (
-      <td className="mb-table__cell--numeric cds--tabular-nums">
-        {fmtNumber(value as number | null)}
-      </td>
-    );
-  }
-
-  // Monospace field
-  if (field.mono && value != null) {
-    const display =
-      typeof value === 'string'
-        ? value
-        : typeof value === 'number' || typeof value === 'boolean'
-          ? String(value)
-          : JSON.stringify(value);
-    return <td className="cds--mono">{display}</td>;
-  }
-
-  // Array (multiselect)
-  if (Array.isArray(value)) {
-    return <td>{optionLabel(field, value)}</td>;
-  }
-
-  // Default — safe display of unknown value
-  const fallback =
-    value == null
-      ? '—'
-      : typeof value === 'string'
-        ? value
-        : typeof value === 'number' || typeof value === 'boolean'
-          ? String(value)
-          : JSON.stringify(value);
-  return <td>{fallback}</td>;
+  return <TableCell className={className}>{content}</TableCell>;
 }
 
-// ── Row actions ───────────────────────────────────────────────────────────
-
-function RowActions({ type, record }: { type: EntityType; record: EntityRecord }) {
-  const title = titleOf(type, record);
-  // Map entity type to route path segment
-  const pathSegment = type === 'work_order' ? 'work-orders' : `${type}s`;
+function EntityTableHeader({
+  field,
+  sort,
+  onSort,
+}: {
+  field: FieldDef;
+  sort: SortDef;
+  onSort: (sort: SortDef) => void;
+}) {
+  const isActive = sort.key === field.key;
+  const direction = isActive ? (sort.dir === 'asc' ? 'ASC' : 'DESC') : 'NONE';
 
   return (
-    <td className="mb-table__cell--actions">
+    <TableHeader
+      key={field.key}
+      isSortable
+      isSortHeader={isActive}
+      sortDirection={direction}
+      onClick={() => {
+        if (isActive) {
+          onSort({ key: field.key, dir: sort.dir === 'asc' ? 'desc' : 'asc' });
+        } else {
+          onSort({ key: field.key, dir: 'asc' });
+        }
+      }}
+      className={field.numeric ? 'mb-table__th--numeric' : undefined}
+    >
+      {field.label}
+    </TableHeader>
+  );
+}
+
+function EntityTableActionsCell({ type, record }: { type: EntityType; record: EntityRecord }) {
+  const title = titleOf(type, record);
+
+  return (
+    <TableCell className="mb-table__cell--actions">
       <Link
-        to={`/${pathSegment}/${record.id}/edit`}
+        to={editPath(type, record.id)}
         className="mb-btn mb-btn--ghost"
         aria-label={`Edit ${title}`}
         title="Edit"
@@ -190,14 +191,150 @@ function RowActions({ type, record }: { type: EntityType; record: EntityRecord }
         <Edit size={16} />
       </Link>
       <Link
-        to={`/${pathSegment}/${record.id}/delete`}
+        to={deletePath(type, record.id)}
         className="mb-btn mb-btn--ghost"
         aria-label={`Delete ${title}`}
         title="Delete"
       >
         <TrashCan size={16} />
       </Link>
-    </td>
+    </TableCell>
+  );
+}
+
+function WideTable(props: EntityTableProps) {
+  const { type, schema, records, refCaches, sort, onSort } = props;
+  const fields = schema.fields.filter((f) => !f.hiddenInList);
+
+  return (
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {fields.map((field) => (
+              <EntityTableHeader key={field.key} field={field} sort={sort} onSort={onSort} />
+            ))}
+            <TableHeader>
+              <span className="cds--visually-hidden">Actions</span>
+            </TableHeader>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {records.map((record) => (
+            <TableRow key={record.id} data-id={record.id}>
+              {fields.map((field, i) => (
+                <EntityTableCell
+                  key={field.key}
+                  field={field}
+                  record={record}
+                  type={type}
+                  refCaches={refCaches}
+                  isFirst={i === 0}
+                />
+              ))}
+              <EntityTableActionsCell type={type} record={record} />
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+// ── Narrow card layout ──────────────────────────────────────────────────────
+
+function NarrowCards(props: EntityTableProps) {
+  const { type, schema, records, refCaches, sort, onSort } = props;
+  const fields = schema.fields.filter((f) => !f.hiddenInList);
+
+  return (
+    <div className="mb-entity-cards" role="list">
+      {records.map((record) => (
+        <Tile key={record.id} className="mb-entity-card" role="listitem">
+          <div className="mb-entity-card__header">
+            <Link to={detailPath(type, record.id)} className="mb-table__entity-link">
+              {titleOf(type, record)}
+            </Link>
+          </div>
+          <dl className="mb-entity-card__fields">
+            {fields.slice(1).map((field) => {
+              const { content, mono, numeric } = resolveCellValue(field, record, type, refCaches);
+              return (
+                <div key={field.key} className="mb-entity-card__field">
+                  <dt className="mb-entity-card__label">{field.label}</dt>
+                  <dd
+                    className={[
+                      mono ? 'cds--mono' : undefined,
+                      numeric ? 'mb-table__cell--numeric' : undefined,
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                  >
+                    {content}
+                  </dd>
+                </div>
+              );
+            })}
+          </dl>
+          <div className="mb-entity-card__actions">
+            <Link
+              to={editPath(type, record.id)}
+              className="mb-btn mb-btn--ghost"
+              aria-label={`Edit ${titleOf(type, record)}`}
+              title="Edit"
+            >
+              <Edit size={16} />
+            </Link>
+            <Link
+              to={deletePath(type, record.id)}
+              className="mb-btn mb-btn--ghost"
+              aria-label={`Delete ${titleOf(type, record)}`}
+              title="Delete"
+            >
+              <TrashCan size={16} />
+            </Link>
+          </div>
+        </Tile>
+      ))}
+      <SortButtonBar fields={fields} sort={sort} onSort={onSort} />
+    </div>
+  );
+}
+
+function SortButtonBar({
+  fields,
+  sort,
+  onSort,
+}: {
+  fields: FieldDef[];
+  sort: SortDef;
+  onSort: (sort: SortDef) => void;
+}) {
+  return (
+    <div className="mb-entity-card__sort-bar" role="group" aria-label="Sort cards">
+      <span className="mb-entity-card__sort-label">Sort by</span>
+      {fields.map((field) => {
+        const isActive = sort.key === field.key;
+        return (
+          <button
+            key={field.key}
+            type="button"
+            className={`mb-entity-card__sort-button${isActive ? ' mb-entity-card__sort-button--active' : ''}`}
+            onClick={() => {
+              if (isActive) {
+                onSort({ key: field.key, dir: sort.dir === 'asc' ? 'desc' : 'asc' });
+              } else {
+                onSort({ key: field.key, dir: 'asc' });
+              }
+            }}
+            aria-pressed={isActive}
+          >
+            {field.label}
+            {isActive ? (sort.dir === 'asc' ? ' ↑' : ' ↓') : ''}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -223,46 +360,18 @@ export function SkeletonTable({ colCount, rowCount }: { colCount: number; rowCou
   );
 }
 
-// ── Full table ────────────────────────────────────────────────────────────
+// ── Main component ────────────────────────────────────────────────────────
 
 /**
- * Schema-driven entity table with sortable headers, tags, ref resolution,
- * row click navigation, and action buttons.
+ * Schema-driven entity table. Renders a Carbon DataTable on larger container
+ * widths and a stacked card layout when the container is narrow.
  */
-export function EntityTable({ type, schema, records, refCaches, sort, onSort }: EntityTableProps) {
-  const fields = schema.fields.filter((f) => !f.hiddenInList);
+export function EntityTable(props: EntityTableProps) {
+  const { ref, breakpoint } = useContainerWidth();
 
   return (
-    <div className="mb-table-wrapper">
-      <table className="mb-table">
-        <thead>
-          <tr>
-            {fields.map((f) => (
-              <SortableHeader key={f.key} field={f} sort={sort} onSort={onSort} />
-            ))}
-            <th scope="col" className="mb-table__th--actions">
-              <span className="cds--visually-hidden">Actions</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {records.map((record) => (
-            <tr key={record.id} data-id={record.id}>
-              {fields.map((f, i) => (
-                <Cell
-                  key={f.key}
-                  field={f}
-                  record={record}
-                  type={type}
-                  refCaches={refCaches}
-                  isFirst={i === 0}
-                />
-              ))}
-              <RowActions type={type} record={record} />
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div ref={ref} className="mb-entity-table">
+      {breakpoint === 'sm' ? <NarrowCards {...props} /> : <WideTable {...props} />}
     </div>
   );
 }
