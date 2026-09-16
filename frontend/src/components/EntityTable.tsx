@@ -18,7 +18,7 @@ import type {
   TagColor,
 } from '@/schema/types';
 
-import { optionLabel, tagFamily, titleOf } from '@/schema/api';
+import { optionLabel, tagFamily, titleOf } from '@/schema/helpers';
 import { date as fmtDate, number as fmtNumber } from '@/utils/format';
 
 // ── Types ─────────────────────────────────────────────────────────────────

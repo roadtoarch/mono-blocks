@@ -21,7 +21,7 @@ import {
   tagFamily,
   titleOf,
   field as getField,
-} from '@/schema/api';
+} from '@/schema/helpers';
 import { date as fmtDate, dateTime as fmtDateTime, number as fmtNumber } from '@/utils/format';
 
 // ── Skeleton widths (stable keys, no Math.random) ─────────────────────────

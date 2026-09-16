@@ -14,8 +14,7 @@ import { Link } from '@tanstack/react-router';
 import type { KpiDelta, KpiTile, RecentWorkOrder } from '@/hooks/useDashboard';
 
 import { useDashboard } from '@/hooks/useDashboard';
-import { optionLabel, tagFamily } from '@/schema/api';
-import { field } from '@/schema/api';
+import { field, optionLabel, tagFamily } from '@/schema/helpers';
 import { date, number as fmtNum } from '@/utils/format';
 
 // ── KPI tile ─────────────────────────────────────────────────────────────

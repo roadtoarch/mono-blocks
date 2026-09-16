@@ -12,7 +12,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { NavItem } from '@/schema/config';
 import type { Skin } from '@/stores/theme';
 
-import * as mockDb from '@/api/mockDb';
+import * as mockDb from '@/api/mockDb'; // mock-only: reset() has no REST equivalent yet
 import { ToastRegion } from '@/components/ToastRegion';
 import { useNav, useTheme } from '@/hooks';
 import { navItems } from '@/schema/config';

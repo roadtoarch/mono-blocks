@@ -1,5 +1,5 @@
 /**
- * MonoBlocks — schema/api.ts
+ * MonoBlocks — schema/helpers.ts
  *
  * Schema helper functions. Port of prototype schema.js helpers.
  * All functions are pure and synchronous — no I/O.

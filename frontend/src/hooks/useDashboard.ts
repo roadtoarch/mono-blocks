@@ -7,8 +7,8 @@
  */
 import { useQuery } from '@tanstack/react-query';
 
-import * as mockDb from '@/api/mockDb';
-import { titleOf } from '@/schema/api';
+import { getEntityResource } from '@/api/resources/entity-resource-factory';
+import { titleOf } from '@/schema/helpers';
 
 // ── Constants ────────────────────────────────────────────────────────────
 
@@ -65,11 +65,11 @@ export function useDashboard() {
     queryKey: ['dashboard'],
     queryFn: async (): Promise<DashboardData> => {
       const [customers, sites, equipment, , workOrders] = await Promise.all([
-        mockDb.list('customer', {}),
-        mockDb.list('site', {}),
-        mockDb.list('equipment', {}),
-        mockDb.list('technician', {}),
-        mockDb.list('work_order', { sort: { key: 'scheduled_for', dir: 'desc' } }),
+        getEntityResource('customer').list({}),
+        getEntityResource('site').list({}),
+        getEntityResource('equipment').list({}),
+        getEntityResource('technician').list({}),
+        getEntityResource('work_order').list({ sort: { key: 'scheduled_for', dir: 'desc' } }),
       ]);
 
       // Ref cache for site titles (used in recent WOs table)

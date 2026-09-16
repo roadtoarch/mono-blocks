@@ -19,11 +19,11 @@ import * as React from 'react';
 
 import type { EntityType, FieldDef } from '@/schema/types';
 
-import * as mockDb from '@/api/mockDb';
+import { getEntityResource } from '@/api/resources/entity-resource-factory';
 import { FieldControl } from '@/components/FieldControl';
 import { useEntityDetail, useInvalidateDetail } from '@/hooks/useEntityDetail';
 import { useRefCaches } from '@/hooks/useEntityList';
-import { detailPath, listPath, get, titleOf } from '@/schema/api';
+import { detailPath, listPath, get, titleOf } from '@/schema/helpers';
 import { toast } from '@/stores/toast';
 import { syncValidator, uniqueValidator } from '@/utils/validators';
 
@@ -148,8 +148,8 @@ export function FormPage({ type, id }: FormPageProps) {
       try {
         const cleaned = cleanValues(value, schema.fields);
         const saved = isEdit
-          ? await mockDb.update(type, editId, cleaned)
-          : await mockDb.create(type, cleaned);
+          ? await getEntityResource(type).update(editId, cleaned)
+          : await getEntityResource(type).create(cleaned);
 
         invalidateDetail(type, saved.id);
         toast(

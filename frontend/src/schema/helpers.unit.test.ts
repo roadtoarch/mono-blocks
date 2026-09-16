@@ -1,7 +1,7 @@
 /**
- * MonoBlocks — schema/api.unit.test.ts
+ * MonoBlocks — schema/helpers.unit.test.ts
  *
- * Unit tests for schema/api.ts — get, has, types, field, listFields,
+ * Unit tests for schema/helpers.ts — get, has, types, field, listFields,
  * optionLabel, tagFamily, titleOf, relLabel, path helpers.
  */
 
@@ -23,7 +23,7 @@ import {
   tagFamily,
   titleOf,
   types,
-} from './api.ts';
+} from './helpers.ts';
 import { SCHEMA } from './config.tsx';
 import { ENTITY_TYPES } from './types.ts';
 

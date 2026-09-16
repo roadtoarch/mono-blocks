@@ -2,14 +2,14 @@
  * MonoBlocks — hooks/useEntityDetail.ts
  *
  * TanStack Query hook for the entity detail page. Fetches a single record
- * with its relations and events via mockDb.related(). Also provides
+ * with its relations and events via the Resource pattern. Also provides
  * useDeleteEntity mutation and useInvalidateDetail invalidation helper.
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { EntityType } from '@/schema/types';
 
-import * as mockDb from '@/api/mockDb';
+import { getEntityResource } from '@/api/resources/entity-resource-factory';
 
 // ── Query key factory ─────────────────────────────────────────────────────
 
@@ -24,7 +24,7 @@ const detailKey = (type: EntityType, id: string): unknown[] => ['detail', type, 
 export function useEntityDetail(type: EntityType, id: string) {
   return useQuery({
     queryKey: detailKey(type, id),
-    queryFn: () => mockDb.related(type, id),
+    queryFn: () => getEntityResource(type).related(id),
   });
 }
 
@@ -38,7 +38,8 @@ export function useDeleteEntity() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ type, id }: { type: EntityType; id: string }) => mockDb.remove(type, id),
+    mutationFn: ({ type, id }: { type: EntityType; id: string }) =>
+      getEntityResource(type).remove(id),
     onSuccess: (_data, { type }) => {
       void qc.invalidateQueries({ queryKey: ['list', type] });
       void qc.invalidateQueries({ queryKey: ['detail', type] });

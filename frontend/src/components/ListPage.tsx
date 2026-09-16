@@ -17,7 +17,7 @@ import type { EntityType, SortDef } from '@/schema/types';
 import { EntityTable, SkeletonTable } from '@/components/EntityTable';
 import { ListToolbar, type ListToolbarState } from '@/components/ListToolbar';
 import { useEntityList, useRefCaches } from '@/hooks/useEntityList';
-import { get, newPath } from '@/schema/api';
+import { get, newPath } from '@/schema/helpers';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 

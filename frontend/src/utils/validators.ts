@@ -10,7 +10,7 @@
  */
 import type { EntityType, FieldDef } from '@/schema/types';
 
-import * as mockDb from '@/api/mockDb';
+import { getEntityResource } from '@/api/resources/entity-resource-factory';
 
 // ── Email regex (same as prototype) ────────────────────────────────────────
 
@@ -71,7 +71,7 @@ export function uniqueValidator(type: EntityType, f: FieldDef, excludeId?: strin
     if (!value || value === '') return undefined;
     const str = asString(value);
     if (!str) return undefined;
-    const available = await mockDb.checkUnique(type, f.key, str, excludeId);
+    const available = await getEntityResource(type).checkUnique(f.key, str, excludeId);
     if (!available) {
       return `Another ${type.replace(/_/g, ' ')} already uses this ${f.label.toLowerCase()}. It must be unique.`;
     }

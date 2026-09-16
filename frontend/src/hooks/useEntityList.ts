@@ -10,8 +10,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { EntityType, ListOptions, SortDef } from '@/schema/types';
 
-import * as api from '@/api/mockDb';
-import { get, listFields, titleOf } from '@/schema/api';
+import { getEntityResource } from '@/api/resources/entity-resource-factory';
+import { get, listFields, titleOf } from '@/schema/helpers';
 
 // ── Query key factory ─────────────────────────────────────────────────────
 
@@ -33,7 +33,8 @@ function useRefCache(type: EntityType | undefined): Record<string, string> {
     queryKey: type ? refKey(type) : ['ref-cache', '__none__'],
     queryFn: async () => {
       if (!type) return {};
-      const rows = await api.list(type, {});
+      const resource = getEntityResource(type);
+      const rows = await resource.list({});
       const map: Record<string, string> = {};
       for (const r of rows) {
         map[r.id] = titleOf(type, r);
@@ -98,7 +99,7 @@ export function useEntityList(type: EntityType, opts: UseEntityListOptions = {})
 
   return useQuery({
     queryKey: listKey(type, listOpts),
-    queryFn: () => api.list(type, listOpts),
+    queryFn: () => getEntityResource(type).list(listOpts),
   });
 }
 

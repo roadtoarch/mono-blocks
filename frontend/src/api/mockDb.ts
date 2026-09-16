@@ -31,7 +31,7 @@ import type {
   SortDef,
 } from '@/schema/types.ts';
 
-import { get, relLabel, types } from '@/schema/api.ts';
+import { get, relLabel, types } from '@/schema/helpers';
 import { STORE_KEYS } from '@/schema/config.tsx';
 
 // ── Storage ────────────────────────────────────────────────────────────────

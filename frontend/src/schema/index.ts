@@ -22,7 +22,7 @@ export {
   editPath,
   newPath,
   deletePath,
-} from './api.ts';
+} from './helpers.ts';
 export type {
   EntityType,
   EntityConfig,
