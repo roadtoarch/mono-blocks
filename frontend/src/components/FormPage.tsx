@@ -9,18 +9,17 @@
  * Validation: sync on change (required/email/number/date), async on blur
  * (uniqueness). On submit: validates all → saves → toasts → navigates
  * to detail page.
- *
- * IMPORTANT: useForm is called unconditionally (no early returns before it)
- * to satisfy the Rules of Hooks.
  */
+import { Button, ButtonSet, Form } from '@carbon/react';
 import { useForm } from '@tanstack/react-form';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import * as React from 'react';
 
-import type { EntityType, FieldDef } from '@/schema/types';
+import type { EntityType, EntityRecord, FieldDef } from '@/schema/types';
 
 import { getEntityResource } from '@/api/resources/entity-resource-factory';
 import { FieldControl } from '@/components/FieldControl';
+import { LinkButton } from '@/components/LinkButton';
 import { useEntityDetail, useInvalidateDetail } from '@/hooks/useEntityDetail';
 import { useRefCaches } from '@/hooks/useEntityList';
 import { detailPath, listPath, get, titleOf } from '@/schema/helpers';
@@ -65,13 +64,13 @@ function ErrorState({ error, onRetry, listHref, isNotFound }: ErrorStateProps) {
       </h1>
       <p className="mb-error-state__text">{error.message}</p>
       {isNotFound ? (
-        <Link className="mb-btn mb-btn--secondary" to={listHref}>
+        <LinkButton kind="secondary" to={listHref}>
           Back to list
-        </Link>
+        </LinkButton>
       ) : (
-        <button className="mb-btn mb-btn--secondary" type="button" onClick={onRetry}>
+        <Button kind="secondary" type="button" onClick={onRetry}>
           Retry
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -88,6 +87,100 @@ function buildDefaults(fields: FieldDef[]): Record<string, unknown> {
   return defaults;
 }
 
+function defaultsFromRecord(fields: FieldDef[], record: EntityRecord): Record<string, unknown> {
+  return Object.fromEntries(fields.map((f) => [f.key, record[f.key] ?? '']));
+}
+
+// ── Inner form component ───────────────────────────────────────────────────
+
+interface FormContentProps {
+  type: EntityType;
+  editId: string;
+  defaultValues: Record<string, unknown>;
+  refOptions: Record<string, { value: string; label: string }[]>;
+  cancelHref: string;
+}
+
+function FormContent({ type, editId, defaultValues, refOptions, cancelHref }: FormContentProps) {
+  const navigate = useNavigate();
+  const isEdit = editId !== '';
+  const invalidateDetail = useInvalidateDetail();
+  const schema = get(type);
+
+  const form = useForm({
+    defaultValues,
+    onSubmit: async ({ value }) => {
+      try {
+        const cleaned = cleanValues(value, schema.fields);
+        const saved = isEdit
+          ? await getEntityResource(type).update(editId, cleaned)
+          : await getEntityResource(type).create(cleaned);
+
+        invalidateDetail(type, saved.id);
+        toast(
+          'success',
+          isEdit ? `${schema.singular} updated` : `${schema.singular} created`,
+          `${titleOf(type, saved)} was saved.`,
+        );
+        void navigate({ to: detailPath(type, saved.id) });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'The request did not go through.';
+        toast('error', 'Save failed', message);
+      }
+    },
+  });
+
+  return (
+    <>
+      <div className="mb-page-header">
+        <h1 className="mb-page-header__title">
+          {isEdit
+            ? `Edit ${schema.singular.toLowerCase()}`
+            : `Create ${schema.singular.toLowerCase()}`}
+        </h1>
+      </div>
+
+      <Form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          void form.handleSubmit();
+        }}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--cds-spacing-05)',
+          maxWidth: 'var(--cds-form-max-width)',
+        }}
+      >
+        {schema.fields.map((f) => (
+          <form.Field
+            key={f.key}
+            name={f.key}
+            validators={{
+              onChange: syncValidator(type, f),
+              ...(f.unique
+                ? { onBlurAsync: uniqueValidator(type, f, isEdit ? editId : undefined) }
+                : {}),
+            }}
+          >
+            {(field) => <FieldControl fieldDef={f} field={field} refOptions={refOptions} />}
+          </form.Field>
+        ))}
+
+        <ButtonSet style={{ marginBlockStart: 'var(--cds-spacing-06)' }}>
+          <Button kind="primary" type="submit">
+            {isEdit ? 'Save changes' : `Create ${schema.singular.toLowerCase()}`}
+          </Button>
+          <LinkButton kind="ghost" to={cancelHref}>
+            Cancel
+          </LinkButton>
+        </ButtonSet>
+      </Form>
+    </>
+  );
+}
+
 // ── FormPage ───────────────────────────────────────────────────────────────
 
 interface FormPageProps {
@@ -96,12 +189,10 @@ interface FormPageProps {
 }
 
 export function FormPage({ type, id }: FormPageProps) {
-  const navigate = useNavigate();
   const isEdit = id !== undefined;
   const editId = id ?? '';
   const schema = get(type);
   const listHref = listPath(type);
-  const invalidateDetail = useInvalidateDetail();
 
   // Load record (edit only) and ref caches — hooks always called
   const detailQuery = useEntityDetail(type, editId);
@@ -130,42 +221,8 @@ export function FormPage({ type, id }: FormPageProps) {
     void refetchRef.current();
   }, []);
 
-  // Determine loading/error state BEFORE useForm (no early returns above)
   const isLoading = isEdit && detailQuery.isLoading;
   const isError = isEdit && detailQuery.isError;
-
-  // Default values: from record (edit) or empty (create)
-  const record = isEdit ? detailQuery.data?.record : null;
-  const defaultValues = record
-    ? Object.fromEntries(schema.fields.map((f) => [f.key, record[f.key] ?? '']))
-    : buildDefaults(schema.fields);
-
-  // ── Form instance (always called — rules of hooks) ─────────────────────
-
-  const form = useForm({
-    defaultValues,
-    onSubmit: async ({ value }) => {
-      try {
-        const cleaned = cleanValues(value, schema.fields);
-        const saved = isEdit
-          ? await getEntityResource(type).update(editId, cleaned)
-          : await getEntityResource(type).create(cleaned);
-
-        invalidateDetail(type, saved.id);
-        toast(
-          'success',
-          isEdit ? `${schema.singular} updated` : `${schema.singular} created`,
-          `${titleOf(type, saved)} was saved.`,
-        );
-        void navigate({ to: detailPath(type, saved.id) });
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'The request did not go through.';
-        toast('error', 'Save failed', message);
-      }
-    },
-  });
-
-  // ── Render states ──────────────────────────────────────────────────────
 
   if (isLoading) {
     return <FormSkeleton />;
@@ -180,51 +237,20 @@ export function FormPage({ type, id }: FormPageProps) {
     );
   }
 
+  const record = isEdit ? detailQuery.data?.record : null;
+  const defaultValues = record
+    ? defaultsFromRecord(schema.fields, record)
+    : buildDefaults(schema.fields);
   const cancelHref = isEdit && id ? detailPath(type, id) : listHref;
 
   return (
-    <>
-      <div className="mb-page-header">
-        <h1 className="mb-page-header__title">
-          {isEdit
-            ? `Edit ${schema.singular.toLowerCase()}`
-            : `Create ${schema.singular.toLowerCase()}`}
-        </h1>
-      </div>
-
-      <form
-        className="mb-form"
-        noValidate
-        onSubmit={(e) => {
-          e.preventDefault();
-          void form.handleSubmit();
-        }}
-      >
-        {schema.fields.map((f) => (
-          <form.Field
-            key={f.key}
-            name={f.key}
-            validators={{
-              onChange: syncValidator(type, f),
-              ...(f.unique
-                ? { onBlurAsync: uniqueValidator(type, f, isEdit ? editId : undefined) }
-                : {}),
-            }}
-          >
-            {(field) => <FieldControl fieldDef={f} field={field} refOptions={refOptions} />}
-          </form.Field>
-        ))}
-
-        <div className="mb-form__actions">
-          <button className="mb-btn mb-btn--primary" type="submit">
-            {isEdit ? 'Save changes' : `Create ${schema.singular.toLowerCase()}`}
-          </button>
-          <Link className="mb-btn mb-btn--ghost" to={cancelHref}>
-            Cancel
-          </Link>
-        </div>
-      </form>
-    </>
+    <FormContent
+      type={type}
+      editId={editId}
+      defaultValues={defaultValues}
+      refOptions={refOptions}
+      cancelHref={cancelHref}
+    />
   );
 }
 

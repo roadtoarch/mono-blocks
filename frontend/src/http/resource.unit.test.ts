@@ -6,13 +6,16 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-import type { RequestContext, ResponseContext, Transport } from './types.ts';
-
 import { Resource } from './resource.ts';
+
+import type { RequestContext, ResponseContext, Transport } from './types.ts';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function makeRes<T = unknown>(data: T, overrides?: Partial<ResponseContext<T>>): ResponseContext<T> {
+function makeRes<T = unknown>(
+  data: T,
+  overrides?: Partial<ResponseContext<T>>,
+): ResponseContext<T> {
   return {
     data,
     status: 200,

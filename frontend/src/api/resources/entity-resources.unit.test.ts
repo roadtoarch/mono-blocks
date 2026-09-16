@@ -6,8 +6,6 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-import type { Transport } from '@/http/types';
-
 import {
   CustomerResource,
   EquipmentResource,
@@ -15,6 +13,8 @@ import {
   TechnicianResource,
   WorkOrderResource,
 } from './entity-resources.ts';
+
+import type { Transport } from '@/http/types';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 

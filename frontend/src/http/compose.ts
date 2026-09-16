@@ -37,7 +37,7 @@ export function compose(middlewares: Middleware[], transport: Transport): Transp
         return transport(ctx);
       }
 
-      const middleware = middlewares[i]!;
+      const middleware = middlewares[i];
       return middleware(ctx, () => dispatch(i + 1));
     };
 

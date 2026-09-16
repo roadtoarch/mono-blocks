@@ -25,7 +25,11 @@ export class Resource<T = unknown> {
     return this.request<R>('GET', path, config);
   }
 
-  protected async post<R = T>(path = '', data?: unknown, config?: Partial<RequestConfig>): Promise<R> {
+  protected async post<R = T>(
+    path = '',
+    data?: unknown,
+    config?: Partial<RequestConfig>,
+  ): Promise<R> {
     return this.request<R>('POST', path, { ...config, data });
   }
 

@@ -14,6 +14,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  Tag,
   Tile,
 } from '@carbon/react';
 import { Link } from '@tanstack/react-router';
@@ -27,6 +28,7 @@ import type {
   TagColor,
 } from '@/schema/types';
 
+import { LinkButton } from '@/components/LinkButton';
 import { useContainerWidth } from '@/hooks/useContainerWidth';
 import {
   deletePath,
@@ -67,11 +69,13 @@ function resolveCellValue(
     return { content: resolved ?? refId ?? '—' };
   }
 
-  const strValue = typeof value === 'string' ? value : null;
-  const family: TagColor | null = strValue ? tagFamily(type, field.key, strValue) : null;
+  const family: TagColor | null = (() => {
+    const strValue = typeof value === 'string' ? value : null;
+    return strValue ? tagFamily(type, field.key, strValue) : null;
+  })();
   if (family) {
     return {
-      content: <span className={`mb-tag mb-tag--${family}`}>{optionLabel(field, value)}</span>,
+      content: <Tag type={family}>{optionLabel(field, value)}</Tag>,
     };
   }
 
@@ -182,22 +186,26 @@ function EntityTableActionsCell({ type, record }: { type: EntityType; record: En
 
   return (
     <TableCell className="mb-table__cell--actions">
-      <Link
+      <LinkButton
+        kind="ghost"
+        size="sm"
+        hasIconOnly
+        renderIcon={Edit}
+        iconDescription={`Edit ${title}`}
         to={editPath(type, record.id)}
-        className="mb-btn mb-btn--ghost"
         aria-label={`Edit ${title}`}
         title="Edit"
-      >
-        <Edit size={16} />
-      </Link>
-      <Link
+      />
+      <LinkButton
+        kind="ghost"
+        size="sm"
+        hasIconOnly
+        renderIcon={TrashCan}
+        iconDescription={`Delete ${title}`}
         to={deletePath(type, record.id)}
-        className="mb-btn mb-btn--ghost"
         aria-label={`Delete ${title}`}
         title="Delete"
-      >
-        <TrashCan size={16} />
-      </Link>
+      />
     </TableCell>
   );
 }
@@ -277,22 +285,26 @@ function NarrowCards(props: EntityTableProps) {
             })}
           </dl>
           <div className="mb-entity-card__actions">
-            <Link
+            <LinkButton
+              kind="ghost"
+              size="sm"
+              hasIconOnly
+              renderIcon={Edit}
+              iconDescription={`Edit ${titleOf(type, record)}`}
               to={editPath(type, record.id)}
-              className="mb-btn mb-btn--ghost"
               aria-label={`Edit ${titleOf(type, record)}`}
               title="Edit"
-            >
-              <Edit size={16} />
-            </Link>
-            <Link
+            />
+            <LinkButton
+              kind="ghost"
+              size="sm"
+              hasIconOnly
+              renderIcon={TrashCan}
+              iconDescription={`Delete ${titleOf(type, record)}`}
               to={deletePath(type, record.id)}
-              className="mb-btn mb-btn--ghost"
               aria-label={`Delete ${titleOf(type, record)}`}
               title="Delete"
-            >
-              <TrashCan size={16} />
-            </Link>
+            />
           </div>
         </Tile>
       ))}

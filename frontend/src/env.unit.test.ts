@@ -13,7 +13,6 @@
  */
 
 import { describe, expect, it } from 'vitest';
-
 import { z } from 'zod';
 
 // ── Schemas (duplicated from env.ts for unit testing) ────────────────────────
@@ -96,9 +95,7 @@ describe('env validation', () => {
     });
 
     it('rejects empty string for required fields', () => {
-      expect(() =>
-        getValidatedAppEnv({ VITE_API_URL: '' }),
-      ).toThrow();
+      expect(() => getValidatedAppEnv({ VITE_API_URL: '' })).toThrow();
     });
 
     it('accepts optional VITE_FRONTEND_URL', () => {

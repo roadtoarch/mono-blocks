@@ -5,10 +5,11 @@
  * Shows brand monogram, tagline, enter CTA, and skin switcher.
  * Port of prototype index.html landing page.
  */
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
 import type { Skin } from '@/stores/theme';
 
+import { LinkButton } from '@/components/LinkButton';
 import { useTheme } from '@/hooks';
 
 const SKINS: { key: Skin; label: string }[] = [
@@ -50,9 +51,9 @@ function LandingPage() {
         equipment, technicians and work orders — with every journey from search to sign-off.
       </p>
 
-      <Link to="/dashboard" className="mb-btn mb-btn--primary">
+      <LinkButton kind="primary" to="/dashboard">
         Enter the app
-      </Link>
+      </LinkButton>
 
       <div className="mb-skin-switcher">
         <p className="mb-skin-switcher__label" id="mb-skin-label">

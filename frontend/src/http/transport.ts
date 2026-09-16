@@ -10,8 +10,9 @@
 
 import axios from 'axios';
 
-import type { RequestConfig, RequestContext, ResponseContext } from './types';
 import { AbortError, HttpError, NetworkError } from './types';
+
+import type { RequestConfig, RequestContext, ResponseContext } from './types';
 
 // ─── Header normalisation ────────────────────────────────────────────────────
 
@@ -44,10 +45,7 @@ function mapAxiosError(error: unknown): never {
   const err = error as any;
 
   // Abort — cancelled via AbortSignal or axios timeout abort
-  if (
-    err.code === 'ERR_CANCELED' ||
-    (err.code === 'ECONNABORTED' && err.config?.signal?.aborted)
-  ) {
+  if (err.code === 'ERR_CANCELED' || (err.code === 'ECONNABORTED' && err.config?.signal?.aborted)) {
     throw new AbortError();
   }
 

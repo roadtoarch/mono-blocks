@@ -7,6 +7,7 @@
 
 import { describe, expect, it } from 'vitest';
 
+import { SCHEMA } from './config.tsx';
 import {
   deletePath,
   detailPath,
@@ -24,7 +25,6 @@ import {
   titleOf,
   types,
 } from './helpers.ts';
-import { SCHEMA } from './config.tsx';
 import { ENTITY_TYPES } from './types.ts';
 
 import type { EntityType } from './types.ts';

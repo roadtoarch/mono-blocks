@@ -6,9 +6,9 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-import type { RequestContext, ResponseContext } from '../types.ts';
-
 import { createAuthMiddleware, type TokenProvider } from './auth.ts';
+
+import type { RequestContext, ResponseContext } from '../types.ts';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -64,7 +64,9 @@ describe('createAuthMiddleware', () => {
   it('preserves existing headers', async () => {
     const provider: TokenProvider = vi.fn().mockResolvedValue('tok');
     const middleware = createAuthMiddleware(provider);
-    const ctx = freshCtx({ config: { url: '/test', method: 'GET', headers: { 'X-Custom': 'val' } } });
+    const ctx = freshCtx({
+      config: { url: '/test', method: 'GET', headers: { 'X-Custom': 'val' } },
+    });
     const response = makeRes();
     const next = vi.fn().mockResolvedValue(response);
 

@@ -6,9 +6,9 @@
 
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-import type { RequestContext, ResponseContext } from './types.ts';
-
 import { createApiClient, setDefaultTokenProvider } from './api-client.ts';
+
+import type { RequestContext, ResponseContext } from './types.ts';
 
 // ── Mock the axios transport so we don't need a real HTTP server ─────────────
 

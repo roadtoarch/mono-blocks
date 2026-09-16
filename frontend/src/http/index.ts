@@ -22,7 +22,12 @@ export { compose } from './compose';
 export { transport, normalizeHeaders } from './transport';
 
 // API client
-export { createApiClient, request, setDefaultTokenProvider, type ApiClientConfig } from './api-client';
+export {
+  createApiClient,
+  request,
+  setDefaultTokenProvider,
+  type ApiClientConfig,
+} from './api-client';
 
 // Middlewares
 export {

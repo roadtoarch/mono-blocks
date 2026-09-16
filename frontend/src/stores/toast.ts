@@ -52,3 +52,11 @@ export function toast(kind: ToastKind, title: string, body?: string): () => void
 
   return dismiss;
 }
+
+/**
+ * Manually dismiss a toast by id.
+ */
+export function dismissToast(id: string): void {
+  toasts = toasts.filter((t) => t.id !== id);
+  notify();
+}

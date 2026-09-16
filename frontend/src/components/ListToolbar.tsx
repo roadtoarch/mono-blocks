@@ -5,6 +5,7 @@
  * (immediate), and an explicit-submit search bar (button/Enter only — never
  * fires on keystroke, per client requirement R9).
  */
+import { Button, Select, SelectItem, TextInput } from '@carbon/react';
 import { useForm } from '@tanstack/react-form';
 
 import type { EntityConfig, FieldDef, SortDef } from '@/schema/types';
@@ -35,28 +36,20 @@ function FilterSelect({
   onChange: (val: string) => void;
 }) {
   return (
-    <div className="mb-form-field">
-      <label className="mb-form-field__label" htmlFor={`mb-filter-${field.key}`}>
-        {field.label}
-      </label>
-      <div className="mb-select-wrapper">
-        <select
-          className="mb-select"
-          id={`mb-filter-${field.key}`}
-          value={value}
-          onChange={(e) => {
-            onChange(e.target.value);
-          }}
-        >
-          <option value="">All</option>
-          {field.options?.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
+    <Select
+      id={`mb-filter-${field.key}`}
+      name={`filter-${field.key}`}
+      labelText={field.label}
+      value={value}
+      onChange={(e) => {
+        onChange(e.target.value);
+      }}
+    >
+      <SelectItem value="" text="All" />
+      {field.options?.map((o) => (
+        <SelectItem key={o.value} value={o.value} text={o.label} />
+      ))}
+    </Select>
   );
 }
 
@@ -72,31 +65,25 @@ function SortSelect({
   onChange: (s: SortDef) => void;
 }) {
   return (
-    <div className="mb-form-field">
-      <label className="mb-form-field__label" htmlFor="mb-sort">
-        Sort by
-      </label>
-      <div className="mb-select-wrapper">
-        <select
-          className="mb-select"
-          id="mb-sort"
-          value={`${sort.key}:${sort.dir}`}
-          onChange={(e) => {
-            const [key, dir] = e.target.value.split(':');
-            onChange({ key, dir: dir === 'desc' ? 'desc' : 'asc' });
-          }}
-        >
-          {fields.map((f) => [
-            <option key={`${f.key}:asc`} value={`${f.key}:asc`}>
-              {f.label} (ascending)
-            </option>,
-            <option key={`${f.key}:desc`} value={`${f.key}:desc`}>
-              {f.label} (descending)
-            </option>,
-          ])}
-        </select>
-      </div>
-    </div>
+    <Select
+      id="mb-sort"
+      name="sort"
+      labelText="Sort by"
+      value={`${sort.key}:${sort.dir}`}
+      onChange={(e) => {
+        const [key, dir] = e.target.value.split(':');
+        onChange({ key, dir: dir === 'desc' ? 'desc' : 'asc' });
+      }}
+    >
+      {fields.map((f) => [
+        <SelectItem key={`${f.key}:asc`} value={`${f.key}:asc`} text={`${f.label} (ascending)`} />,
+        <SelectItem
+          key={`${f.key}:desc`}
+          value={`${f.key}:desc`}
+          text={`${f.label} (descending)`}
+        />,
+      ])}
+    </Select>
   );
 }
 
@@ -127,17 +114,14 @@ function SearchBar({
         void form.handleSubmit();
       }}
     >
-      <div className="mb-form-field">
-        <label className="mb-form-field__label" htmlFor="mb-search-input">
-          Search {placeholder}
-        </label>
-        <form.Field name="q">
-          {(field) => (
-            <input
-              className="mb-input"
-              type="search"
+      <form.Field name="q">
+        {(field) => (
+          <div style={{ flex: '1 1 auto', minWidth: 0 }}>
+            <TextInput
               id="mb-search-input"
               name="q"
+              type="search"
+              labelText={`Search ${placeholder}`}
               placeholder={`Search by ${placeholder}`}
               autoComplete="off"
               value={field.state.value}
@@ -146,12 +130,12 @@ function SearchBar({
                 field.handleChange(e.target.value);
               }}
             />
-          )}
-        </form.Field>
-      </div>
-      <button className="mb-btn mb-btn--primary" type="submit">
+          </div>
+        )}
+      </form.Field>
+      <Button kind="primary" type="submit">
         Search
-      </button>
+      </Button>
     </form>
   );
 }

@@ -6,12 +6,21 @@
  * from the MonoBlocks schema: text, email, tel, number, date, select,
  * multiselect, textarea, and ref (entity-relationship) selects.
  *
- * Accessibility: every field gets label, aria-describedby (helper + error),
- * aria-invalid on validation failure, and proper focus management.
+ * Accessibility: every field uses Carbon's built-in label, helper text,
+ * and invalid/invalidText props for validation state.
  */
+import {
+  Checkbox,
+  FormGroup,
+  NumberInput,
+  Select,
+  SelectItem,
+  TextArea,
+  TextInput,
+} from '@carbon/react';
 import * as React from 'react';
 
-import type { FieldDef, FieldOption } from '@/schema/types';
+import type { FieldDef } from '@/schema/types';
 
 // ── Field API shape (what TanStack Form's render prop provides) ────────────
 
@@ -30,8 +39,6 @@ interface FieldRenderProps {
   handleBlur: () => void;
 }
 
-// ── Field control ──────────────────────────────────────────────────────────
-
 interface FieldControlProps {
   fieldDef: FieldDef;
   field: FieldRenderProps;
@@ -39,72 +46,38 @@ interface FieldControlProps {
 }
 
 export function FieldControl({ fieldDef: f, field, refOptions }: FieldControlProps) {
-  const { value, handleChange, handleBlur } = field;
+  const value = field.state.value;
+  const { handleChange, handleBlur } = field;
   const meta = field.state.meta;
   const error = meta.isTouched && !meta.isValid ? meta.errors.join(', ') : null;
+  const isInvalid = Boolean(error);
 
   const fieldId = `mb-f-${f.key}`;
-  const helperId = f.helper ? `${fieldId}-helper` : undefined;
-  const errorId = `${fieldId}-error`;
-  const describedBy = [helperId, errorId].filter(Boolean).join(' ');
-  const isInvalid = !meta.isValid && meta.isTouched;
+  const label = (
+    <>
+      {f.label}
+      {f.required ? (
+        <>
+          {' '}
+          <span aria-hidden="true">*</span>
+        </>
+      ) : null}
+    </>
+  );
 
   return (
-    <div className={`mb-form-field${error ? ' is-invalid' : ''}`} data-field={f.key}>
-      {/* Label */}
-      {f.type === 'multiselect' ? (
-        <span className="mb-form-field__label" id={`${fieldId}-legend`}>
-          {f.label}
-        </span>
-      ) : (
-        <label className="mb-form-field__label" htmlFor={fieldId}>
-          {f.label}
-          {f.required ? (
-            <>
-              {' '}
-              <span aria-hidden="true">*</span>
-            </>
-          ) : null}
-        </label>
-      )}
-
-      {/* Control */}
+    <div data-field={f.key}>
       {renderControl({
         f,
         value,
         handleChange,
         handleBlur,
         fieldId,
-        describedBy,
+        label,
         isInvalid,
+        error,
         refOptions,
       })}
-
-      {/* Helper text */}
-      {f.helper ? (
-        <p className="mb-form-field__helper" id={helperId}>
-          {f.helper}
-        </p>
-      ) : null}
-
-      {/* Error message */}
-      <p className="mb-form-field__error" id={errorId} role="alert">
-        {error ? (
-          <>
-            <svg
-              className="mb-icon mb-form-field__error-icon"
-              aria-hidden="true"
-              viewBox="0 0 16 16"
-              width="16"
-              height="16"
-            >
-              <path d="M8 1L14.5 13H1.5L8 1z" fill="currentColor" />
-              <path d="M7.5 5.5v3h1v-3h-1zm0 4.5v1h1v-1h-1z" fill="var(--cds-text-on-color)" />
-            </svg>
-            <span>{error}</span>
-          </>
-        ) : null}
-      </p>
     </div>
   );
 }
@@ -117,29 +90,33 @@ interface ControlProps {
   handleChange: (val: unknown) => void;
   handleBlur: () => void;
   fieldId: string;
-  describedBy: string;
+  label: React.ReactNode;
   isInvalid: boolean;
+  error: string | null;
   refOptions?: Record<string, { value: string; label: string }[]>;
 }
 
 function renderControl(props: ControlProps) {
-  const { f, value, handleChange, handleBlur, fieldId, describedBy, isInvalid, refOptions } = props;
+  const { f, value, handleChange, handleBlur, fieldId, label, isInvalid, error } = props;
 
   // Textarea
   if (f.type === 'textarea') {
     return (
-      <textarea
-        className="mb-textarea"
+      <TextArea
         id={fieldId}
         name={f.key}
+        labelText={label}
+        helperText={f.helper ?? undefined}
+        invalid={isInvalid}
+        invalidText={error ?? undefined}
         rows={4}
         value={asString(value)}
-        onBlur={handleBlur}
+        onBlur={() => {
+          handleBlur();
+        }}
         onChange={(e) => {
           handleChange(e.target.value);
         }}
-        aria-describedby={describedBy}
-        aria-invalid={isInvalid}
       />
     );
   }
@@ -148,120 +125,144 @@ function renderControl(props: ControlProps) {
   if (f.type === 'multiselect') {
     const chosen = asArray(value);
     return (
-      <div role="group" aria-labelledby={`${fieldId}-legend`} id={fieldId}>
+      <FormGroup legendText={label} invalid={isInvalid}>
+        {f.helper ? <p className="mb-field-helper">{f.helper}</p> : null}
         {f.options.map((o) => (
-          <label className="mb-form-field__label" htmlFor={`${fieldId}-${o.value}`} key={o.value}>
-            <input
-              type="checkbox"
-              id={`${fieldId}-${o.value}`}
-              name={f.key}
-              value={o.value}
-              checked={chosen.includes(o.value)}
-              onChange={(e) => {
-                const next = e.target.checked
-                  ? [...chosen, o.value]
-                  : chosen.filter((v) => v !== o.value);
-                handleChange(next);
-              }}
-              onBlur={() => {
-                handleBlur();
-              }}
-              aria-invalid={isInvalid}
-            />{' '}
-            {o.label}
-          </label>
+          <Checkbox
+            key={o.value}
+            id={`${fieldId}-${o.value}`}
+            labelText={o.label}
+            name={f.key}
+            value={o.value}
+            checked={chosen.includes(o.value)}
+            invalid={isInvalid}
+            onBlur={() => {
+              handleBlur();
+            }}
+            onChange={(_, data) => {
+              const next = data.checked
+                ? [...chosen, o.value]
+                : chosen.filter((v) => v !== o.value);
+              handleChange(next);
+            }}
+          />
         ))}
-      </div>
+        {isInvalid && error ? (
+          <p className="mb-field-error" role="alert">
+            {error}
+          </p>
+        ) : null}
+      </FormGroup>
     );
   }
 
   // Select with ref (entity-relationship)
   if (f.type === 'select' && f.ref) {
-    const opts = refOptions?.[f.ref] ?? [];
+    const opts = props.refOptions?.[f.ref] ?? [];
     const placeholder = f.required ? 'Select…' : 'Unassigned';
     return (
-      <div className="mb-select-wrapper">
-        <select
-          className="mb-select"
-          id={fieldId}
-          name={f.key}
-          value={asString(value)}
-          onBlur={handleBlur}
-          onChange={(e) => {
-            handleChange(e.target.value);
-          }}
-          aria-describedby={describedBy}
-          aria-invalid={isInvalid}
-        >
-          <option value="">{placeholder}</option>
-          {opts.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      <Select
+        id={fieldId}
+        name={f.key}
+        labelText={label}
+        helperText={f.helper ?? undefined}
+        invalid={isInvalid}
+        invalidText={error ?? undefined}
+        value={asString(value)}
+        onBlur={() => {
+          handleBlur();
+        }}
+        onChange={(e) => {
+          handleChange(e.target.value);
+        }}
+      >
+        <SelectItem value="" text={placeholder} />
+        {opts.map((o) => (
+          <SelectItem key={o.value} value={o.value} text={o.label} />
+        ))}
+      </Select>
     );
   }
 
   // Select (no ref — native options)
   if (f.type === 'select') {
     return (
-      <div className="mb-select-wrapper">
-        <select
-          className="mb-select"
-          id={fieldId}
-          name={f.key}
-          value={asString(value)}
-          onBlur={handleBlur}
-          onChange={(e) => {
-            handleChange(e.target.value);
-          }}
-          aria-describedby={describedBy}
-          aria-invalid={isInvalid}
-        >
-          <option value="">Select…</option>
-          {f.options.map((o: FieldOption) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      <Select
+        id={fieldId}
+        name={f.key}
+        labelText={label}
+        helperText={f.helper ?? undefined}
+        invalid={isInvalid}
+        invalidText={error ?? undefined}
+        value={asString(value)}
+        onBlur={() => {
+          handleBlur();
+        }}
+        onChange={(e) => {
+          handleChange(e.target.value);
+        }}
+      >
+        <SelectItem value="" text="Select…" />
+        {f.options.map((o) => (
+          <SelectItem key={o.value} value={o.value} text={o.label} />
+        ))}
+      </Select>
     );
   }
 
-  // Input types: text, email, tel, number, date
-  const inputType = f.type === 'number' ? 'number' : f.type;
-  const extras: Record<string, string> = {};
+  // Number
   if (f.type === 'number') {
-    extras.min = '0';
-    extras.max = '10000000';
-    extras.inputMode = 'numeric';
+    return (
+      <NumberInput
+        id={fieldId}
+        name={f.key}
+        label={label}
+        helperText={f.helper ?? undefined}
+        invalid={isInvalid}
+        invalidText={error ?? undefined}
+        value={value === '' || value === null || value === undefined ? '' : Number(value)}
+        min={0}
+        max={10000000}
+        allowEmpty
+        type="number"
+        onBlur={() => {
+          handleBlur();
+        }}
+        onChange={(_, data) => {
+          handleChange(data.value === '' ? '' : Number(data.value));
+        }}
+      />
+    );
   }
+
+  // Input types: text, email, tel, date
+  const extras: React.InputHTMLAttributes<HTMLInputElement> = {};
   if (f.type === 'email') extras.autoComplete = 'email';
   if (f.type === 'tel') extras.autoComplete = 'tel';
+  if (f.type === 'number') {
+    extras.min = 0;
+    extras.max = 10000000;
+    extras.inputMode = 'numeric';
+  }
 
   const displayValue = value === null || value === undefined ? '' : asString(value);
 
   return (
-    <input
-      className="mb-input"
+    <TextInput
       id={fieldId}
       name={f.key}
-      type={inputType}
+      type={f.type}
+      labelText={label}
+      helperText={f.helper ?? undefined}
+      invalid={isInvalid}
+      invalidText={error ?? undefined}
       value={displayValue}
-      onBlur={handleBlur}
-      onChange={(e) => {
-        const raw = e.target.value;
-        if (f.type === 'number') {
-          handleChange(raw === '' ? '' : Number(raw));
-        } else {
-          handleChange(raw);
-        }
+      onBlur={() => {
+        handleBlur();
       }}
-      aria-describedby={describedBy}
-      aria-invalid={isInvalid}
+      onChange={(e) => {
+        handleChange(e.target.value);
+      }}
       {...extras}
     />
   );

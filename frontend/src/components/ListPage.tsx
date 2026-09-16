@@ -9,12 +9,13 @@
  * Search is explicit-submit only (R9). Filters and sort are immediate.
  */
 import { Add, Search, WarningFilled } from '@carbon/icons-react';
-import { Link } from '@tanstack/react-router';
+import { Button } from '@carbon/react';
 import * as React from 'react';
 
 import type { EntityType, SortDef } from '@/schema/types';
 
 import { EntityTable, SkeletonTable } from '@/components/EntityTable';
+import { LinkButton } from '@/components/LinkButton';
 import { ListToolbar, type ListToolbarState } from '@/components/ListToolbar';
 import { useEntityList, useRefCaches } from '@/hooks/useEntityList';
 import { get, newPath } from '@/schema/helpers';
@@ -37,9 +38,9 @@ function EmptyNoRecords({ type }: { type: EntityType }) {
         Get started by adding the first {schema.singular.toLowerCase()}. It will show up here right
         away.
       </p>
-      <Link to={newPath(type)} className="mb-btn mb-btn--primary">
+      <LinkButton kind="primary" to={newPath(type)}>
         Add first {schema.singular.toLowerCase()}
-      </Link>
+      </LinkButton>
     </div>
   );
 }
@@ -69,9 +70,9 @@ function EmptyNoResults({
         {schema.searchFields.join(', ').replace(/_/g, ' ')}.
       </p>
       {hasQuery && (
-        <button className="mb-btn mb-btn--ghost" type="button" onClick={onClearSearch}>
+        <Button kind="ghost" type="button" onClick={onClearSearch}>
           Clear search
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -87,9 +88,9 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
       />
       <h2 className="mb-error-state__title">Couldn&apos;t load records</h2>
       <p className="mb-error-state__text">{message}</p>
-      <button className="mb-btn mb-btn--secondary" type="button" onClick={onRetry}>
+      <Button kind="secondary" type="button" onClick={onRetry}>
         Retry
-      </button>
+      </Button>
     </div>
   );
 }
@@ -158,9 +159,9 @@ export function ListPage({ type }: ListPageProps) {
       <div className="mb-page-header">
         <h1 className="mb-page-header__title">{schema.plural}</h1>
         <div className="mb-page-header__actions">
-          <Link to={newPath(type)} className="mb-btn mb-btn--primary">
+          <LinkButton kind="primary" to={newPath(type)}>
             Add {schema.singular.toLowerCase()}
-          </Link>
+          </LinkButton>
         </div>
       </div>
 

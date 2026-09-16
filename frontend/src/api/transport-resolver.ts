@@ -10,9 +10,9 @@
  * import mockDb or the HTTP pipeline directly.
  */
 
-import type { Transport } from '@/http/types';
-
 import { mockTransport } from './mock-transport';
+
+import type { Transport } from '@/http/types';
 
 // ─── Transport selection ─────────────────────────────────────────────────────
 

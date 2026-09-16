@@ -6,9 +6,9 @@
 
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-import type { EntityType } from '@/schema/types';
-
 import { clearResourceCache, getEntityResource } from './entity-resource-factory.ts';
+
+import type { EntityType } from '@/schema/types';
 
 // ── Tests ───────────────────────────────────────────────────────────────────
 

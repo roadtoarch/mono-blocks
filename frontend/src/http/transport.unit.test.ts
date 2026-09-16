@@ -4,13 +4,13 @@
  * Unit tests for the axios transport and normalizeHeaders helper.
  */
 
-import { describe, expect, it, vi, beforeEach } from 'vitest';
 import axios from 'axios';
-
-import type { RequestContext } from './types.ts';
-import { AbortError, HttpError, NetworkError } from './types.ts';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 import { normalizeHeaders, transport } from './transport.ts';
+import { AbortError, HttpError, NetworkError } from './types.ts';
+
+import type { RequestContext } from './types.ts';
 
 // ── Mocks ───────────────────────────────────────────────────────────────────
 

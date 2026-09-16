@@ -6,13 +6,16 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-import type { RequestContext, ResponseContext, Transport } from '@/http/types';
-
 import { CrudResource } from './crud-resource.ts';
+
+import type { RequestContext, ResponseContext, Transport } from '@/http/types';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-function makeRes<T = unknown>(data: T, overrides?: Partial<ResponseContext<T>>): ResponseContext<T> {
+function makeRes<T = unknown>(
+  data: T,
+  overrides?: Partial<ResponseContext<T>>,
+): ResponseContext<T> {
   return {
     data,
     status: 200,
@@ -77,10 +80,10 @@ describe('CrudResource', () => {
       });
 
       expect(capturedParams).toEqual({
-        q: 'acme',
+        'q': 'acme',
         'filter.status': 'active',
-        sortKey: 'name',
-        sortDir: 'asc',
+        'sortKey': 'name',
+        'sortDir': 'asc',
       });
       // Empty filter values should be excluded
       expect(capturedParams).not.toHaveProperty('filter.region');

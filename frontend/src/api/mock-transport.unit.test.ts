@@ -6,11 +6,10 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { RequestContext } from '@/http/types';
-
+import { mockTransport } from './mock-transport.ts';
 import * as mockDb from './mockDb.ts';
 
-import { mockTransport } from './mock-transport.ts';
+import type { RequestContext } from '@/http/types';
 
 // ── Mocks ───────────────────────────────────────────────────────────────────
 
@@ -88,10 +87,10 @@ describe('mockTransport', () => {
           url: '/api/customers',
           method: 'GET',
           params: {
-            q: 'acme',
+            'q': 'acme',
             'filter.status': 'active',
-            sortKey: 'name',
-            sortDir: 'asc',
+            'sortKey': 'name',
+            'sortDir': 'asc',
           },
         },
       });
@@ -112,7 +111,9 @@ describe('mockTransport', () => {
     });
 
     it('strips baseURL prefix from URL', async () => {
-      const ctx = makeCtx({ config: { url: 'http://localhost:8080/api/customers', method: 'GET', params: {} } });
+      const ctx = makeCtx({
+        config: { url: 'http://localhost:8080/api/customers', method: 'GET', params: {} },
+      });
       await mockTransport(ctx);
 
       expect(mockDb.list).toHaveBeenCalled();

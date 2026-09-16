@@ -6,11 +6,13 @@
  * inbound relation warnings, and Delete (danger) + Keep it (ghost) actions.
  * Full page, never a modal (per client brief).
  */
+import { Button, ButtonSet } from '@carbon/react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import * as React from 'react';
 
 import type { EntityType, RelationResult } from '@/schema/types';
 
+import { LinkButton } from '@/components/LinkButton';
 import { useDeleteEntity, useEntityDetail } from '@/hooks/useEntityDetail';
 import {
   detailPath,
@@ -93,13 +95,13 @@ function ErrorState({ error, onRetry, listHref, isNotFound }: ErrorStateProps) {
       </h1>
       <p className="mb-error-state__text">{error.message}</p>
       {isNotFound ? (
-        <Link className="mb-btn mb-btn--secondary" to={listHref}>
+        <LinkButton kind="secondary" to={listHref}>
           Back to list
-        </Link>
+        </LinkButton>
       ) : (
-        <button className="mb-btn mb-btn--secondary" type="button" onClick={onRetry}>
+        <Button kind="secondary" type="button" onClick={onRetry}>
           Retry
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -264,13 +266,29 @@ export function DeletePage({ type, id }: DeletePageProps) {
         </dl>
       </div>
 
-      <p className="mb-form-field__helper" id="mb-delete-copy">
+      <p
+        id="mb-delete-copy"
+        style={{
+          color: 'var(--cds-text-helper)',
+          fontSize: 'var(--cds-body-compact-01-font-size)',
+          lineHeight: 'var(--cds-body-compact-01-line-height)',
+          letterSpacing: 'var(--cds-body-compact-01-letter-spacing)',
+        }}
+      >
         This action cannot be undone. The {schema.singular.toLowerCase()} and its event history will
         be permanently removed.
       </p>
 
       {inbound.length > 0 && (
-        <p className="mb-form-field__helper" id="mb-delete-warning">
+        <p
+          id="mb-delete-warning"
+          style={{
+            color: 'var(--cds-text-helper)',
+            fontSize: 'var(--cds-body-compact-01-font-size)',
+            lineHeight: 'var(--cds-body-compact-01-line-height)',
+            letterSpacing: 'var(--cds-body-compact-01-letter-spacing)',
+          }}
+        >
           {inbound
             .map((r) => `${String(r.records.length)} linked ${r.label.toLowerCase()}`)
             .join(' and ')}{' '}
@@ -278,19 +296,14 @@ export function DeletePage({ type, id }: DeletePageProps) {
         </p>
       )}
 
-      <div className="mb-form__actions">
-        <button
-          className="mb-btn mb-btn--danger"
-          type="button"
-          onClick={handleDelete}
-          disabled={deleting}
-        >
+      <ButtonSet style={{ marginBlockStart: 'var(--cds-spacing-06)' }}>
+        <Button kind="danger" type="button" onClick={handleDelete} disabled={deleting}>
           Delete
-        </button>
-        <Link className="mb-btn mb-btn--ghost" to={detailPath(type, id)}>
+        </Button>
+        <LinkButton kind="ghost" to={detailPath(type, id)}>
           Keep it
-        </Link>
-      </div>
+        </LinkButton>
+      </ButtonSet>
     </>
   );
 }

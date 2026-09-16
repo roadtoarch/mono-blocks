@@ -6,9 +6,11 @@
  * Resource pattern works against both mockDb and the real API.
  */
 
-import type { EntityType } from '@/schema/types';
-import type { Transport } from '@/http/types';
 import { CrudResource } from './crud-resource';
+
+import type { Transport } from '@/http/types';
+import type { EntityType } from '@/schema/types';
+
 import { getTransport } from '@/api/transport-resolver';
 
 // ─── Resource cache ──────────────────────────────────────────────────────────

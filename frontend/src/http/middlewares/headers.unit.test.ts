@@ -6,9 +6,9 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-import type { RequestContext, ResponseContext } from '../types.ts';
-
 import { createHeadersMiddleware } from './headers.ts';
+
+import type { RequestContext, ResponseContext } from '../types.ts';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 

@@ -9,8 +9,6 @@
  */
 
 import { compose } from './compose';
-import type { Middleware, Transport } from './types';
-import { transport } from './transport';
 import {
   createAuthMiddleware,
   createHeadersMiddleware,
@@ -19,6 +17,10 @@ import {
   type TokenProvider,
   type TraceProvider,
 } from './middlewares';
+import { transport } from './transport';
+
+import type { Middleware, Transport } from './types';
+
 import { env } from '@/env';
 
 // ─── Config ──────────────────────────────────────────────────────────────────

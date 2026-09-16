@@ -2,7 +2,14 @@
  * MonoBlocks — API resources barrel
  */
 
-export { CrudResource, type DeleteResponse, type ListResponse, type RelatedResponse, type ResetResponse, type UniqueCheckResponse } from './crud-resource';
+export {
+  CrudResource,
+  type DeleteResponse,
+  type ListResponse,
+  type RelatedResponse,
+  type ResetResponse,
+  type UniqueCheckResponse,
+} from './crud-resource';
 export {
   CustomerResource,
   SiteResource,

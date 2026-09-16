@@ -13,7 +13,7 @@ import { useCallback, useSyncExternalStore } from 'react';
 
 import type { Toast, ToastKind } from '@/stores/toast';
 
-import { getToasts, subscribe, toast as showToast } from '@/stores/toast';
+import { getToasts, subscribe, toast as showToast, dismissToast } from '@/stores/toast';
 
 // Cached snapshot — same reference as long as the store hasn't changed.
 let cachedToasts: Toast[] = [];
@@ -45,6 +45,7 @@ function getServerSnapshot(): Toast[] {
 export function useToasts(): {
   toasts: Toast[];
   toast: (kind: ToastKind, title: string, body?: string) => () => void;
+  dismiss: (id: string) => void;
 } {
   const toasts = useSyncExternalStore(subscribeToasts, getSnapshot, getServerSnapshot);
 
@@ -53,5 +54,9 @@ export function useToasts(): {
     [],
   );
 
-  return { toasts, toast: toastFn };
+  const dismissFn = useCallback((id: string) => {
+    dismissToast(id);
+  }, []);
+
+  return { toasts, toast: toastFn, dismiss: dismissFn };
 }

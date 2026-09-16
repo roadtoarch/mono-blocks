@@ -6,10 +6,11 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-import type { RequestContext, ResponseContext } from '../types.ts';
 import { HttpError, NetworkError } from '../types.ts';
 
 import { createRetryMiddleware } from './retry.ts';
+
+import type { RequestContext, ResponseContext } from '../types.ts';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 

@@ -5,11 +5,13 @@
  * Shows breadcrumb, page header (with Edit/Delete links), a definition list
  * of every schema field, resolved relation sections, and an event timeline.
  */
+import { Button, Tag } from '@carbon/react';
 import { Link } from '@tanstack/react-router';
 import * as React from 'react';
 
 import type { EntityType, EntityRecord, FieldDef, RelationResult } from '@/schema/types';
 
+import { LinkButton } from '@/components/LinkButton';
 import { useEntityDetail } from '@/hooks/useEntityDetail';
 import {
   detailPath,
@@ -91,7 +93,7 @@ function FieldValue({ fieldDef, record, relTitles, type }: FieldValueProps) {
   if (family && value) {
     return (
       <dd>
-        <span className={`mb-tag mb-tag--${family}`}>{optionLabel(fieldDef, value)}</span>
+        <Tag type={family}>{optionLabel(fieldDef, value)}</Tag>
       </dd>
     );
   }
@@ -208,13 +210,13 @@ function ErrorState({ error, onRetry, listHref, isNotFound }: ErrorStateProps) {
       </h1>
       <p className="mb-error-state__text">{error.message}</p>
       {isNotFound ? (
-        <Link className="mb-btn mb-btn--secondary" to={listHref}>
+        <LinkButton kind="secondary" to={listHref}>
           Back to list
-        </Link>
+        </LinkButton>
       ) : (
-        <button className="mb-btn mb-btn--secondary" type="button" onClick={onRetry}>
+        <Button kind="secondary" type="button" onClick={onRetry}>
           Retry
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -285,12 +287,12 @@ export function DetailPage({ type, id }: DetailPageProps) {
       <div className="mb-page-header mb-page-header--detail">
         <h1 className="mb-page-header__title">{title}</h1>
         <div className="mb-page-header__actions">
-          <Link className="mb-btn mb-btn--secondary" to={editPath(type, record.id)}>
+          <LinkButton kind="secondary" to={editPath(type, record.id)}>
             Edit
-          </Link>
-          <Link className="mb-btn mb-btn--danger" to={deletePath(type, record.id)}>
+          </LinkButton>
+          <LinkButton kind="danger" to={deletePath(type, record.id)}>
             Delete
-          </Link>
+          </LinkButton>
         </div>
       </div>
 
@@ -327,7 +329,16 @@ export function DetailPage({ type, id }: DetailPageProps) {
             ))}
           </dl>
         ) : (
-          <p className="mb-form-field__helper">No events recorded for this record yet.</p>
+          <p
+            style={{
+              color: 'var(--cds-text-helper)',
+              fontSize: 'var(--cds-body-compact-01-font-size)',
+              lineHeight: 'var(--cds-body-compact-01-line-height)',
+              letterSpacing: 'var(--cds-body-compact-01-letter-spacing)',
+            }}
+          >
+            No events recorded for this record yet.
+          </p>
         )}
       </section>
     </>

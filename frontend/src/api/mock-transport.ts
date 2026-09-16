@@ -18,9 +18,9 @@
  *   POST   /api/reset                    → reset()
  */
 
-import type { RequestContext, ResponseContext, Transport } from '@/http/types';
-
 import * as mockDb from './mockDb';
+
+import type { RequestContext, ResponseContext, Transport } from '@/http/types';
 import type { EntityType } from '@/schema/types';
 
 // ─── Route helpers ───────────────────────────────────────────────────────────
@@ -30,10 +30,10 @@ import type { EntityType } from '@/schema/types';
  * e.g. "customers" → "customer", "work-orders" → "work_order"
  */
 const SEGMENT_TO_TYPE: Record<string, EntityType> = {
-  customers: 'customer',
-  sites: 'site',
-  equipment: 'equipment',
-  technicians: 'technician',
+  'customers': 'customer',
+  'sites': 'site',
+  'equipment': 'equipment',
+  'technicians': 'technician',
   'work-orders': 'work_order',
 };
 
@@ -105,7 +105,7 @@ export const mockTransport: Transport = async (ctx: RequestContext): Promise<Res
         data = await mockDb.getRecord(route.type, route.id);
       } else {
         // List with query params → ListOptions
-        const params = (config.params ?? {}) as Record<string, unknown>;
+        const params = config.params ?? {};
         const sortKey = params.sortKey as string | undefined;
         const sortDir = params.sortDir as 'asc' | 'desc' | undefined;
 
@@ -134,7 +134,11 @@ export const mockTransport: Transport = async (ctx: RequestContext): Promise<Res
 
     case 'PATCH': {
       if (!route.id) throw new Error(`MockTransport: PATCH requires an ID in URL "${config.url}"`);
-      data = await mockDb.update(route.type, route.id, (config.data ?? {}) as Record<string, unknown>);
+      data = await mockDb.update(
+        route.type,
+        route.id,
+        (config.data ?? {}) as Record<string, unknown>,
+      );
       break;
     }
 

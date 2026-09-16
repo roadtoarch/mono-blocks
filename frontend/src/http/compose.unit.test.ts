@@ -7,6 +7,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { compose } from './compose.ts';
+
 import type { Middleware, RequestContext, ResponseContext, Transport } from './types.ts';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────

@@ -9,10 +9,12 @@
  * "View list." so screen readers announce a natural sentence and axe's
  * label-content-name-mismatch rule passes.
  */
+import { Button, Tag } from '@carbon/react';
 import { Link } from '@tanstack/react-router';
 
 import type { KpiDelta, KpiTile, RecentWorkOrder } from '@/hooks/useDashboard';
 
+import { LinkButton } from '@/components/LinkButton';
 import { useDashboard } from '@/hooks/useDashboard';
 import { field, optionLabel, tagFamily } from '@/schema/helpers';
 import { date, number as fmtNum } from '@/utils/format';
@@ -76,20 +78,8 @@ function RecentRow({ wo }: { wo: RecentWorkOrder }) {
         </Link>
       </td>
       <td>{wo.siteTitle}</td>
-      <td>
-        {prioColor && (
-          <span className={`mb-tag mb-tag--${prioColor}`}>
-            {optionLabel(prioField, wo.priority)}
-          </span>
-        )}
-      </td>
-      <td>
-        {statusColor && (
-          <span className={`mb-tag mb-tag--${statusColor}`}>
-            {optionLabel(statusField, wo.status)}
-          </span>
-        )}
-      </td>
+      <td>{prioColor && <Tag type={prioColor}>{optionLabel(prioField, wo.priority)}</Tag>}</td>
+      <td>{statusColor && <Tag type={statusColor}>{optionLabel(statusField, wo.status)}</Tag>}</td>
       <td className="cds--mono">{date(wo.scheduledFor)}</td>
     </tr>
   );
@@ -150,9 +140,9 @@ function DashboardError({ error, onRetry }: { error: Error; onRetry: () => void 
     <div className="mb-error-state">
       <h1 className="mb-error-state__title">Couldn't load the dashboard</h1>
       <p className="mb-error-state__text">{error.message || 'Something went wrong.'}</p>
-      <button className="mb-btn mb-btn--secondary" type="button" onClick={onRetry}>
+      <Button kind="secondary" type="button" onClick={onRetry}>
         Retry
-      </button>
+      </Button>
     </div>
   );
 }
@@ -208,24 +198,24 @@ export function DashboardPage() {
               </table>
             </div>
             <p>
-              <Link className="mb-btn mb-btn--ghost" to="/work-orders">
+              <LinkButton kind="ghost" to="/work-orders">
                 View all work orders
-              </Link>
+              </LinkButton>
             </p>
           </section>
 
           <section className="mb-section" aria-label="Quick links">
             <h2 className="mb-section__title">Quick links</h2>
             <div className="mb-page-header__actions">
-              <Link className="mb-btn mb-btn--primary" to="/work-orders/new">
+              <LinkButton kind="primary" to="/work-orders/new">
                 Add work order
-              </Link>
-              <Link className="mb-btn mb-btn--secondary" to="/customers/new">
+              </LinkButton>
+              <LinkButton kind="secondary" to="/customers/new">
                 Add customer
-              </Link>
-              <Link className="mb-btn mb-btn--secondary" to="/sites/new">
+              </LinkButton>
+              <LinkButton kind="secondary" to="/sites/new">
                 Add site
-              </Link>
+              </LinkButton>
             </div>
           </section>
         </>

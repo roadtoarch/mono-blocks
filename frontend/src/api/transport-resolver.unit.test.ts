@@ -6,9 +6,9 @@
 
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-import type { Transport } from '@/http/types';
-
 import { getTransport, resetTransport, setTransport } from './transport-resolver.ts';
+
+import type { Transport } from '@/http/types';
 
 // ── Tests ───────────────────────────────────────────────────────────────────
 

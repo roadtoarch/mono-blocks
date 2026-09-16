@@ -14,8 +14,9 @@
  * The final `res.meta.retryCount` reflects how many retries occurred.
  */
 
-import type { Middleware } from '../types';
 import { HttpError, NetworkError } from '../types';
+
+import type { Middleware } from '../types';
 
 function isRetryableError(error: unknown): boolean {
   if (error instanceof HttpError && error.status >= 500) {

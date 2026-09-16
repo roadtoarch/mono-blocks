@@ -17,9 +17,15 @@
  */
 
 import type { Transport } from '@/http/types';
-import { Resource } from '@/http/resource';
+import type {
+  EntityRecord,
+  EntityEvent,
+  ListOptions,
+  RelatedResult,
+  RelationResult,
+} from '@/schema/types';
 
-import type { EntityRecord, EntityEvent, ListOptions, RelatedResult, RelationResult } from '@/schema/types';
+import { Resource } from '@/http/resource';
 
 // ─── Response types ──────────────────────────────────────────────────────────
 
@@ -109,7 +115,7 @@ export class CrudResource<T extends EntityRecord = EntityRecord> extends Resourc
    */
   async remove(id: string): Promise<DeleteResponse> {
     const res = await this.request<DeleteResponse>('DELETE', id);
-    return res as DeleteResponse;
+    return res;
   }
 
   // ─── Extended operations ─────────────────────────────────────────────────

@@ -6,9 +6,9 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-import type { RequestContext, ResponseContext } from '../types.ts';
-
 import { createTraceMiddleware, randomHex, type TraceProvider } from './trace.ts';
+
+import type { RequestContext, ResponseContext } from '../types.ts';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -125,7 +125,9 @@ describe('createTraceMiddleware', () => {
 
   it('preserves existing headers', async () => {
     const middleware = createTraceMiddleware();
-    const ctx = freshCtx({ config: { url: '/test', method: 'GET', headers: { Authorization: 'Bearer x' } } });
+    const ctx = freshCtx({
+      config: { url: '/test', method: 'GET', headers: { Authorization: 'Bearer x' } },
+    });
     const response = makeRes();
     const next = vi.fn().mockResolvedValue(response);
 

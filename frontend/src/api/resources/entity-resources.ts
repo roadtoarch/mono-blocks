@@ -6,14 +6,14 @@
  * (e.g. work-order status transitions).
  */
 
-import type { Transport } from '@/http/types';
-
 import { CrudResource } from './crud-resource';
+
+import type { Transport } from '@/http/types';
 import type { EntityRecord } from '@/schema/types';
 
 // ─── Customer ────────────────────────────────────────────────────────────────
 
-export class CustomerResource extends CrudResource<EntityRecord> {
+export class CustomerResource extends CrudResource {
   constructor(transport: Transport) {
     super('customers', transport);
   }
@@ -21,7 +21,7 @@ export class CustomerResource extends CrudResource<EntityRecord> {
 
 // ─── Site ────────────────────────────────────────────────────────────────────
 
-export class SiteResource extends CrudResource<EntityRecord> {
+export class SiteResource extends CrudResource {
   constructor(transport: Transport) {
     super('sites', transport);
   }
@@ -29,7 +29,7 @@ export class SiteResource extends CrudResource<EntityRecord> {
 
 // ─── Equipment ───────────────────────────────────────────────────────────────
 
-export class EquipmentResource extends CrudResource<EntityRecord> {
+export class EquipmentResource extends CrudResource {
   constructor(transport: Transport) {
     super('equipment', transport);
   }
@@ -37,7 +37,7 @@ export class EquipmentResource extends CrudResource<EntityRecord> {
 
 // ─── Technician ──────────────────────────────────────────────────────────────
 
-export class TechnicianResource extends CrudResource<EntityRecord> {
+export class TechnicianResource extends CrudResource {
   constructor(transport: Transport) {
     super('technicians', transport);
   }
@@ -45,7 +45,7 @@ export class TechnicianResource extends CrudResource<EntityRecord> {
 
 // ─── Work Order ──────────────────────────────────────────────────────────────
 
-export class WorkOrderResource extends CrudResource<EntityRecord> {
+export class WorkOrderResource extends CrudResource {
   constructor(transport: Transport) {
     super('work-orders', transport);
   }

@@ -6,9 +6,9 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-import type { ResponseContext } from '../types.ts';
-
 import { createCacheMiddleware } from './cache.ts';
+
+import type { ResponseContext } from '../types.ts';
 
 function makeRes(overrides?: Partial<ResponseContext>): ResponseContext {
   return {
