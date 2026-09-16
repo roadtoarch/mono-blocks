@@ -12,7 +12,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import '@/styles/index.css';
+import '@/styles.scss';
 
 import { routeTree } from './routeTree.gen';
 

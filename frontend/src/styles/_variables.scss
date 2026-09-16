@@ -1,0 +1,12 @@
+// MonoBlocks — shared Sass variables
+// ---------------------------------------------------------------------------
+// Variables used across the Sass partials. Kept minimal by design; most
+// design tokens live as CSS custom properties so they can be overridden at
+// runtime (tenant themes, dark mode, brand skins).
+
+/// Carbon class prefix. Matches the default used by @carbon/react and is
+/// referenced when overriding Carbon component selectors.
+$mb-prefix: 'cds';
+
+/// Absolute black — handy helper for shadows/overlays that need a true black.
+$black: #000000;

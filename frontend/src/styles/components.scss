@@ -1,8 +1,12 @@
 /* ==========================================================================
-   MonoBlocks — components.css
+   MonoBlocks — components.scss
    --------------------------------------------------------------------------
    Component contracts from DESIGN.md. Mobile-first. Zero color/size literals
-   outside tokens.css. Square corners except tag pills.
+   outside tokens.scss. Square corners except tag pills.
+
+   Container queries (bottom of file) drive responsive adjustments from the
+   container's inline size rather than the viewport — so content adapts when
+   .mb-main shrinks (side nav push) without the browser window resizing.
    ========================================================================== */
 
 /* buttons */
@@ -376,8 +380,10 @@
   color: var(--cds-text-primary);
 }
 
-/* data table */
+/* data table — container for @container column-hiding rules */
 .mb-table-wrapper {
+  container-type: inline-size;
+  container-name: table;
   width: 100%;
   overflow-x: auto;
 }
@@ -627,21 +633,30 @@ th[aria-sort='descending'] .mb-table__sort-icon {
   flex-shrink: 0;
 }
 
+/* KPI grid — container for tile-level @container rules;
+   reflow driven by @container main (see bottom of file) */
 .mb-kpi-grid {
+  container-type: inline-size;
+  container-name: kpi-grid;
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--cds-spacing-05);
 }
 
-@media (min-width: 672px) {
-  .mb-kpi-grid {
-    grid-template-columns: repeat(2, 1fr);
+/* Viewport fallback for browsers without container query support (~8%).
+   Container-query rules at the bottom of this file take precedence in
+   supporting browsers because they appear later in the cascade. */
+@supports not (container-type: inline-size) {
+  @media (min-width: 672px) {
+    .mb-kpi-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
-}
 
-@media (min-width: 1056px) {
-  .mb-kpi-grid {
-    grid-template-columns: repeat(4, 1fr);
+  @media (min-width: 1056px) {
+    .mb-kpi-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
   }
 }
 
@@ -899,14 +914,17 @@ th[aria-sort='descending'] .mb-table__sort-icon {
   overflow-wrap: anywhere;
 }
 
-@media (max-width: 671px) {
-  .mb-def-list {
-    grid-template-columns: 1fr;
-    gap: var(--cds-spacing-01) 0;
-  }
+/* Definition list single-column: viewport fallback (no container query support) */
+@supports not (container-type: inline-size) {
+  @media (max-width: 671px) {
+    .mb-def-list {
+      grid-template-columns: 1fr;
+      gap: var(--cds-spacing-01) 0;
+    }
 
-  .mb-def-list dd {
-    margin-block-end: var(--cds-spacing-03);
+    .mb-def-list dd {
+      margin-block-end: var(--cds-spacing-03);
+    }
   }
 }
 
@@ -1048,4 +1066,127 @@ th[aria-sort='descending'] .mb-table__sort-icon {
 
 .mb-skin-chip[data-skin='ember'] .mb-skin-chip__swatch {
   background-color: var(--cds-skin-preview-ember);
+}
+
+/* ==========================================================================
+   CONTAINER QUERIES
+   --------------------------------------------------------------------------
+   Responsive adjustments driven by the *container's* inline size rather than
+   the viewport. This matters when .mb-main shrinks (side nav opens in push
+   mode) without the browser window changing size.
+
+   Containers established:
+     - .mb-main     (shell.scss)  → container-name: main
+     - .mb-table-wrapper (above)  → container-name: table
+     - .mb-kpi-grid (above)       → container-name: kpi-grid
+
+   All rules reference --cds-* tokens only. No hardcoded px/font values.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   KPI grid reflow — respond to .mb-main width
+   Replaces the viewport @media rules (which are kept as @supports fallback).
+   --------------------------------------------------------------------------- */
+@container main (min-width: 672px) {
+  .mb-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container main (min-width: 1056px) {
+  .mb-kpi-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   KPI tile typography — shrink value + padding when main is narrow
+   --------------------------------------------------------------------------- */
+@container main (max-width: 480px) {
+  .mb-tile--kpi {
+    padding: var(--cds-spacing-04);
+    gap: var(--cds-spacing-01);
+  }
+
+  .mb-tile__value {
+    font-size: var(--cds-heading-03-font-size);
+    line-height: var(--cds-heading-03-line-height);
+    font-weight: var(--cds-heading-03-weight);
+    letter-spacing: var(--cds-heading-03-letter-spacing);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Definition list — single-column when main is narrow
+   Replaces the viewport @media (max-width: 671px) rule.
+   --------------------------------------------------------------------------- */
+@container main (max-width: 671px) {
+  .mb-def-list {
+    grid-template-columns: 1fr;
+    gap: var(--cds-spacing-01) 0;
+  }
+
+  .mb-def-list dd {
+    margin-block-end: var(--cds-spacing-03);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Form spacing — tighten gap when main is narrow
+   --------------------------------------------------------------------------- */
+@container main (max-width: 480px) {
+  .mb-form {
+    gap: var(--cds-spacing-04);
+  }
+
+  .mb-form__actions {
+    gap: var(--cds-spacing-02);
+    margin-block-start: var(--cds-spacing-04);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Toolbar compaction — stack vertically when main is narrow
+   --------------------------------------------------------------------------- */
+@container main (max-width: 480px) {
+  .mb-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--cds-spacing-02);
+  }
+
+  .mb-search-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Page header — compact title when main is narrow
+   --------------------------------------------------------------------------- */
+@container main (max-width: 480px) {
+  .mb-page-header {
+    gap: var(--cds-spacing-03);
+    margin-block-end: var(--cds-spacing-04);
+  }
+
+  .mb-page-header__title {
+    font-size: var(--cds-heading-03-font-size);
+    line-height: var(--cds-heading-03-line-height);
+    font-weight: var(--cds-heading-03-weight);
+    letter-spacing: var(--cds-heading-03-letter-spacing);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Table column hiding — opt-in classes for secondary columns.
+   Add .mb-table__th--hide-narrow / .mb-table__cell--hide-narrow to <th>/<td>
+   elements that should disappear when the table container is narrow.
+   Queried against .mb-table-wrapper (container-name: table).
+   --------------------------------------------------------------------------- */
+@container table (max-width: 600px) {
+  .mb-table__th--hide-narrow,
+  .mb-table__cell--hide-narrow {
+    display: none;
+  }
 }

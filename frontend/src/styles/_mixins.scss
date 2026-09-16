@@ -1,0 +1,39 @@
+@use 'sass:list';
+@use 'sass:meta';
+
+/// Recursively emit CSS custom properties from a nested Sass map.
+///
+/// @param {Map}    $token-map  - The map of tokens to emit.
+/// @param {String} $prefix     - Prefix for CSS variable names (default: 'cds').
+/// @param {String} $token-name - Optional category name (e.g. 'motion').
+/// @param {List}   $path       - Internal recursion path (do not pass manually).
+///
+/// @example scss
+///   $map: (standard: cubic-bezier(0.4, 0, 0.2, 1));
+///   @include emit-tokens($map, 'cds', 'motion');
+///   // -> --cds-motion-standard: cubic-bezier(0.4, 0, 0.2, 1);
+@mixin emit-tokens($token-map, $prefix: 'cds', $token-name: null, $path: ()) {
+  $token-segment: '';
+
+  @if $token-name != null {
+    $token-segment: '-#{$token-name}';
+  }
+
+  @each $key, $value in $token-map {
+    // Force key to string to avoid Sass color warnings.
+    $key-str: '' + $key;
+    $new-path: list.append($path, $key-str, $separator: space);
+
+    @if meta.type-of($value) == 'map' {
+      @include emit-tokens($value, $prefix, $token-name, $new-path);
+    } @else {
+      $var-name: $prefix + $token-segment;
+
+      @each $segment in $new-path {
+        $var-name: $var-name + '-' + $segment;
+      }
+
+      --#{$var-name}: #{$value};
+    }
+  }
+}

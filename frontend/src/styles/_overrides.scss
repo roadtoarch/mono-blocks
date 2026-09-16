@@ -1,0 +1,46 @@
+@use './variables' as variables;
+
+// MonoBlocks — Carbon component overrides
+// ---------------------------------------------------------------------------
+// This is the home for visual overrides to Carbon's own components. It loads
+// after @carbon/react so these rules win in the cascade.
+//
+// Current philosophy:
+//   - The app primarily uses custom .mb-* components, so overrides are minimal.
+//   - As more Carbon components are adopted, expand this file (or split it into
+//     component-scoped partials) rather than growing ad-hoc rules elsewhere.
+//   - Prefer CSS custom property overrides (--cds-* tokens) over hard-coded
+//     values and never use !important.
+//
+// Common override patterns to consider when adopting Carbon components:
+//   - Border radius (buttons, inputs, tiles, modals, notifications)
+//   - z-index fixes for popovers / tooltips vs the app shell
+//   - Header / side-nav chrome when using Carbon UI shell
+//   - Label color / typography token tweaks
+
+/// Popover / tooltip z-index
+/// Carbon's popover layer uses z('floating') by default. If it ever needs to
+/// sit above the MonoBlocks side-nav (z: 6000) but below toasts (z: 9000),
+/// uncomment and tune the values below.
+// .#{variables.$mb-prefix}--popover-content,
+// .#{variables.$mb-prefix}--popover-caret {
+//   z-index: 8500;
+// }
+
+/// Modal close button: keep the transparent close control even when Carbon
+/// also applies the primary button class to it.
+.#{variables.$mb-prefix}--modal-close.#{variables.$mb-prefix}--btn--primary {
+  background-color: transparent;
+  color: var(--cds-icon-primary);
+
+  &:hover {
+    background-color: var(--cds-layer-hover);
+  }
+}
+
+/// Carbon content band: remove default padding so our own .mb-main governs
+/// the page gutter. Only relevant when using Carbon UI shell components.
+.#{variables.$mb-prefix}--content {
+  padding: 0;
+  background: var(--cds-background);
+}

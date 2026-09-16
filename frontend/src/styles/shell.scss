@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MonoBlocks — shell.css
+   MonoBlocks — shell.scss
    --------------------------------------------------------------------------
    App chrome: fixed 48px header, push-style side nav, main content area,
    dark-theme chrome seams, and View Transition styling.
@@ -8,6 +8,10 @@
    The side nav element keeps a fixed 256px width; its overflow: hidden
    clips its CONTENTS but the element itself overflows the collapsed 0px
    track. NO position: fixed/absolute overlay is used.
+
+   .mb-main is established as a size container (container-type: inline-size)
+   so that child components can use @container main (…) to respond to the
+   available content width — which shrinks when the side nav opens.
 
    Closed-state: visibility: hidden with deferred transition-delay so the
    nav stays visible during the 240ms slide-out animation.
@@ -204,8 +208,10 @@
   flex-shrink: 0;
 }
 
-/* main */
+/* main — container for @container queries on child components */
 .mb-main {
+  container-type: inline-size;
+  container-name: main;
   min-width: 0;
   padding: var(--cds-spacing-05);
   background-color: var(--cds-background);

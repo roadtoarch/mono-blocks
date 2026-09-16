@@ -1,0 +1,23 @@
+// Carbon v11 base styles (grid, components, default white theme).
+// Loaded first so all --cds-* defaults are present.
+@use '@carbon/react';
+
+// Shared Sass utilities (no CSS output).
+@use './styles/variables';
+@use './styles/mixins';
+
+// SPAT design tokens: OKLCH primitives + semantic → --cds-* mapping.
+// Loaded AFTER Carbon so our custom property definitions override Carbon's
+// default theme values via the CSS cascade (later definition wins at
+// equal specificity).
+@use './styles/tokens';
+
+// Carbon component overrides (loaded after Carbon + tokens so these rules
+// win in the cascade).
+@use './styles/overrides';
+
+// Application styles — SCSS declarations referencing --cds-* tokens.
+// Order: base (reset, type, focus) → shell (app chrome, nav) → components.
+@use './styles/base';
+@use './styles/shell';
+@use './styles/components';
