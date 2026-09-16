@@ -68,11 +68,24 @@ All 5 entity types are defined in `src/schema/config.ts`. Components read the sc
 2. Add seed data in `src/api/seed.ts`
 3. Add route files in `src/routes/_app/<entity>/`
 
+### API Pipeline
+
+All HTTP communication flows through a Koa-style middleware pipeline in `src/http/`. The stack is:
+
+- **`Resource<T>`** base class -- constructs `RequestContext` from method/path/data and sends it through a transport
+- **Middleware chain** -- auth (Bearer token), trace (B3 headers), retry (5xx + NetworkError with exponential backoff), headers (extract response headers)
+- **Transport** -- either the axios transport (`src/http/transport.ts`, the only file importing axios) or the mock transport (`src/api/mock-transport.ts`, routes URLs to mockDb)
+- **Transport resolver** -- `getTransport()` / `setTransport()` in `src/api/transport-resolver.ts` controls which transport the app uses (defaults to mock)
+
+Hooks call `getEntityResource(type)` from the entity resource factory, which returns a cached `CrudResource` using the current transport. Swapping from mock to real backend requires one `setTransport()` call before app render.
+
+See the [API Connection Layer](../../mono-blocks.wiki/patterns/API-Connection-Layer.md) wiki page for the full reference -- middleware catalog, REST mapping table, error hierarchy, mock URL routing, and step-by-step guides for adding routes and replacing the mock backend.
+
 ### Mock Backend
 
 `src/api/mockDb.ts` provides a localStorage-backed mock API with:
 
-- **300–700ms simulated latency** per request
+- **300--700ms simulated latency** per request
 - **One-shot `failNext`** for error-state testing
 - **CRUD operations**: `list`, `getRecord`, `create`, `update`, `remove`
 - **Relations**: `related` returns outbound/inbound relations + events
@@ -80,6 +93,8 @@ All 5 entity types are defined in `src/schema/config.ts`. Components read the sc
 - **Reset**: restores seed data (SEED_VERSION 3)
 
 Storage key: `mb-data-v1` in localStorage.
+
+The mock transport in `src/api/mock-transport.ts` adapts mockDb to the `Transport` interface, parsing URLs like `/api/customers/cust-001/related` into the corresponding mockDb calls. The transport resolver in `src/api/transport-resolver.ts` defaults to this mock transport, so the app works out of the box with no backend. See the [API Connection Layer](../../mono-blocks.wiki/patterns/API-Connection-Layer.md) wiki page for the full URL routing table and transport-swapping instructions.
 
 ### Theming
 
