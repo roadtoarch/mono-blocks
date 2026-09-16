@@ -7,7 +7,7 @@
 //   1. Primitive palette (OKLCH) — raw color scales, not tied to usage
 //   2. Structural primitives — spacing, radius, motion, elevation
 //   3. Custom dimensions — component sizes, z-index, shell tokens
-//   4. Semantic mapping → Carbon v11 `--cds-*` custom properties (light)
+//   4. Semantic tokens → Carbon v11 `--cds-*` custom properties (light)
 //   5. Dark mode via [data-carbon-theme="g100"]
 //   6. prefers-color-scheme fallback
 //   7. Brand skin overrides ([data-mb-skin])
@@ -22,6 +22,10 @@
 // spacing, type, motion, component colors like tags/notifications/skeletons).
 // This file only overrides tokens we want to change from Carbon defaults.
 // ==========================================================================
+
+@use 'sass:map';
+@use '@carbon/type' as carbon-type;
+@use '@carbon/motion' as carbon-motion;
 
 // ---------------------------------------------------------------------------
 // 1. PRIMITIVE PALETTES
@@ -142,6 +146,166 @@
   --cds-skin-preview-cornerstone: oklch(0.53 0.2 250);
   --cds-skin-preview-mono: #37474f;
   --cds-skin-preview-ember: #b3432a;
+
+  // ---------------------------------------------------------------------------
+  // 3b. MISSING CARBON v11 CSS CUSTOM PROPERTIES
+  // ---------------------------------------------------------------------------
+  // Carbon v11 emits many design tokens as CSS custom properties, but not all
+  // of the variables referenced by the legacy MonoBlocks mb-* layer. The block
+  // below fills the gaps so the current UI renders correctly while we migrate
+  // each hand-rolled component to real @carbon/react components and can delete
+  // these custom definitions.
+
+  /* type tokens (not emitted as CSS vars by @carbon/react) */
+  --cds-display-01-font-size: #{map.get(carbon-type.$display-01, font-size)};
+  --cds-display-01-line-height: #{map.get(carbon-type.$display-01, line-height)};
+  --cds-display-01-font-weight: #{map.get(carbon-type.$display-01, font-weight)};
+  --cds-display-01-letter-spacing: #{map.get(carbon-type.$display-01, letter-spacing)};
+
+  --cds-heading-05-font-size: #{map.get(carbon-type.$heading-05, font-size)};
+  --cds-heading-05-line-height: #{map.get(carbon-type.$heading-05, line-height)};
+  --cds-heading-05-font-weight: #{map.get(carbon-type.$heading-05, font-weight)};
+  --cds-heading-05-letter-spacing: #{map.get(carbon-type.$heading-05, letter-spacing)};
+
+  --cds-heading-04-font-size: #{map.get(carbon-type.$heading-04, font-size)};
+  --cds-heading-04-line-height: #{map.get(carbon-type.$heading-04, line-height)};
+  --cds-heading-04-font-weight: #{map.get(carbon-type.$heading-04, font-weight)};
+  --cds-heading-04-letter-spacing: #{map.get(carbon-type.$heading-04, letter-spacing)};
+
+  --cds-heading-03-font-size: #{map.get(carbon-type.$heading-03, font-size)};
+  --cds-heading-03-line-height: #{map.get(carbon-type.$heading-03, line-height)};
+  --cds-heading-03-font-weight: #{map.get(carbon-type.$heading-03, font-weight)};
+  --cds-heading-03-letter-spacing: #{map.get(carbon-type.$heading-03, letter-spacing)};
+
+  --cds-heading-02-font-size: #{map.get(carbon-type.$heading-02, font-size)};
+  --cds-heading-02-line-height: #{map.get(carbon-type.$heading-02, line-height)};
+  --cds-heading-02-font-weight: #{map.get(carbon-type.$heading-02, font-weight)};
+  --cds-heading-02-letter-spacing: #{map.get(carbon-type.$heading-02, letter-spacing)};
+
+  --cds-heading-01-font-size: #{map.get(carbon-type.$heading-01, font-size)};
+  --cds-heading-01-line-height: #{map.get(carbon-type.$heading-01, line-height)};
+  --cds-heading-01-font-weight: #{map.get(carbon-type.$heading-01, font-weight)};
+  --cds-heading-01-letter-spacing: #{map.get(carbon-type.$heading-01, letter-spacing)};
+
+  --cds-body-01-font-size: #{map.get(carbon-type.$body-01, font-size)};
+  --cds-body-01-line-height: #{map.get(carbon-type.$body-01, line-height)};
+  --cds-body-01-font-weight: #{map.get(carbon-type.$body-01, font-weight)};
+  --cds-body-01-letter-spacing: #{map.get(carbon-type.$body-01, letter-spacing)};
+
+  --cds-body-compact-01-font-size: #{map.get(carbon-type.$body-compact-01, font-size)};
+  --cds-body-compact-01-line-height: #{map.get(carbon-type.$body-compact-01, line-height)};
+  --cds-body-compact-01-font-weight: #{map.get(carbon-type.$body-compact-01, font-weight)};
+  --cds-body-compact-01-letter-spacing: #{map.get(carbon-type.$body-compact-01, letter-spacing)};
+
+  --cds-body-compact-02-font-size: #{map.get(carbon-type.$body-compact-02, font-size)};
+  --cds-body-compact-02-line-height: #{map.get(carbon-type.$body-compact-02, line-height)};
+  --cds-body-compact-02-font-weight: #{map.get(carbon-type.$body-compact-02, font-weight)};
+  --cds-body-compact-02-letter-spacing: #{map.get(carbon-type.$body-compact-02, letter-spacing)};
+
+  --cds-label-01-font-size: #{map.get(carbon-type.$label-01, font-size)};
+  --cds-label-01-line-height: #{map.get(carbon-type.$label-01, line-height)};
+  --cds-label-01-font-weight: #{map.get(carbon-type.$label-01, font-weight)};
+  --cds-label-01-letter-spacing: #{map.get(carbon-type.$label-01, letter-spacing)};
+
+  --cds-helper-text-01-font-size: #{map.get(carbon-type.$helper-text-01, font-size)};
+  --cds-helper-text-01-line-height: #{map.get(carbon-type.$helper-text-01, line-height)};
+  --cds-helper-text-01-font-weight: #{map.get(carbon-type.$helper-text-01, font-weight)};
+  --cds-helper-text-01-letter-spacing: #{map.get(carbon-type.$helper-text-01, letter-spacing)};
+
+  --cds-code-01-font-size: #{map.get(carbon-type.$code-01, font-size)};
+  --cds-code-01-line-height: #{map.get(carbon-type.$code-01, line-height)};
+  --cds-code-01-font-weight: #{map.get(carbon-type.$code-01, font-weight)};
+  --cds-code-01-letter-spacing: #{map.get(carbon-type.$code-01, letter-spacing)};
+
+  --cds-code-02-font-size: #{map.get(carbon-type.$code-02, font-size)};
+  --cds-code-02-line-height: #{map.get(carbon-type.$code-02, line-height)};
+  --cds-code-02-font-weight: #{map.get(carbon-type.$code-02, font-weight)};
+  --cds-code-02-letter-spacing: #{map.get(carbon-type.$code-02, letter-spacing)};
+
+  --cds-font-family-sans: #{map.get(carbon-type.$font-families, sans)};
+  --cds-font-family-mono: #{map.get(carbon-type.$font-families, mono)};
+  --cds-root-font-size: 100%;
+
+  /* structural / component-dimension tokens not emitted by Carbon */
+  --cds-button-height: 3rem;
+  --cds-button-padding-y: 0;
+  --cds-button-padding-x: 1rem;
+  --cds-input-height: 3rem;
+  --cds-tag-height: 1.5rem;
+  --cds-row-height: 3rem;
+  --cds-header-height: 3rem;
+
+  --cds-border-width: 1px;
+  --cds-focus-width: 2px;
+  --cds-focus-offset: 2px;
+  --cds-focus-inset: var(--cds-background);
+  --cds-active-edge-width: 3px;
+
+  --cds-radius-none: 0;
+  --cds-radius-pill: 9999px;
+  --cds-radius-full: 9999px;
+
+  /* motion tokens */
+  --cds-duration-fast-01: #{carbon-motion.$duration-fast-01};
+  --cds-duration-fast-02: #{carbon-motion.$duration-fast-02};
+  --cds-duration-moderate-01: #{carbon-motion.$duration-moderate-01};
+  --cds-duration-moderate-02: #{carbon-motion.$duration-moderate-02};
+  --cds-duration-slow-01: #{carbon-motion.$duration-slow-01};
+  --cds-duration-slow-02: #{carbon-motion.$duration-slow-02};
+  --cds-duration-none: 1ms;
+  --cds-duration-shimmer: 1.5s;
+
+  --cds-easing-standard-productive: #{map.get(map.get(carbon-motion.$easings, standard), productive)};
+  --cds-easing-standard-expressive: #{map.get(map.get(carbon-motion.$easings, standard), expressive)};
+  --cds-easing-entrance-productive: #{map.get(map.get(carbon-motion.$easings, entrance), productive)};
+  --cds-easing-exit-productive: #{map.get(map.get(carbon-motion.$easings, exit), productive)};
+
+  /* component aliases used by legacy mb-* layer */
+  --cds-field: var(--cds-field-01);
+  --cds-background-hover: var(--cds-layer-hover-01);
+  --cds-background-active: var(--cds-layer-active-01);
+
+  /* button colors */
+  --cds-button-secondary: var(--cds-layer-01);
+  --cds-button-secondary-hover: var(--cds-layer-hover-01);
+  --cds-button-secondary-active: var(--cds-layer-active-01);
+  --cds-button-tertiary: var(--cds-interactive);
+  --cds-button-tertiary-hover: var(--cds-interactive);
+  --cds-button-tertiary-active: var(--cds-interactive);
+  --cds-button-danger: var(--cds-support-error);
+  --cds-button-danger-hover: color-mix(in oklch, var(--cds-support-error) 85%, black);
+  --cds-button-danger-active: color-mix(in oklch, var(--cds-support-error) 70%, black);
+  --cds-button-disabled: var(--cds-layer-accent-01);
+  --cds-text-on-color-disabled: var(--cds-text-disabled);
+
+  /* tag colors (fallbacks until Carbon Tag is used) */
+  --cds-tag-gray-bg: var(--cds-layer-01);
+  --cds-tag-gray-text: var(--cds-text-primary);
+  --cds-tag-gray-border: var(--cds-border-subtle);
+  --cds-tag-blue-bg: var(--cds-layer-01);
+  --cds-tag-blue-text: var(--cds-interactive);
+  --cds-tag-blue-border: var(--cds-interactive);
+  --cds-tag-green-bg: var(--cds-layer-01);
+  --cds-tag-green-text: var(--cds-support-success);
+  --cds-tag-green-border: var(--cds-support-success);
+  --cds-tag-red-bg: var(--cds-layer-01);
+  --cds-tag-red-text: var(--cds-support-error);
+  --cds-tag-red-border: var(--cds-support-error);
+  --cds-tag-purple-bg: var(--cds-layer-01);
+  --cds-tag-purple-text: var(--cds-support-info);
+  --cds-tag-purple-border: var(--cds-support-info);
+  --cds-tag-cyan-bg: var(--cds-layer-01);
+  --cds-tag-cyan-text: var(--cds-support-info);
+  --cds-tag-cyan-border: var(--cds-support-info);
+
+  /* notification / toast / skeleton (fallbacks) */
+  --cds-notification-bg-info: var(--cds-layer-01);
+  --cds-notification-bg-success: var(--cds-layer-01);
+  --cds-notification-bg-warning: var(--cds-layer-01);
+  --cds-notification-bg-error: var(--cds-layer-01);
+  --cds-skeleton-background: var(--cds-layer-01);
+  --cds-skeleton-element: var(--cds-layer-accent-01);
+  --cds-shadow-toast: var(--cds-elevation-2);
 }
 
 // ---------------------------------------------------------------------------
