@@ -35,14 +35,12 @@ function sleep(ms: number): Promise<void> {
 /**
  * Create a retry middleware with sensible defaults.
  */
-export function createRetryMiddleware(): Middleware {
+export const createRetryMiddleware = (): Middleware => {
   return async (ctx, next) => {
     const maxRetries: number = (ctx.meta.maxRetries as number | undefined) ?? 3;
     const baseDelay: number = (ctx.meta.retryDelayMs as number | undefined) ?? 1000;
-
     let lastError: unknown;
     let attempt = 0;
-
     while (attempt <= maxRetries) {
       try {
         const res = await next();
@@ -50,18 +48,15 @@ export function createRetryMiddleware(): Middleware {
         return res;
       } catch (error) {
         lastError = error;
-
         if (attempt >= maxRetries || !isRetryableError(error)) {
           throw error;
         }
-
         const jitter = Math.random() * baseDelay * Math.pow(2, attempt);
         await sleep(jitter);
         attempt++;
       }
     }
-
     // Unreachable, but TypeScript needs it for control-flow analysis.
     throw lastError;
   };
-}
+};

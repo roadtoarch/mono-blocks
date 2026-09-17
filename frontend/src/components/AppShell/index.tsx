@@ -92,7 +92,7 @@ function swallow(): void {
 /**
  * Full application shell with header, side nav, main content, and toast region.
  */
-export function AppShell() {
+export const AppShell = () => {
   const { theme, skin, toggleTheme, setSkin } = useTheme();
   const { isOpen, toggleNav } = useNav();
   const router = useRouter();
@@ -100,43 +100,36 @@ export function AppShell() {
   const appRef = useRef<HTMLDivElement>(null);
   const [skinMenuOpen, setSkinMenuOpen] = useState(false);
   const skinMenuRef = useRef<HTMLDivElement>(null);
-
   // Determine active nav key from current path.
   const pathname = location.pathname;
   const items = navItems();
   const activeKey =
     items.find((item) => pathname.startsWith(item.path) && item.path !== '/')?.key ?? 'dashboard';
-
   // Sync data-nav attribute with the open state.
   useEffect(() => {
     if (appRef.current) {
       appRef.current.setAttribute('data-nav', isOpen ? 'open' : 'closed');
     }
   }, [isOpen]);
-
   // Close skin menu on outside click.
   useEffect(() => {
     if (!skinMenuOpen) return swallow;
-
     const handler = (e: MouseEvent) => {
       if (skinMenuRef.current && !skinMenuRef.current.contains(e.target as Node)) {
         setSkinMenuOpen(false);
       }
     };
-
     document.addEventListener('click', handler);
     return () => {
       document.removeEventListener('click', handler);
     };
   }, [skinMenuOpen]);
-
   const handleReset = useCallback(() => {
     void mockDb.reset().then(() => {
       toast('success', 'Data reset', 'Demo data has been restored to its original state.');
       void router.invalidate();
     });
   }, [router]);
-
   const handleSkinSelect = useCallback(
     (s: Skin) => {
       setSkin(s);
@@ -144,7 +137,6 @@ export function AppShell() {
     },
     [setSkin],
   );
-
   return (
     <>
       <SkipToContent className="mb-skip-link">Skip to main content</SkipToContent>
@@ -266,4 +258,4 @@ export function AppShell() {
       <ToastRegion />
     </>
   );
-}
+};

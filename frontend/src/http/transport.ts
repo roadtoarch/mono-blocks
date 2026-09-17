@@ -20,13 +20,12 @@ import type { RequestConfig, RequestContext, ResponseContext } from './types';
  * Normalise various header representations into a flat `Record<string, string>`.
  * Handles: `Headers` objects, plain records, or `undefined`.
  */
-export function normalizeHeaders(
+export const normalizeHeaders = (
   headers: Record<string, string> | Headers | undefined,
-): Record<string, string> {
+): Record<string, string> => {
   if (headers == null) {
     return {};
   }
-
   if (headers instanceof Headers) {
     const out: Record<string, string> = {};
     headers.forEach((value, key) => {
@@ -34,9 +33,8 @@ export function normalizeHeaders(
     });
     return out;
   }
-
   return { ...headers };
-}
+};
 
 // ─── Error mapping ───────────────────────────────────────────────────────────
 
@@ -74,9 +72,8 @@ function mapAxiosError(error: unknown): never {
  * This is the terminal handler in the middleware pipeline — the only place
  * where axios is actually called.
  */
-export async function transport(ctx: RequestContext): Promise<ResponseContext> {
+export const transport = async (ctx: RequestContext): Promise<ResponseContext> => {
   const { config } = ctx;
-
   const axiosConfig: import('axios').AxiosRequestConfig = {
     url: config.url,
     method: config.method,
@@ -89,10 +86,8 @@ export async function transport(ctx: RequestContext): Promise<ResponseContext> {
     responseType: config.responseType,
     validateStatus: () => true, // we handle status codes ourselves
   };
-
   try {
     const res = await axios(axiosConfig);
-
     return {
       data: res.data,
       status: res.status,
@@ -104,4 +99,4 @@ export async function transport(ctx: RequestContext): Promise<ResponseContext> {
   } catch (error) {
     mapAxiosError(error);
   }
-}
+};

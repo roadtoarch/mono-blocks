@@ -14,7 +14,7 @@ export type Skin = 'cornerstone' | 'mono' | 'ember';
 /**
  * Read the persisted theme from localStorage, defaulting to system preference.
  */
-export function getTheme(): CarbonTheme {
+export const getTheme = (): CarbonTheme => {
   try {
     const stored = globalThis.localStorage.getItem(THEME_KEY);
     if (stored === 'g100' || stored === 'white') return stored;
@@ -22,33 +22,33 @@ export function getTheme(): CarbonTheme {
     // storage unavailable
   }
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'g100' : 'white';
-}
+};
 
 /**
  * Apply a theme and persist it.
  */
-export function setTheme(theme: CarbonTheme): void {
+export const setTheme = (theme: CarbonTheme): void => {
   document.documentElement.setAttribute('data-carbon-theme', theme);
   try {
     globalThis.localStorage.setItem(THEME_KEY, theme);
   } catch {
     // storage unavailable — theme still applies for this session
   }
-}
+};
 
 /**
  * Toggle between light and dark themes.
  */
-export function toggleTheme(): CarbonTheme {
+export const toggleTheme = (): CarbonTheme => {
   const next = getTheme() === 'g100' ? 'white' : 'g100';
   setTheme(next);
   return next;
-}
+};
 
 /**
  * Read the persisted skin from localStorage.
  */
-export function getSkin(): Skin {
+export const getSkin = (): Skin => {
   try {
     const stored = globalThis.localStorage.getItem(SKIN_KEY);
     if (stored === 'cornerstone' || stored === 'mono' || stored === 'ember') return stored;
@@ -56,16 +56,16 @@ export function getSkin(): Skin {
     // storage unavailable
   }
   return 'cornerstone';
-}
+};
 
 /**
  * Apply a skin and persist it.
  */
-export function setSkin(skin: Skin): void {
+export const setSkin = (skin: Skin): void => {
   document.documentElement.setAttribute('data-mb-skin', skin);
   try {
     globalThis.localStorage.setItem(SKIN_KEY, skin);
   } catch {
     // storage unavailable
   }
-}
+};

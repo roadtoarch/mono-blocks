@@ -229,21 +229,18 @@ interface DetailPageProps {
   id: string;
 }
 
-export function DetailPage({ type, id }: DetailPageProps) {
+export const DetailPage = ({ type, id }: DetailPageProps) => {
   const query = useEntityDetail(type, id);
   const schema = get(type);
   const listHref = listPath(type);
-
   // Keep a ref to refetch for stable callback
   const refetchRef = React.useRef(query.refetch);
   React.useEffect(() => {
     refetchRef.current = query.refetch;
   });
-
   const handleRetry = React.useCallback(() => {
     void refetchRef.current();
   }, []);
-
   // Build ref title map from outbound relations
   const relTitles = React.useMemo<Record<string, Record<string, string>>>(() => {
     if (!query.data) return {};
@@ -257,12 +254,10 @@ export function DetailPage({ type, id }: DetailPageProps) {
     }
     return titles;
   }, [query.data]);
-
   // Loading state
   if (query.isLoading) {
     return <DetailSkeleton />;
   }
-
   // Error state
   if (query.isError) {
     const err = query.error instanceof Error ? query.error : new Error('Something went wrong.');
@@ -271,15 +266,11 @@ export function DetailPage({ type, id }: DetailPageProps) {
       <ErrorState error={err} onRetry={handleRetry} listHref={listHref} isNotFound={isNotFound} />
     );
   }
-
   if (!query.data) return null;
-
   const { record, relations, events } = query.data;
   const title = titleOf(type, record);
-
   // Filtered relations (only those with records)
   const visibleRelations = relations.filter((r) => r.records.length > 0);
-
   return (
     <>
       <Breadcrumb type={type} title={title} />
@@ -343,4 +334,4 @@ export function DetailPage({ type, id }: DetailPageProps) {
       </section>
     </>
   );
-}
+};

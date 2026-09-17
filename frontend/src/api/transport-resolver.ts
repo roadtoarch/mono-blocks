@@ -21,21 +21,21 @@ let currentTransport: Transport = mockTransport;
 /**
  * Get the currently active transport.
  */
-export function getTransport(): Transport {
+export const getTransport = (): Transport => {
   return currentTransport;
-}
+};
 
 /**
  * Replace the active transport (e.g. switch from mock to real API).
  * Call once at app startup after auth is initialised.
  */
-export function setTransport(transport: Transport): void {
+export const setTransport = (transport: Transport): void => {
   currentTransport = transport;
-}
+};
 
 /**
  * Reset to mock transport (useful for tests / storybook).
  */
-export function resetTransport(): void {
+export const resetTransport = (): void => {
   currentTransport = mockTransport;
-}
+};

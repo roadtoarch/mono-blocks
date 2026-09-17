@@ -52,22 +52,19 @@ function getServerSnapshot(): NavState {
 /**
  * Provides the current nav state and toggle/set functions.
  */
-export function useNav(): {
+export const useNav = (): {
   navState: NavState;
   isOpen: boolean;
   setNavState: (s: NavState) => void;
   toggleNav: () => void;
-} {
+} => {
   const navState = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const isOpen = navState === 'open';
-
   const setNavState = useCallback((s: NavState) => {
     applyNavState(s);
   }, []);
-
   const toggleNav = useCallback(() => {
     toggleNavFn();
   }, []);
-
   return { navState, isOpen, setNavState, toggleNav };
-}
+};

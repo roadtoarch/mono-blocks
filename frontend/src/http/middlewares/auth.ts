@@ -16,17 +16,15 @@ export type TokenProvider = () => Promise<string | null>;
  * The provider is called on **every** request so that expiring tokens
  * (e.g. OIDC access tokens) are always fresh.
  */
-export function createAuthMiddleware(tokenProvider: TokenProvider): Middleware {
+export const createAuthMiddleware = (tokenProvider: TokenProvider): Middleware => {
   return async (ctx, next) => {
     const token = await tokenProvider();
-
     if (token) {
       ctx.config.headers = {
         ...ctx.config.headers,
         Authorization: `Bearer ${token}`,
       };
     }
-
     return next();
   };
-}
+};

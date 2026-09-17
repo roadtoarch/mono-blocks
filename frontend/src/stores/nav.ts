@@ -22,7 +22,7 @@ function getAppEl(): HTMLElement | null {
 /**
  * Read the persisted nav state from localStorage.
  */
-export function getNavState(): NavState {
+export const getNavState = (): NavState => {
   // Prefer the live DOM attribute (source of truth for the hook).
   const el = getAppEl();
   if (el) {
@@ -36,12 +36,12 @@ export function getNavState(): NavState {
     // storage unavailable
   }
   return 'closed';
-}
+};
 
 /**
  * Apply the nav state: update the DOM attribute AND persist to localStorage.
  */
-export function setNavState(state: NavState): void {
+export const setNavState = (state: NavState): void => {
   const el = getAppEl();
   if (el) {
     el.setAttribute('data-nav', state);
@@ -51,13 +51,13 @@ export function setNavState(state: NavState): void {
   } catch {
     // storage unavailable — state still applies for this session
   }
-}
+};
 
 /**
  * Toggle the nav state.
  */
-export function toggleNav(): NavState {
+export const toggleNav = (): NavState => {
   const next = getNavState() === 'open' ? 'closed' : 'open';
   setNavState(next);
   return next;
-}
+};

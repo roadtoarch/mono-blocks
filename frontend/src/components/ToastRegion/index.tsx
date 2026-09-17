@@ -21,11 +21,9 @@ const KIND_LABEL: Record<ToastKind, string> = {
  * Fixed bottom-right region that renders all active toasts.
  * Reads directly from the store via useToasts hook.
  */
-export function ToastRegion() {
+export const ToastRegion = () => {
   const { toasts, dismiss } = useToasts();
-
   if (toasts.length === 0) return null;
-
   return (
     <div className="mb-toast-region" aria-live="polite" aria-label="Notifications">
       {toasts.map((t) => (
@@ -43,4 +41,4 @@ export function ToastRegion() {
       ))}
     </div>
   );
-}
+};

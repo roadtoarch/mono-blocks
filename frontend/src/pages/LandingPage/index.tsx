@@ -38,7 +38,7 @@ function LandingMonogram() {
 /**
  * Landing page component.
  */
-export function LandingPage() {
+export const LandingPage = () => {
   const { skin, setSkin } = useTheme();
 
   return (
@@ -87,4 +87,4 @@ export function LandingPage() {
       </footer>
     </div>
   );
-}
+};

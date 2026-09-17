@@ -56,7 +56,7 @@ function useRefCache(type: EntityType | undefined): Record<string, string> {
  * The hook calls a fixed number of sub-hooks (2, padded) so the call count
  * is stable across entity types. This is safe because the schema is static.
  */
-export function useRefCaches(type: EntityType): Record<string, Record<string, string>> {
+export const useRefCaches = (type: EntityType): Record<string, Record<string, string>> => {
   const fields = listFields(type);
   const refTypes: (EntityType | undefined)[] = [];
   const seen = new Set<EntityType>();
@@ -68,15 +68,13 @@ export function useRefCaches(type: EntityType): Record<string, Record<string, st
   }
   // Pad to exactly 2 entries for stable hook call count
   while (refTypes.length < 2) refTypes.push(undefined);
-
   const cache0 = useRefCache(refTypes[0]);
   const cache1 = useRefCache(refTypes[1]);
-
   const caches: Record<string, Record<string, string>> = {};
   if (refTypes[0] && Object.keys(cache0).length > 0) caches[refTypes[0]] = cache0;
   if (refTypes[1] && Object.keys(cache1).length > 0) caches[refTypes[1]] = cache1;
   return caches;
-}
+};
 
 // ── Entity list hook ──────────────────────────────────────────────────────
 
@@ -90,18 +88,17 @@ export interface UseEntityListOptions {
  * Fetch a filtered, sorted list of entity records.
  * Returns TanStack Query result (data, isLoading, error, refetch, isError).
  */
-export function useEntityList(type: EntityType, opts: UseEntityListOptions = {}) {
+export const useEntityList = (type: EntityType, opts: UseEntityListOptions = {}) => {
   const listOpts: ListOptions = {
     q: opts.q,
     filters: opts.filters,
     sort: opts.sort ?? get(type).defaultSort,
   };
-
   return useQuery({
     queryKey: listKey(type, listOpts),
     queryFn: () => getEntityResource(type).list(listOpts),
   });
-}
+};
 
 // ── Invalidation helper ───────────────────────────────────────────────────
 
@@ -109,10 +106,10 @@ export function useEntityList(type: EntityType, opts: UseEntityListOptions = {})
  * Return a function that invalidates list + ref-cache queries for a type.
  * Call after create/update/delete mutations.
  */
-export function useInvalidateList() {
+export const useInvalidateList = () => {
   const qc = useQueryClient();
   return (type: EntityType) => {
     void qc.invalidateQueries({ queryKey: ['list', type] });
     void qc.invalidateQueries({ queryKey: ['ref-cache', type] });
   };
-}
+};

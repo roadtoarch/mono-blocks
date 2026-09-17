@@ -148,17 +148,15 @@ function SearchBar({
  * - Sort: immediate on change
  * - Search: explicit submit only (button click or Enter)
  */
-export function ListToolbar({ schema, state, onChange }: ListToolbarProps) {
+export const ListToolbar = ({ schema, state, onChange }: ListToolbarProps) => {
   const filterableFields = schema.fields.filter((f) => f.filterable);
   const listFlds = schema.fields.filter((f) => !f.hiddenInList);
-
   const searchPlaceholder = schema.searchFields
     .map((key) => {
       const f = schema.fields.find((fld) => fld.key === key);
       return f ? f.label.toLowerCase() : key;
     })
     .join(', ');
-
   return (
     <div className="mb-toolbar">
       {filterableFields.map((f) => (
@@ -191,4 +189,4 @@ export function ListToolbar({ schema, state, onChange }: ListToolbarProps) {
       />
     </div>
   );
-}
+};

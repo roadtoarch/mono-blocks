@@ -42,21 +42,18 @@ function getServerSnapshot(): Toast[] {
 /**
  * Provides the current toast list and a `toast()` function.
  */
-export function useToasts(): {
+export const useToasts = (): {
   toasts: Toast[];
   toast: (kind: ToastKind, title: string, body?: string) => () => void;
   dismiss: (id: string) => void;
-} {
+} => {
   const toasts = useSyncExternalStore(subscribeToasts, getSnapshot, getServerSnapshot);
-
   const toastFn = useCallback(
     (kind: ToastKind, title: string, body?: string) => showToast(kind, title, body),
     [],
   );
-
   const dismissFn = useCallback((id: string) => {
     dismissToast(id);
   }, []);
-
   return { toasts, toast: toastFn, dismiss: dismissFn };
-}
+};

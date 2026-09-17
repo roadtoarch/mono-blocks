@@ -375,7 +375,7 @@ const ICON_MAP: Record<EntityType | 'dashboard', ComponentType> = {
 };
 
 /** All nav items in sidebar order. */
-export function navItems(): NavItem[] {
+export const navItems = (): NavItem[] => {
   const pathMap: Record<EntityType, string> = {
     customer: '/customers',
     site: '/sites',
@@ -392,4 +392,4 @@ export function navItems(): NavItem[] {
       path: pathMap[type as EntityType],
     })),
   ];
-}
+};

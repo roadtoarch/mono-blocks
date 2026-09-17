@@ -45,13 +45,12 @@ interface FieldControlProps {
   refOptions?: Record<string, { value: string; label: string }[]>;
 }
 
-export function FieldControl({ fieldDef: f, field, refOptions }: FieldControlProps) {
+export const FieldControl = ({ fieldDef: f, field, refOptions }: FieldControlProps) => {
   const value = field.state.value;
   const { handleChange, handleBlur } = field;
   const meta = field.state.meta;
   const error = meta.isTouched && !meta.isValid ? meta.errors.join(', ') : null;
   const isInvalid = Boolean(error);
-
   const fieldId = `mb-f-${f.key}`;
   const label = (
     <>
@@ -64,7 +63,6 @@ export function FieldControl({ fieldDef: f, field, refOptions }: FieldControlPro
       ) : null}
     </>
   );
-
   return (
     <div data-field={f.key}>
       {renderControl({
@@ -80,7 +78,7 @@ export function FieldControl({ fieldDef: f, field, refOptions }: FieldControlPro
       })}
     </div>
   );
-}
+};
 
 // ── Control renderer ──────────────────────────────────────────────────────
 

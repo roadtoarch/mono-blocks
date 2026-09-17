@@ -9,7 +9,7 @@ import type { DataStore } from '@/schema/types.ts';
 
 export const SEED_VERSION = 3;
 
-export function seed(): DataStore {
+export const seed = (): DataStore => {
   return {
     version: SEED_VERSION,
     customers: [
@@ -944,4 +944,4 @@ export function seed(): DataStore {
       },
     ],
   };
-}
+};

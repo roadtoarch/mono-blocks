@@ -53,40 +53,35 @@ function toThresholds(options: UseContainerWidthOptions): { sm: number; md: numb
  * @param options - Optional breakpoint thresholds.
  * @returns An object with `ref`, `width`, `breakpoint`.
  */
-export function useContainerWidth(options: UseContainerWidthOptions = {}): UseContainerWidthResult {
+export const useContainerWidth = (
+  options: UseContainerWidthOptions = {},
+): UseContainerWidthResult => {
   const thresholds = toThresholds(options);
   const { sm, md } = thresholds;
   const ref = useRef<HTMLDivElement | null>(null);
   const [width, setWidth] = useState<number>(0);
   const [breakpoint, setBreakpoint] = useState<ContainerBreakpoint>('sm');
   const initializedRef = useRef(false);
-
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
-
     const update = (entryWidth: number) => {
       setWidth(entryWidth);
       setBreakpoint(getBreakpoint(entryWidth, { sm, md }));
     };
-
     if (!initializedRef.current) {
       initializedRef.current = true;
       update(element.getBoundingClientRect().width);
     }
-
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         update(entry.contentRect.width);
       }
     });
-
     observer.observe(element);
-
     return () => {
       observer.disconnect();
     };
   }, [sm, md]);
-
   return { ref, width, breakpoint };
-}
+};

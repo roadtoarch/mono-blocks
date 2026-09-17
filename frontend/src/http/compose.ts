@@ -23,24 +23,20 @@ import type { Middleware, Transport, RequestContext, ResponseContext } from './t
  *
  * @throws {Error} If any middleware calls `next()` more than once.
  */
-export function compose(middlewares: Middleware[], transport: Transport): Transport {
+export const compose = (middlewares: Middleware[], transport: Transport): Transport => {
   return async (ctx: RequestContext): Promise<ResponseContext> => {
     let index = -1;
-
     const dispatch = async (i: number): Promise<ResponseContext> => {
       if (i <= index) {
         throw new Error('next() called multiple times');
       }
       index = i;
-
       if (i >= middlewares.length) {
         return transport(ctx);
       }
-
       const middleware = middlewares[i];
       return middleware(ctx, () => dispatch(i + 1));
     };
-
     return dispatch(0);
   };
-}
+};

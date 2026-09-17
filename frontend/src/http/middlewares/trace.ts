@@ -18,9 +18,8 @@ export type TraceProvider = () => Promise<string | null>;
  * Falls back to `Math.random` when the Web Crypto API is unavailable
  * (e.g. older test environments).
  */
-export function randomHex(length: number): string {
+export const randomHex = (length: number): string => {
   const bytes = Math.ceil(length / 2);
-
   try {
     const buffer = new Uint8Array(bytes);
     crypto.getRandomValues(buffer);
@@ -36,7 +35,7 @@ export function randomHex(length: number): string {
     }
     return hex;
   }
-}
+};
 
 /**
  * Create a B3 trace middleware.
@@ -45,23 +44,19 @@ export function randomHex(length: number): string {
  *   a non-null string that value is used as the trace ID; otherwise a new
  *   one is generated.
  */
-export function createTraceMiddleware(traceProvider?: TraceProvider): Middleware {
+export const createTraceMiddleware = (traceProvider?: TraceProvider): Middleware => {
   return async (ctx, next) => {
     const providerTraceId = traceProvider ? await traceProvider() : null;
     const traceId = providerTraceId ?? randomHex(32);
     const spanId = randomHex(16);
-
     ctx.config.headers = {
       ...ctx.config.headers,
       'X-B3-TraceId': traceId,
       'X-B3-SpanId': spanId,
     };
-
     const res = await next();
-
     res.meta.traceId = traceId;
     res.meta.spanId = spanId;
-
     return res;
   };
-}
+};

@@ -160,29 +160,25 @@ interface DeletePageProps {
   id: string;
 }
 
-export function DeletePage({ type, id }: DeletePageProps) {
+export const DeletePage = ({ type, id }: DeletePageProps) => {
   const navigate = useNavigate();
   const query = useEntityDetail(type, id);
   const deleteMutation = useDeleteEntity();
   const schema = get(type);
   const listHref = listPath(type);
   const [deleting, setDeleting] = React.useState(false);
-
   // Keep refs for stable callbacks
   const refetchRef = React.useRef(query.refetch);
   React.useEffect(() => {
     refetchRef.current = query.refetch;
   });
-
   const recordRef = React.useRef(query.data?.record);
   React.useEffect(() => {
     if (query.data) recordRef.current = query.data.record;
   });
-
   const handleRetry = React.useCallback(() => {
     void refetchRef.current();
   }, []);
-
   const handleDelete = React.useCallback(() => {
     if (deleting) return;
     setDeleting(true);
@@ -202,12 +198,10 @@ export function DeletePage({ type, id }: DeletePageProps) {
       },
     );
   }, [deleting, deleteMutation, type, id, schema.singular, navigate, listHref]);
-
   // Loading
   if (query.isLoading) {
     return <DeleteSkeleton />;
   }
-
   // Error
   if (query.isError) {
     const err = query.error instanceof Error ? query.error : new Error('Something went wrong.');
@@ -216,25 +210,19 @@ export function DeletePage({ type, id }: DeletePageProps) {
       <ErrorState error={err} onRetry={handleRetry} listHref={listHref} isNotFound={isNotFound} />
     );
   }
-
   if (!query.data) return null;
-
   const { record, relations } = query.data;
   const title = titleOf(type, record);
-
   // Key fields: title field + first four list-visible fields (deduped)
   const titleField = schema.titleField;
   const listVisible = listFields(type).map((f) => f.key);
   const keyFields = [titleField, ...listVisible]
     .filter((k, i, arr) => arr.indexOf(k) === i)
     .slice(0, 5);
-
   // Outbound relations for ref resolution
   const outboundRels = relations.filter((r) => r.direction === 'outbound');
-
   // Inbound warnings
   const inbound = relations.filter((r) => r.direction === 'inbound' && r.records.length > 0);
-
   return (
     <>
       <DeleteBreadcrumb type={type} id={id} title={title} />
@@ -306,4 +294,4 @@ export function DeletePage({ type, id }: DeletePageProps) {
       </ButtonSet>
     </>
   );
-}
+};

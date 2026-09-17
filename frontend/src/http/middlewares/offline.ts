@@ -15,9 +15,9 @@ import type { Middleware } from '../types';
 /**
  * Create an offline middleware (currently a no-op passthrough).
  */
-export function createOfflineMiddleware(): Middleware {
+export const createOfflineMiddleware = (): Middleware => {
   return async (_ctx, next) => {
     // TODO: implement offline detection + request queuing
     return next();
   };
-}
+};

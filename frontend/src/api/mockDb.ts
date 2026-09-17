@@ -205,7 +205,7 @@ function sortRows(rows: EntityRecord[], sort?: SortDef): EntityRecord[] {
 // ── Public API ─────────────────────────────────────────────────────────────
 
 /** List records with optional search, filters, and sort. */
-export function list(type: EntityType, opts: ListOptions = {}): Promise<EntityRecord[]> {
+export const list = (type: EntityType, opts: ListOptions = {}): Promise<EntityRecord[]> => {
   return request(() => {
     const rows = collection(load(), type).map(clone);
     return sortRows(
@@ -213,19 +213,22 @@ export function list(type: EntityType, opts: ListOptions = {}): Promise<EntityRe
       opts.sort ?? get(type).defaultSort,
     );
   });
-}
+};
 
 /** Get a single record by ID. */
-export function getRecord(type: EntityType, id: string): Promise<EntityRecord> {
+export const getRecord = (type: EntityType, id: string): Promise<EntityRecord> => {
   return request(() => {
     const row = collection(load(), type).find((r) => r.id === id);
     if (!row) throw new NotFoundError(type, id);
     return clone(row);
   });
-}
+};
 
 /** Create a new record. */
-export function create(type: EntityType, values: Record<string, unknown>): Promise<EntityRecord> {
+export const create = (
+  type: EntityType,
+  values: Record<string, unknown>,
+): Promise<EntityRecord> => {
   return request(() => {
     const record = clone(values) as EntityRecord;
     record.id = nextId(type);
@@ -234,23 +237,21 @@ export function create(type: EntityType, values: Record<string, unknown>): Promi
     save();
     return clone(record);
   });
-}
+};
 
 /** Update an existing record. Logs events for work_order transitions. */
-export function update(
+export const update = (
   type: EntityType,
   id: string,
   values: Record<string, unknown>,
-): Promise<EntityRecord> {
+): Promise<EntityRecord> => {
   return request(() => {
     const rows = collection(load(), type);
     const idx = rows.findIndex((r) => r.id === id);
     if (idx === -1) throw new NotFoundError(type, id);
-
     const before = rows[idx];
     const next = { ...before, ...clone(values), id: before.id, entity_type: type };
     rows[idx] = next;
-
     // Timeline-worthy transitions
     if (type === 'work_order') {
       const beforeStatus = before.status as string | undefined;
@@ -269,14 +270,19 @@ export function update(
         pushEvent(type, id, 'note_added', { note: nextNotes });
       }
     }
-
     save();
     return clone(next);
   });
-}
+};
 
 /** Delete a record and its events. */
-export function remove(type: EntityType, id: string): Promise<{ deleted: true; id: string }> {
+export const remove = (
+  type: EntityType,
+  id: string,
+): Promise<{
+  deleted: true;
+  id: string;
+}> => {
   return request(() => {
     const data = load();
     const rows = collection(data, type);
@@ -288,21 +294,19 @@ export function remove(type: EntityType, id: string): Promise<{ deleted: true; i
     save();
     return { deleted: true, id };
   });
-}
+};
 
 /**
  * Relations (outbound via schema + inbound reverse scan) and events.
  */
-export function related(type: EntityType, id: string): Promise<RelatedResult> {
+export const related = (type: EntityType, id: string): Promise<RelatedResult> => {
   return request(() => {
     const data = load();
     const record = collection(data, type).find((r) => r.id === id);
     if (!record) throw new NotFoundError(type, id);
     const rec = clone(record);
-
     const relations: RelationResult[] = [];
     const schema = get(type);
-
     // Outbound: relations this record points at
     for (const rel of schema.relations ?? []) {
       const targetId = rec[rel.field] as string | undefined;
@@ -315,7 +319,6 @@ export function related(type: EntityType, id: string): Promise<RelatedResult> {
         records: targets.map(clone),
       });
     }
-
     // Inbound: other entity types that point at this record
     for (const otherType of types()) {
       const other = get(otherType);
@@ -332,23 +335,21 @@ export function related(type: EntityType, id: string): Promise<RelatedResult> {
         });
       }
     }
-
     const events = data.events
       .filter((e) => e.entity_type === type && e.entity_id === id)
       .map(clone)
       .sort((a, b) => (a.timestamp < b.timestamp ? 1 : -1));
-
     return { record: rec, relations, events };
   });
-}
+};
 
 /** Check whether a value is unique for a field, excluding a specific ID. */
-export function checkUnique(
+export const checkUnique = (
   type: EntityType,
   key: string,
   value: unknown,
   excludeId?: string,
-): Promise<boolean> {
+): Promise<boolean> => {
   return request(() => {
     const norm = safeStr(value).trim().toLowerCase();
     if (!norm) return true;
@@ -356,10 +357,12 @@ export function checkUnique(
       (r) => r.id !== excludeId && safeStr(r[key]).trim().toLowerCase() === norm,
     );
   });
-}
+};
 
 /** Reset to seeded data. */
-export function reset(): Promise<{ reset: true }> {
+export const reset = (): Promise<{
+  reset: true;
+}> => {
   // Clear failNext before the request so reset always succeeds
   failNext = false;
   return request(() => {
@@ -367,24 +370,24 @@ export function reset(): Promise<{ reset: true }> {
     save();
     return { reset: true };
   });
-}
+};
 
 /** Set the failNext flag. */
-export function setFailNext(value: boolean): void {
+export const setFailNext = (value: boolean): void => {
   failNext = value;
-}
+};
 
 // ── Synchronous peek (for dashboard KPIs) ──────────────────────────────────
 
 /** Synchronous read of the store (for dashboard KPI math). */
-export function peek(type: EntityType): EntityRecord[] {
+export const peek = (type: EntityType): EntityRecord[] => {
   return clone(collection(load(), type));
-}
+};
 
 /** Synchronous read of all events. */
-export function peekEvents(): EntityEvent[] {
+export const peekEvents = (): EntityEvent[] => {
   return clone(load().events);
-}
+};
 
 /** Current seed version. */
 export const seedVersion = SEED_VERSION;

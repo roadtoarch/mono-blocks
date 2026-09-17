@@ -100,16 +100,14 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
 /**
  * Generic entity list page. One component per entity type, driven by schema.
  */
-export function ListPage({ type }: ListPageProps) {
+export const ListPage = ({ type }: ListPageProps) => {
   const schema = get(type);
-
   // Toolbar state
   const [toolbarState, setToolbarState] = React.useState<ListToolbarState>({
     q: '',
     filters: {},
     sort: schema.defaultSort,
   });
-
   // Data
   const {
     data: records,
@@ -122,37 +120,28 @@ export function ListPage({ type }: ListPageProps) {
     filters: toolbarState.filters,
     sort: toolbarState.sort,
   });
-
   // Ref caches for foreign-key columns
   const refCaches = useRefCaches(type);
-
   // Set page title
   React.useEffect(() => {
     document.title = `${schema.plural} — Cornerstone Property Services`;
   }, [schema.plural]);
-
   const handleSort = React.useCallback((sort: SortDef) => {
     setToolbarState((prev) => ({ ...prev, sort }));
   }, []);
-
   const handleClearSearch = React.useCallback(() => {
     setToolbarState((prev) => ({ ...prev, q: '', filters: {} }));
   }, []);
-
   const handleRetry = React.useCallback(() => {
     void refetch();
   }, [refetch]);
-
   const fields = schema.fields.filter((f) => !f.hiddenInList);
   const colCount = fields.length + 1;
-
   // Determine which content to show
   const hasActiveSearch =
     toolbarState.q.trim() !== '' || Object.values(toolbarState.filters).some((v) => v !== '');
-
   // Extract error message safely
   const errorMessage = error instanceof Error ? error.message : 'Something went wrong.';
-
   return (
     <div>
       {/* Page header */}
@@ -193,4 +182,4 @@ export function ListPage({ type }: ListPageProps) {
       )}
     </div>
   );
-}
+};

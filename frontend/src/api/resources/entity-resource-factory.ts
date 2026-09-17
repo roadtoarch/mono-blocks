@@ -36,19 +36,18 @@ const BASE_PATHS: Record<EntityType, string> = {
  * (e.g. from mock to real API), call `clearResourceCache()`
  * to force re-creation.
  */
-export function getEntityResource(type: EntityType, transport?: Transport): CrudResource {
+export const getEntityResource = (type: EntityType, transport?: Transport): CrudResource => {
   const cached = resourceCache.get(type);
   if (cached && !transport) return cached;
-
   const t = transport ?? getTransport();
   const resource = new CrudResource(BASE_PATHS[type], t);
   resourceCache.set(type, resource);
   return resource;
-}
+};
 
 /**
  * Clear the resource cache. Call when the transport changes.
  */
-export function clearResourceCache(): void {
+export const clearResourceCache = (): void => {
   resourceCache.clear();
-}
+};

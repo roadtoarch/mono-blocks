@@ -188,19 +188,23 @@ interface FormPageProps {
   id?: string; // undefined = create, defined = edit
 }
 
-export function FormPage({ type, id }: FormPageProps) {
+export const FormPage = ({ type, id }: FormPageProps) => {
   const isEdit = id !== undefined;
   const editId = id ?? '';
   const schema = get(type);
   const listHref = listPath(type);
-
   // Load record (edit only) and ref caches — hooks always called
   const detailQuery = useEntityDetail(type, editId);
   const { refCaches } = useRefCaches(type);
-
   // Build ref options for select fields
   const refOptions = React.useMemo(() => {
-    const opts: Record<string, { value: string; label: string }[]> = {};
+    const opts: Record<
+      string,
+      {
+        value: string;
+        label: string;
+      }[]
+    > = {};
     for (const f of schema.fields) {
       if (!f.ref) continue;
       const cache = refCaches[f.ref];
@@ -210,24 +214,19 @@ export function FormPage({ type, id }: FormPageProps) {
     }
     return opts;
   }, [schema.fields, refCaches]);
-
   // Keep refs for stable callbacks
   const refetchRef = React.useRef(detailQuery.refetch);
   React.useEffect(() => {
     refetchRef.current = detailQuery.refetch;
   });
-
   const handleRetry = React.useCallback(() => {
     void refetchRef.current();
   }, []);
-
   const isLoading = isEdit && detailQuery.isLoading;
   const isError = isEdit && detailQuery.isError;
-
   if (isLoading) {
     return <FormSkeleton />;
   }
-
   if (isError) {
     const err =
       detailQuery.error instanceof Error ? detailQuery.error : new Error('Something went wrong.');
@@ -236,13 +235,11 @@ export function FormPage({ type, id }: FormPageProps) {
       <ErrorState error={err} onRetry={handleRetry} listHref={listHref} isNotFound={isNotFound} />
     );
   }
-
   const record = isEdit ? detailQuery.data?.record : null;
   const defaultValues = record
     ? defaultsFromRecord(schema.fields, record)
     : buildDefaults(schema.fields);
   const cancelHref = isEdit && id ? detailPath(type, id) : listHref;
-
   return (
     <FormContent
       type={type}
@@ -252,7 +249,7 @@ export function FormPage({ type, id }: FormPageProps) {
       cancelHref={cancelHref}
     />
   );
-}
+};
 
 // ── Value cleaning ────────────────────────────────────────────────────────
 

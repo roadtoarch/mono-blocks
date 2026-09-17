@@ -15,8 +15,8 @@ export interface LinkButtonProps extends Omit<ButtonProps<typeof Link>, 'as' | '
   to: string;
 }
 
-export function LinkButton({ to, ...rest }: LinkButtonProps) {
+export const LinkButton = ({ to, ...rest }: LinkButtonProps) => {
   // TanStack's `Link` expects a narrow route-path union; our helpers return
   // plain strings, so we widen at the boundary.
   return <Button as={Link} to={to} {...rest} />;
-}
+};

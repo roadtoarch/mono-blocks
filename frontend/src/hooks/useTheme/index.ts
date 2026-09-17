@@ -44,19 +44,17 @@ function getServerSnapshot(): string {
 /**
  * Provides the current Carbon theme and skin, plus setters.
  */
-export function useTheme(): {
+export const useTheme = (): {
   theme: CarbonTheme;
   skin: Skin;
   setTheme: (t: CarbonTheme) => void;
   toggleTheme: () => CarbonTheme;
   setSkin: (s: Skin) => void;
-} {
+} => {
   // Subscribe to attribute mutations so React re-renders on change.
   useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-
   const theme = getTheme();
   const skin = getSkin();
-
   const setTheme = useCallback((t: CarbonTheme) => {
     applyTheme(t);
   }, []);
@@ -64,6 +62,5 @@ export function useTheme(): {
   const setSkin = useCallback((s: Skin) => {
     applySkin(s);
   }, []);
-
   return { theme, skin, setTheme, toggleTheme, setSkin };
-}
+};

@@ -46,30 +46,25 @@ export interface ApiClientConfig {
  * The returned transport injects `baseURL` into every request config
  * before passing it through the middleware pipeline.
  */
-export function createApiClient(config: ApiClientConfig): Transport {
+export const createApiClient = (config: ApiClientConfig): Transport => {
   const middlewares: Middleware[] = [
     ...(config.middlewares ?? []),
     createAuthMiddleware(config.tokenProvider),
   ];
-
   if (config.traceProvider) {
     middlewares.push(createTraceMiddleware(config.traceProvider));
   }
-
   middlewares.push(createRetryMiddleware());
-
   if (config.extractHeaders && config.extractHeaders.length > 0) {
     middlewares.push(createHeadersMiddleware(config.extractHeaders));
   }
-
   const pipeline = compose(middlewares, transport);
-
   // Wrap the pipeline to inject baseURL from config
   return async (ctx) => {
     ctx.config.baseURL = config.baseURL;
     return pipeline(ctx);
   };
-}
+};
 
 // ─── Default client ──────────────────────────────────────────────────────────
 
@@ -79,9 +74,9 @@ let defaultTokenProvider: TokenProvider = async () => null;
  * Set the token provider used by the default client.
  * Call this once after auth is initialised (e.g. from OIDC).
  */
-export function setDefaultTokenProvider(provider: TokenProvider): void {
+export const setDefaultTokenProvider = (provider: TokenProvider): void => {
   defaultTokenProvider = provider;
-}
+};
 
 /**
  * Lazily-created default API client using `env.VITE_API_URL` as base URL.

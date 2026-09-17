@@ -21,12 +21,12 @@ const detailKey = (type: EntityType, id: string): unknown[] => ['detail', type, 
  * Fetch a single record with its relations and events.
  * Returns TanStack Query result wrapping RelatedResult.
  */
-export function useEntityDetail(type: EntityType, id: string) {
+export const useEntityDetail = (type: EntityType, id: string) => {
   return useQuery({
     queryKey: detailKey(type, id),
     queryFn: () => getEntityResource(type).related(id),
   });
-}
+};
 
 // ── Delete mutation ───────────────────────────────────────────────────────
 
@@ -34,9 +34,8 @@ export function useEntityDetail(type: EntityType, id: string) {
  * Mutation to delete a record. On success, invalidates list + detail + ref
  * caches for the entity type so pages refresh.
  */
-export function useDeleteEntity() {
+export const useDeleteEntity = () => {
   const qc = useQueryClient();
-
   return useMutation({
     mutationFn: ({ type, id }: { type: EntityType; id: string }) =>
       getEntityResource(type).remove(id),
@@ -46,7 +45,7 @@ export function useDeleteEntity() {
       void qc.invalidateQueries({ queryKey: ['ref-cache', type] });
     },
   });
-}
+};
 
 // ── Invalidation helper ───────────────────────────────────────────────────
 
@@ -54,11 +53,11 @@ export function useDeleteEntity() {
  * Return a function that invalidates detail + list + ref-cache queries
  * for a type after create/update operations.
  */
-export function useInvalidateDetail() {
+export const useInvalidateDetail = () => {
   const qc = useQueryClient();
   return (type: EntityType, id?: string) => {
     void qc.invalidateQueries({ queryKey: ['detail', type, id] });
     void qc.invalidateQueries({ queryKey: ['list', type] });
     void qc.invalidateQueries({ queryKey: ['ref-cache', type] });
   };
-}
+};

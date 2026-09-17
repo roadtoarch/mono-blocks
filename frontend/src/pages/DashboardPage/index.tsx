@@ -153,14 +153,12 @@ function DashboardError({ error, onRetry }: { error: Error; onRetry: () => void 
  * Dashboard page — KPI tiles, recent work orders, quick links.
  * Fetches data via useDashboard hook (TanStack Query).
  */
-export function DashboardPage() {
+export const DashboardPage = () => {
   const { data, isLoading, isError, error, refetch } = useDashboard();
-
   if (isError) {
     const err = error instanceof Error ? error : new Error('Something went wrong.');
     return <DashboardError error={err} onRetry={() => void refetch()} />;
   }
-
   return (
     <>
       <div className="mb-page-header">
@@ -222,4 +220,4 @@ export function DashboardPage() {
       )}
     </>
   );
-}
+};

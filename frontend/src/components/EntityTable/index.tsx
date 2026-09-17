@@ -352,7 +352,7 @@ function SortButtonBar({
 
 // ── Skeleton rows ─────────────────────────────────────────────────────────
 
-export function SkeletonTable({ colCount, rowCount }: { colCount: number; rowCount: number }) {
+export const SkeletonTable = ({ colCount, rowCount }: { colCount: number; rowCount: number }) => {
   return (
     <div className="mb-table-wrapper">
       <table className="mb-table" aria-hidden="true">
@@ -370,7 +370,7 @@ export function SkeletonTable({ colCount, rowCount }: { colCount: number; rowCou
       </table>
     </div>
   );
-}
+};
 
 // ── Main component ────────────────────────────────────────────────────────
 
@@ -378,12 +378,11 @@ export function SkeletonTable({ colCount, rowCount }: { colCount: number; rowCou
  * Schema-driven entity table. Renders a Carbon DataTable on larger container
  * widths and a stacked card layout when the container is narrow.
  */
-export function EntityTable(props: EntityTableProps) {
+export const EntityTable = (props: EntityTableProps) => {
   const { ref, breakpoint } = useContainerWidth();
-
   return (
     <div ref={ref} className="mb-entity-table">
       {breakpoint === 'sm' ? <NarrowCards {...props} /> : <WideTable {...props} />}
     </div>
   );
-}
+};

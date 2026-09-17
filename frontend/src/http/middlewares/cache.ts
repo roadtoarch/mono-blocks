@@ -15,9 +15,9 @@ import type { Middleware } from '../types';
 /**
  * Create a cache middleware (currently a no-op passthrough).
  */
-export function createCacheMiddleware(): Middleware {
+export const createCacheMiddleware = (): Middleware => {
   return async (_ctx, next) => {
     // TODO: implement response caching with TTL
     return next();
   };
-}
+};
