@@ -5,18 +5,12 @@
  * Shows brand monogram, tagline, enter CTA, and skin switcher.
  * Port of prototype index.html landing page.
  */
-import { Button } from '@carbon/react';
-
-import type { Skin } from '@/stores/theme';
+import { Column, Grid } from '@carbon/react';
 
 import { LinkButton } from '@/components/LinkButton';
 import { useTheme } from '@/hooks';
 
-const SKINS: { key: Skin; label: string }[] = [
-  { key: 'cornerstone', label: 'Cornerstone Blue' },
-  { key: 'mono', label: 'Graphite Mono' },
-  { key: 'ember', label: 'Ember' },
-];
+import './index.scss';
 
 /**
  * Landing monogram SVG — 3 stacked rects (2 currentColor, 1 brand accent).
@@ -39,52 +33,65 @@ function LandingMonogram() {
  * Landing page component.
  */
 export const LandingPage = () => {
-  const { skin, setSkin } = useTheme();
+  useTheme(); // skin/setSkin available here for the future skin switcher.
 
   return (
-    <div className="mb-landing">
-      <LandingMonogram />
+    <Grid fullWidth className="landing-grid">
+      <Column className="landing-content-col" sm={4} md={4} lg={8}>
+        <div className="landing-content-wrapper">
+          <header className="landing-logo">
+            <LandingMonogram />
+          </header>
 
-      <h1 className="mb-landing__title">Cornerstone Property Services</h1>
-      <p className="mb-landing__tagline">
-        Property management and field maintenance, coordinated in one place: customers, sites,
-        equipment, technicians and work orders — with every journey from search to sign-off.
-      </p>
+          <main>
+            <h1 data-testid="landing-title" className="landing-title">
+              Cornerstone Property Services
+            </h1>
 
-      <LinkButton kind="primary" to="/dashboard">
-        Enter the app
-      </LinkButton>
+            <h2 data-testid="landing-subtitle" className="landing-subtitle">
+              Property management and field maintenance, coordinated in one place: customers, sites,
+              equipment, technicians and work orders — with every journey from search to sign-off.
+            </h2>
 
-      <div className="mb-skin-switcher">
-        <p className="mb-skin-switcher__label" id="mb-skin-label">
-          Swap the brand tokens — same app:
-        </p>
-        <div className="mb-skin-switcher__options" role="group" aria-labelledby="mb-skin-label">
-          {SKINS.map((s) => {
-            const isSelected = skin === s.key;
-            return (
-              <Button
-                key={s.key}
-                size="sm"
-                kind={isSelected ? 'primary' : 'secondary'}
-                className={`mb-skin-chip${isSelected ? ' is-selected' : ''}`}
-                data-skin={s.key}
-                onClick={() => {
-                  setSkin(s.key);
-                }}
-                aria-pressed={isSelected}
-              >
-                <span className="mb-skin-chip__swatch" aria-hidden="true" />
-                {s.label}
-              </Button>
-            );
-          })}
+            <div className="buttons-container single-row">
+              <LinkButton kind="primary" to="/dashboard">
+                Enter the app
+              </LinkButton>
+            </div>
+          </main>
         </div>
-      </div>
+      </Column>
 
-      <footer>
-        <p className="mb-landing__footer">Built on MonoBlocks</p>
-      </footer>
-    </div>
+      <Column
+        className="landing-img-col"
+        sm={4}
+        md={4}
+        lg={8}
+        as="aside"
+        aria-label="Landing image"
+      >
+        <picture>
+          <source
+            srcSet="/img/landing-400.avif 400w, /img/landing-572.avif 572w"
+            sizes="(max-width: 572px) 100vw, 572px"
+            type="image/avif"
+          />
+          <source
+            srcSet="/img/landing-400.webp 400w, /img/landing-572.webp 572w"
+            sizes="(max-width: 572px) 100vw, 572px"
+            type="image/webp"
+          />
+          <img
+            src="/img/landing.png"
+            width="572"
+            height="1024"
+            loading="lazy"
+            decoding="async"
+            className="landing-img"
+            alt="Cornerstone Property Services team at work in a city street, with a technician on a ladder and a service van in the background"
+          />
+        </picture>
+      </Column>
+    </Grid>
   );
 };

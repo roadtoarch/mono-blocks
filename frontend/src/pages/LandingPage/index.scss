@@ -1,0 +1,119 @@
+/// Landing page layout — split-screen on desktop, stacked on mobile.
+/// Uses Carbon Grid classes in the component and CSS custom properties
+/// (project tokens) so no extra Carbon Sass modules are required.
+
+$breakpoint-md: 672px;
+$breakpoint-lg: 1056px;
+$breakpoint-md-max: 671px;
+$breakpoint-lg-max: 1055px;
+
+.landing-grid {
+  padding: 0;
+  height: 100dvh;
+  max-height: 100dvh;
+  background-color: var(--cds-background);
+  overflow: hidden;
+}
+
+.landing-content-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100dvh;
+  padding: 2rem;
+  margin: 0;
+
+  @media (max-width: #{$breakpoint-md-max}) {
+    height: auto;
+    min-height: auto;
+    padding: 1rem;
+  }
+}
+
+.landing-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  width: 100%;
+
+  @media (min-width: #{$breakpoint-lg}) {
+    gap: 6rem;
+  }
+}
+
+.landing-logo {
+  width: fit-content;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+
+  @media (min-width: #{$breakpoint-md}) {
+    gap: 3rem;
+  }
+
+  @media (min-width: #{$breakpoint-lg}) {
+    gap: 4rem;
+  }
+}
+
+.landing-title {
+  font-size: var(--cds-display-font-size);
+  line-height: var(--cds-display-line-height);
+  font-weight: var(--cds-display-weight);
+  letter-spacing: var(--cds-display-letter-spacing);
+  color: var(--cds-text-primary);
+  margin: 0;
+}
+
+.landing-subtitle {
+  font-size: var(--cds-body-01-font-size);
+  line-height: var(--cds-body-01-line-height);
+  letter-spacing: var(--cds-body-01-letter-spacing);
+  color: var(--cds-text-secondary);
+  margin: 0;
+  max-width: 48ch;
+}
+
+.buttons-container {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+
+  &.single-row {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  &.two-rows {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.landing-img-col {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: 100dvh;
+  max-height: 100dvh;
+
+  picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.landing-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
