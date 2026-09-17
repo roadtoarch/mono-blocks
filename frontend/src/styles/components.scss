@@ -1097,7 +1097,9 @@ th[aria-sort='descending'] .mb-table__sort-icon {
   gap: var(--cds-spacing-03);
 }
 
-.mb-skin-chip {
+.mb-skin-chip,
+button.mb-skin-chip,
+button.mb-skin-chip.cds--btn {
   display: inline-flex;
   align-items: center;
   gap: var(--cds-spacing-03);
@@ -1116,11 +1118,15 @@ th[aria-sort='descending'] .mb-table__sort-icon {
     border-color var(--cds-duration-fast-01) var(--cds-easing-standard-productive);
 }
 
-.mb-skin-chip:hover {
+.mb-skin-chip:hover,
+button.mb-skin-chip:hover,
+button.mb-skin-chip.cds--btn:hover {
   background-color: var(--cds-field-hover);
 }
 
-.mb-skin-chip.is-selected {
+.mb-skin-chip.is-selected,
+button.mb-skin-chip.is-selected,
+button.mb-skin-chip.cds--btn.is-selected {
   border-color: var(--cds-border-interactive);
   background-color: var(--cds-layer-selected);
   font-weight: var(--cds-heading-02-weight);

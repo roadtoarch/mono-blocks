@@ -6,10 +6,21 @@
  * Uses useTheme, useNav hooks for reactive state.
  */
 import { Close, ColorPalette, Menu, Moon, Reset, Sun } from '@carbon/icons-react';
+import {
+  Button,
+  Header,
+  HeaderGlobalAction,
+  HeaderGlobalBar,
+  HeaderMenuButton,
+  HeaderName,
+  SideNav,
+  SideNavItems,
+  SideNavLink,
+  SkipToContent,
+} from '@carbon/react';
 import { Link, Outlet, useLocation, useRouter } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { NavItem } from '@/schema/config';
 import type { Skin } from '@/stores/theme';
 
 import * as mockDb from '@/api/mockDb'; // mock-only: reset() has no REST equivalent yet
@@ -40,24 +51,6 @@ function Monogram({ size = 20 }: { size?: number }) {
 }
 
 /**
- * Side navigation item.
- */
-function SidenavItem({ item, isActive }: { item: NavItem; isActive: boolean }) {
-  return (
-    <Link
-      to={item.path}
-      className={`mb-sidenav__item${isActive ? ' is-active' : ''}`}
-      aria-current={isActive ? 'page' : undefined}
-    >
-      <span className="mb-sidenav__icon" aria-hidden="true">
-        {item.icon}
-      </span>
-      <span>{item.label}</span>
-    </Link>
-  );
-}
-
-/**
  * Skin chip for the header dropdown.
  */
 function SkinChip({
@@ -73,8 +66,9 @@ function SkinChip({
   const isSelected = skin === currentSkin;
 
   return (
-    <button
-      type="button"
+    <Button
+      size="sm"
+      kind={isSelected ? 'primary' : 'secondary'}
       className={`mb-skin-chip${isSelected ? ' is-selected' : ''}`}
       data-skin={skin}
       onClick={() => {
@@ -84,7 +78,7 @@ function SkinChip({
     >
       <span className="mb-skin-chip__swatch" aria-hidden="true" />
       <span>{label}</span>
-    </button>
+    </Button>
   );
 }
 
@@ -153,48 +147,43 @@ export function AppShell() {
 
   return (
     <>
-      <a href="#main-content" className="mb-skip-link">
-        Skip to main content
-      </a>
+      <SkipToContent className="mb-skip-link">Skip to main content</SkipToContent>
 
       {/* ─── Header ─── */}
-      <header className="mb-shell-header" role="banner">
-        <button
-          type="button"
+      <Header className="mb-shell-header" aria-label="MonoBlocks application header">
+        <HeaderMenuButton
           className="mb-header__action"
-          onClick={() => {
-            toggleNav();
-          }}
+          isActive={isOpen}
+          onClick={toggleNav}
           aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
-          aria-expanded={isOpen}
-        >
-          <span aria-hidden="true">{isOpen ? <Close size={20} /> : <Menu size={20} />}</span>
-        </button>
+          renderMenuIcon={<Menu size={20} />}
+          renderCloseIcon={<Close size={20} />}
+        />
 
-        <Link
+        <HeaderName
+          as={Link}
           to="/"
-          className="mb-header__wordmark"
+          prefix=""
           aria-label="Cornerstone Property Services — Home"
+          className="mb-header__wordmark"
         >
           <Monogram />
           <span style={{ marginInlineStart: 'var(--cds-spacing-03)' }}>Cornerstone</span>
-        </Link>
+        </HeaderName>
 
-        <div className="mb-header__actions">
+        <HeaderGlobalBar className="mb-header__actions">
           {/* Skin switcher */}
           <div ref={skinMenuRef} style={{ position: 'relative' }}>
-            <button
-              type="button"
+            <HeaderGlobalAction
               className="mb-header__action"
+              aria-label="Change brand skin"
               onClick={() => {
                 setSkinMenuOpen((prev) => !prev);
               }}
-              aria-label="Change brand skin"
-              aria-haspopup="true"
-              aria-expanded={skinMenuOpen}
+              isActive={skinMenuOpen}
             >
               <ColorPalette size={20} />
-            </button>
+            </HeaderGlobalAction>
 
             {skinMenuOpen && (
               <div
@@ -218,45 +207,57 @@ export function AppShell() {
           </div>
 
           {/* Theme toggle */}
-          <button
-            type="button"
+          <HeaderGlobalAction
             className="mb-header__action"
-            onClick={() => {
-              toggleTheme();
-            }}
             aria-label={theme === 'g100' ? 'Switch to light theme' : 'Switch to dark theme'}
+            onClick={toggleTheme}
           >
             {theme === 'g100' ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
+          </HeaderGlobalAction>
 
           {/* Reset demo */}
-          <button
-            type="button"
+          <HeaderGlobalAction
             className="mb-header__action"
-            onClick={handleReset}
             aria-label="Reset demo data"
+            onClick={handleReset}
           >
             <Reset size={20} />
-          </button>
-        </div>
-      </header>
+          </HeaderGlobalAction>
+        </HeaderGlobalBar>
+      </Header>
 
       {/* ─── App grid ─── */}
       <div ref={appRef} className="mb-app" data-nav={isOpen ? 'open' : 'closed'}>
-        {/* Side nav */}
-        <nav className="mb-sidenav" aria-label="Main navigation">
+        <SideNav
+          className="mb-sidenav"
+          aria-label="Main navigation"
+          isFixedNav
+          expanded={isOpen}
+          onToggle={(_event, value) => {
+            if (value !== isOpen) {
+              toggleNav();
+            }
+          }}
+        >
           <div className="mb-sidenav__label">Navigation</div>
-          <ul className="mb-sidenav__list" role="list">
+          <SideNavItems>
             {items.map((item) => (
-              <li key={item.key}>
-                <SidenavItem item={item} isActive={activeKey === item.key} />
-              </li>
+              <SideNavLink
+                key={item.key}
+                as={Link}
+                to={item.path}
+                isActive={activeKey === item.key}
+                renderIcon={item.icon}
+                aria-current={activeKey === item.key ? 'page' : undefined}
+              >
+                {item.label}
+              </SideNavLink>
             ))}
-          </ul>
-        </nav>
+          </SideNavItems>
+        </SideNav>
 
         {/* Main content */}
-        <main id="main-content" className="mb-main" tabIndex={-1}>
+        <main id="main-content" className="app-shell__main" tabIndex={-1}>
           <Outlet />
         </main>
       </div>

@@ -5,6 +5,7 @@
  * Shows brand monogram, tagline, enter CTA, and skin switcher.
  * Port of prototype index.html landing page.
  */
+import { Button } from '@carbon/react';
 import { createFileRoute } from '@tanstack/react-router';
 
 import type { Skin } from '@/stores/theme';
@@ -60,26 +61,30 @@ function LandingPage() {
           Swap the brand tokens — same app:
         </p>
         <div className="mb-skin-switcher__options" role="group" aria-labelledby="mb-skin-label">
-          {SKINS.map((s) => (
-            <button
-              key={s.key}
-              type="button"
-              className={`mb-skin-chip${skin === s.key ? ' is-selected' : ''}`}
-              data-skin={s.key}
-              onClick={() => {
-                setSkin(s.key);
-              }}
-              aria-pressed={skin === s.key}
-            >
-              <span className="mb-skin-chip__swatch" aria-hidden="true" />
-              {s.label}
-            </button>
-          ))}
+          {SKINS.map((s) => {
+            const isSelected = skin === s.key;
+            return (
+              <Button
+                key={s.key}
+                size="sm"
+                kind={isSelected ? 'primary' : 'secondary'}
+                className={`mb-skin-chip${isSelected ? ' is-selected' : ''}`}
+                data-skin={s.key}
+                onClick={() => {
+                  setSkin(s.key);
+                }}
+                aria-pressed={isSelected}
+              >
+                <span className="mb-skin-chip__swatch" aria-hidden="true" />
+                {s.label}
+              </Button>
+            );
+          })}
         </div>
       </div>
 
       <footer>
-        <p className="mb-landing__footer mb-built-on">Built on MonoBlocks</p>
+        <p className="mb-landing__footer">Built on MonoBlocks</p>
       </footer>
     </div>
   );

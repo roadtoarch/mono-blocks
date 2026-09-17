@@ -209,7 +209,8 @@
 }
 
 /* main — container for @container queries on child components */
-.mb-main {
+.mb-main,
+.app-shell__main {
   container-type: inline-size;
   container-name: main;
   min-width: 0;
@@ -219,7 +220,8 @@
 }
 
 @media (min-width: 1584px) {
-  .mb-main {
+  .mb-main,
+  .app-shell__main {
     padding: var(--cds-spacing-06);
   }
 }

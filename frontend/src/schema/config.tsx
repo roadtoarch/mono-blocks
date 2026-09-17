@@ -8,7 +8,7 @@
 import { Dashboard, Document, Building, Tools, User } from '@carbon/icons-react';
 
 import type { CollectionKey, EntityConfig, EntityType, TagColor } from './types.ts';
-import type { ReactNode } from 'react';
+import type { ComponentType } from 'react';
 
 // ── Entity configs ─────────────────────────────────────────────────────────
 
@@ -360,18 +360,18 @@ export const STORE_KEYS: Record<EntityType, CollectionKey> = {
 export interface NavItem {
   key: EntityType | 'dashboard';
   label: string;
-  icon: ReactNode;
+  icon: ComponentType;
   path: string;
 }
 
 /** Icon map: entity type / dashboard → Carbon icon component. */
-const ICON_MAP: Record<EntityType | 'dashboard', ReactNode> = {
-  dashboard: <Dashboard size={20} />,
-  customer: <User size={20} />,
-  site: <Building size={20} />,
-  equipment: <Tools size={20} />,
-  technician: <User size={20} />,
-  work_order: <Document size={20} />,
+const ICON_MAP: Record<EntityType | 'dashboard', ComponentType> = {
+  dashboard: () => <Dashboard size={20} />,
+  customer: () => <User size={20} />,
+  site: () => <Building size={20} />,
+  equipment: () => <Tools size={20} />,
+  technician: () => <User size={20} />,
+  work_order: () => <Document size={20} />,
 };
 
 /** All nav items in sidebar order. */

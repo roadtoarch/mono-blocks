@@ -162,6 +162,12 @@
   --cds-display-01-font-weight: #{map.get(carbon-type.$display-01, font-weight)};
   --cds-display-01-letter-spacing: #{map.get(carbon-type.$display-01, letter-spacing)};
 
+  /* legacy alias used by the mb-landing__title layer */
+  --cds-display-font-size: var(--cds-display-01-font-size);
+  --cds-display-line-height: var(--cds-display-01-line-height);
+  --cds-display-weight: var(--cds-display-01-font-weight);
+  --cds-display-letter-spacing: var(--cds-display-01-letter-spacing);
+
   --cds-heading-05-font-size: #{map.get(carbon-type.$heading-05, font-size)};
   --cds-heading-05-line-height: #{map.get(carbon-type.$heading-05, line-height)};
   --cds-heading-05-font-weight: #{map.get(carbon-type.$heading-05, font-weight)};
