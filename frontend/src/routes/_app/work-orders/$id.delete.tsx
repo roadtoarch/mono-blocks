@@ -5,7 +5,7 @@
  */
 import { createFileRoute } from '@tanstack/react-router';
 
-import { DeletePage } from '@/components/DeletePage';
+import { DeletePage } from '@/pages/DeletePage';
 
 export const Route = createFileRoute('/_app/work-orders/$id/delete')({
   component: DeleteWorkOrderPage,

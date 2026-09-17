@@ -9,7 +9,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import * as React from 'react';
 
 import * as mockDb from '@/api/mockDb';
-import { useEntityList, useRefCaches } from '@/hooks/useEntityList';
+import { useEntityList, useRefCaches } from './index';
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 

@@ -9,7 +9,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import * as mockDb from '@/api/mockDb';
-import { useDashboard } from '@/hooks/useDashboard';
+import { useDashboard } from './index';
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 

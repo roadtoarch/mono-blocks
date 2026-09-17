@@ -5,7 +5,7 @@
  */
 import { createFileRoute } from '@tanstack/react-router';
 
-import { FormPage } from '@/components/FormPage';
+import { FormPage } from '@/pages/FormPage';
 
 export const Route = createFileRoute('/_app/equipment/new')({
   component: NewEquipmentPage,

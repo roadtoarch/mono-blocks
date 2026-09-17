@@ -5,7 +5,7 @@
  */
 import { createFileRoute } from '@tanstack/react-router';
 
-import { DetailPage } from '@/components/DetailPage';
+import { DetailPage } from '@/pages/DetailPage';
 
 export const Route = createFileRoute('/_app/customers/$id')({
   component: CustomerDetailPage,
