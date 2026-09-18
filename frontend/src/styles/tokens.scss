@@ -67,8 +67,25 @@
   --color-neutral-950: oklch(0.15 0.025 260); // darkest surface
 
   // -- Spacing scale (4px base) ---------------------------------------------
-  // Carbon provides --cds-spacing-01..13; these are our own alias layer
-  // for use in custom components and future container-query rules.
+  // Carbon v11 SHOULD provide --cds-spacing-01..13 as CSS custom properties,
+  // but the SCSS @use import path doesn't emit them. We define them here so
+  // shell.scss and components.scss can reference them reliably.
+  --cds-spacing-00: 0;
+  --cds-spacing-01: 2px;
+  --cds-spacing-02: 4px;
+  --cds-spacing-03: 8px;
+  --cds-spacing-04: 12px;
+  --cds-spacing-05: 16px;
+  --cds-spacing-06: 24px;
+  --cds-spacing-07: 32px;
+  --cds-spacing-08: 40px;
+  --cds-spacing-09: 48px;
+  --cds-spacing-10: 64px;
+  --cds-spacing-11: 80px;
+  --cds-spacing-12: 96px;
+  --cds-spacing-13: 128px;
+
+  // Our own alias layer for use in custom components and future container-query rules.
   --space-0: 0;
   --space-1: 0.25rem; // 4px
   --space-2: 0.5rem; // 8px

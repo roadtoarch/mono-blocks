@@ -42,7 +42,8 @@ function Delta({ delta }: { delta: KpiDelta }) {
   const mod = delta.trend === 'up' ? ' mb-tile__delta--up' : ' mb-tile__delta--down';
   return (
     <span className={`mb-tile__delta${mod}`}>
-      ({delta.trend === 'up' ? '↑' : '↓'} {delta.text})
+      (<span className="mb-tile__delta-icon">{delta.trend === 'up' ? '↑' : '↓'}</span>{' '}
+      {delta.text})
     </span>
   );
 }
@@ -196,9 +197,9 @@ export const DashboardPage = () => {
               </table>
             </div>
             <p>
-              <LinkButton kind="ghost" to="/work-orders">
+              <Link to="/work-orders" className="mb-btn mb-btn--ghost">
                 View all work orders
-              </LinkButton>
+              </Link>
             </p>
           </section>
 
