@@ -223,7 +223,6 @@ export const AppShell = () => {
         <SideNav
           className="mb-sidenav"
           aria-label="Main navigation"
-          isFixedNav
           expanded={isOpen}
           onToggle={(_event, value) => {
             if (value !== isOpen) {

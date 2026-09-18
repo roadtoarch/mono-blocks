@@ -127,7 +127,8 @@
   grid-template-columns: 0 1fr;
   margin-block-start: var(--cds-header-height);
   min-height: calc(100vh - var(--cds-header-height));
-  transition: grid-template-columns var(--cds-duration-moderate-02) var(--cds-easing-standard-productive);
+  transition: grid-template-columns var(--cds-duration-moderate-02)
+    var(--cds-easing-standard-productive);
 }
 
 .mb-app[data-nav='open'] {
@@ -140,10 +141,13 @@
   }
 }
 
-/* side nav */
+/* side nav — push-style: must stay in grid flow (override Carbon's position:fixed) */
 .mb-sidenav {
+  position: static !important; /* override Carbon's .cds--side-nav--ux position:fixed */
+  grid-column: 1;
   z-index: var(--cds-z-nav);
   width: var(--cds-sidenav-width);
+  min-width: 0; /* allow shrinking in 0px grid track */
   overflow: hidden;
   visibility: visible;
   transition: visibility var(--cds-duration-none) var(--cds-duration-none);
@@ -211,6 +215,7 @@
 /* main — container for @container queries on child components */
 .mb-main,
 .app-shell__main {
+  grid-column: 2;
   container-type: inline-size;
   container-name: main;
   min-width: 0;
