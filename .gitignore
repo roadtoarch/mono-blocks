@@ -625,3 +625,4 @@ AGENTS.md
 .playwright-mcp
 config/application-*.yml
 *.code-workspace
+*_old/
