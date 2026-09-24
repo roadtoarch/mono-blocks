@@ -17,7 +17,7 @@
    nav stays visible during the 240ms slide-out animation.
    ========================================================================== */
 
-/* header — fixed 48px, always-dark shell chrome */
+/* header — fixed 48px, theme-aware shell chrome */
 .mb-shell-header {
   position: fixed;
   inset-block-start: 0;
@@ -32,9 +32,6 @@
   font-size: var(--cds-body-compact-01-font-size);
   line-height: var(--cds-body-compact-01-line-height);
   letter-spacing: var(--cds-body-compact-01-letter-spacing);
-}
-
-[data-carbon-theme='g100'] .mb-shell-header {
   border-block-end: var(--cds-border-width) solid var(--cds-border-subtle);
 }
 
@@ -168,15 +165,12 @@
   font-size: var(--cds-body-compact-01-font-size);
   line-height: var(--cds-body-compact-01-line-height);
   letter-spacing: var(--cds-body-compact-01-letter-spacing);
+  border-inline-end: var(--cds-border-width) solid var(--cds-border-subtle);
 }
 
 .mb-app:not([data-nav='open']) .mb-sidenav {
   visibility: hidden;
   transition-delay: var(--cds-duration-moderate-02);
-}
-
-[data-carbon-theme='g100'] .mb-sidenav {
-  border-inline-end: var(--cds-border-width) solid var(--cds-border-subtle);
 }
 
 .mb-sidenav__label {

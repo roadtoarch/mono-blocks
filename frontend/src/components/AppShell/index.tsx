@@ -2,7 +2,7 @@
  * MonoBlocks — components/AppShell.tsx
  *
  * App chrome: fixed 48px header, push-style side nav, main content area.
- * Always-dark shell chrome (shell-bg tokens are constant across themes).
+ * Theme-aware shell chrome that follows the active Carbon theme (white/g100).
  * Uses useTheme, useNav hooks for reactive state.
  */
 import { Close, ColorPalette, Menu, Moon, Reset, Sun } from '@carbon/icons-react';

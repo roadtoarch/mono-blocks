@@ -152,12 +152,12 @@
   --cds-icon-size: 16px;
   --cds-icon-size-lg: 32px;
 
-  /* UI shell — CONSTANT across themes */
-  --cds-shell-bg: #161616;
-  --cds-shell-text: #f4f4f4;
-  --cds-shell-text-muted: #c6c6c6;
-  --cds-shell-hover: #353535;
-  --cds-shell-active: #393939;
+  /* UI shell — theme-aware (follows the active Carbon theme) */
+  --cds-shell-bg: var(--cds-layer-01);
+  --cds-shell-text: var(--cds-text-primary);
+  --cds-shell-text-muted: var(--cds-text-secondary);
+  --cds-shell-hover: var(--cds-layer-hover-01);
+  --cds-shell-active: var(--cds-layer-active-01);
 
   /* skin-chip preview swatches */
   --cds-skin-preview-cornerstone: oklch(0.53 0.2 250);
