@@ -74,6 +74,18 @@
   letter-spacing: var(--cds-heading-01-letter-spacing);
 }
 
+/* Carbon's HeaderName wraps children in an unclassed <span>; turn it into
+   a flex row so the monogram and wordmark text align horizontally. */
+.mb-header__wordmark > span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.mb-header__wordmark .mb-icon {
+  width: 20px;
+  height: 20px;
+}
+
 .mb-header__wordmark:hover {
   background-color: var(--cds-shell-hover);
   color: var(--cds-shell-text);
