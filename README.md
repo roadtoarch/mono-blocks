@@ -1,26 +1,25 @@
 # mono-blocks
 
-> A small, opinionated full-stack starter for building a tenant-aware React + Spring Boot application with Keycloak already wired in.
+> A small, opinionated full-stack starter for a React + Spring Boot API over a generic, domain-agnostic entities / relationships / events schema.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/roadtoarch/mono-blocks/HEAD/docs/architecture-flow.svg" alt="Architecture flow from the React browser client through Keycloak and the Spring Boot API to PostgreSQL, including the tenant_id claim." width="100%">
+  <img src="https://raw.githubusercontent.com/roadtoarch/mono-blocks/HEAD/docs/architecture-flow.svg" alt="Architecture flow from the React browser client through the Spring Boot API to PostgreSQL." width="100%">
 </p>
 
 <p align="center">
-  <a href="docs/architecture.html">Interactive architecture diagram</a> — full component map with OIDC flow, tenant resolution, and security boundaries
+  <a href="docs/architecture.html">Interactive architecture diagram</a> — full component map
 </p>
 
-The first useful loop is already in place: sign in from the browser, receive an OIDC token, call a protected API, validate the JWT, and carry `tenant_id` through the request. The domain is intentionally empty so you can add your own entities, routes, and business rules without dismantling a demo application first.
+The first useful loop is already in place: a generic CRUD API over one `entities` table with free-form `attributes`, typed `relationships`, and an append-only `events` timeline. Nothing is hardcoded to a single domain — the API stays generic over `entity_type` and `relationship_type` strings, so the same backend serves a CRM, an asset tracker, or a scheduling tool.
 
 ## At A Glance
 
-| Layer     | What is ready                                                            | Where to look        |
-| --------- | ------------------------------------------------------------------------ | -------------------- |
-| Browser   | React 19, Vite 8, TypeScript 6, OIDC code flow with PKCE, silent renewal | `frontend/`          |
-| Identity  | Keycloak 26.7.2, imported `forest` realm, demo users and tenant claims   | `keycloak/import/`   |
-| API       | Spring Boot 4.1, Java 21, JWT resource server, `GET /api/me`             | `backend/`           |
-| Data      | PostgreSQL 16 with PostGIS 3.4, JPA, Flyway plumbing                     | `docker-compose.yml` |
-| Test data | Reproducible PostgreSQL SQL generation with Faker and YAML               | `sampler/`           |
+| Layer     | What is ready                                                             | Where to look        |
+| --------- | ------------------------------------------------------------------------- | -------------------- |
+| Browser   | React 19, Vite 8, TypeScript 6, TanStack Query/Router                     | `frontend/`          |
+| API       | Spring Boot 4.1, Java 21, generic entities/relationships/events REST API   | `backend/`           |
+| Data      | PostgreSQL 16 with PostGIS 3.4, JPA, Flyway, JSONB, full-text search      | `docker-compose.yml` |
+| Test data | Fictional business-scenario seed for the generic core                     | `db/seed/`           |
 
 ## Start Here
 
@@ -39,7 +38,7 @@ cp .env.example .env
 docker compose up -d
 ```
 
-This starts PostgreSQL on `localhost:5432` and Keycloak on `localhost:8081`. The `forest` realm is imported automatically from `keycloak/import/`.
+This starts PostgreSQL with PostGIS on `localhost:5432`. The API's schema is created by Flyway on first boot; no manual migration step is required.
 
 ### 2. Start the API
 
@@ -50,7 +49,7 @@ cd backend
 ./mvnw spring-boot:run
 ```
 
-The API listens on `http://localhost:8080`.
+The API listens on `http://localhost:8080`, and its schema is applied automatically.
 
 ### 3. Start the frontend
 
@@ -63,59 +62,71 @@ yarn install
 yarn dev
 ```
 
-The frontend reads `VITE_API_URL` and `VITE_KEYCLOAK_URL` from `frontend/.env` via a Zod-validated `src/env.ts`. Defaults are `http://localhost:8080` and `http://localhost:8081`.
+The frontend reads `VITE_API_URL` from `frontend/.env` via a Zod-validated `src/env.ts`. The default is `http://localhost:8080`.
 
-Open `http://localhost:5173`, choose **Sign in**, and use one of the demo accounts below.
+Open `http://localhost:5173` to use the frontend.
 
-## Demo Identity
+## Generic Core API
 
-The imported realm is named `forest`. Every demo user currently uses the temporary password `changeme`; replace these credentials before using the scaffold for anything real.
+The API is a thin, domain-agnostic layer over three tables: `entities`, `relationships`, and `events`. Every endpoint is unauthenticated by design — there is no security scaffold to dismantle before you add your own.
 
-| Username | Role     | `tenant_id` |
-| -------- | -------- | ----------: |
-| `alice`  | `ADMIN`  |         `1` |
-| `bob`    | `MEMBER` |         `1` |
-| `carol`  | `MEMBER` |         `2` |
+`entity_type`, `relationship_type`, and `event_type` are free-form strings, so the same API supports a CRM, an asset tracker, or a scheduling tool without a code change.
 
-Keycloak admin console: `http://localhost:8081` with `admin` / `admin`.
+### Entities
 
-## The Working Request
+| Method   | Path                         | Notes                                                                                                                                    |
+| -------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET`    | `/api/entities`              | Paged list. Filters: `entity_type`, `status`, `tag`, `search`, `lat`/`lng`/`radius_km`, `min_lat`/`min_lng`/`max_lat`/`max_lng`. Sorting via `sort=field,dir`. |
+| `GET`    | `/api/entities/{id}`         | Single entity plus a paged `children` list (entities whose `parent_id` is this id).                                                        |
+| `GET`    | `/api/entities/types`        | Distinct `entity_type` values seen so far.                                                                                                 |
+| `GET`    | `/api/entities/check-unique` | Attribute-uniqueness check (`entity_type`, `key`, `value`, optional `excludeId`).                                                          |
+| `POST`   | `/api/entities`              | Create. `entity_type` and `name` are required.                                                                                             |
+| `PUT`    | `/api/entities/{id}`         | Full replace.                                                                                                                              |
+| `PATCH`  | `/api/entities/{id}`         | Partial update (attributes are merged, not replaced).                                                                                      |
+| `DELETE` | `/api/entities/{id}`         | Delete.                                                                                                                                    |
 
-After signing in, the frontend calls the API with the access token:
+### Relationships and events
 
-```http
-GET /api/me
-Authorization: Bearer <access_token>
+| Method   | Path                               | Notes                                                                                                     |
+| -------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `GET`    | `/api/entities/{id}/relationships` | Every edge where the entity is source or target, each with a `direction` (`outbound`/`inbound`).           |
+| `POST`   | `/api/relationships`               | Create an edge. `source_id == target_id` is rejected.                                                      |
+| `DELETE` | `/api/relationships/{id}`          | Delete an edge.                                                                                            |
+| `GET`    | `/api/entities/{id}/events`        | This entity's timeline, newest first.                                                                      |
+| `GET`    | `/api/events`                      | Global feed. Filters: `event_type`, `entity_type`, and an `occurred_at` date range.                        |
+| `POST`   | `/api/events`                      | Append an event. Events are immutable — there is no update or delete.                                      |
+
+### Example calls
+
+```bash
+# Create a customer; any unknown top-level key lands in attributes
+curl -s -X POST http://localhost:8080/api/entities \
+  -H 'Content-Type: application/json' \
+  -d '{"entity_type":"customer","name":"Acme Corp","status":"active",
+       "tags":["vip"],"billing_email":"billing@acme.test","tier":"premium"}'
+
+# List customers matching "Acme", ten per page
+curl -s 'http://localhost:8080/api/entities?entity_type=customer&search=Acme&page=0&size=10'
+
+# Entities within 25 km of downtown Vancouver
+curl -s 'http://localhost:8080/api/entities?lat=49.28&lng=-123.12&radius_km=25'
+
+# Link a work order to a technician
+curl -s -X POST http://localhost:8080/api/relationships \
+  -H 'Content-Type: application/json' \
+  -d '{"source_id":"<work-order-id>","target_id":"<technician-id>","relationship_type":"assigned_to"}'
+
+# Append a status-change event
+curl -s -X POST http://localhost:8080/api/events \
+  -H 'Content-Type: application/json' \
+  -d '{"entity_id":"<id>","event_type":"status_changed","payload":{"from":"open","to":"scheduled"}}'
 ```
 
-The endpoint returns identity and tenant context from the validated JWT:
+`attributes` is a free-form JSON object. Responses expose it both nested (under `attributes`) and flattened at the top level, so `billing_email` above is also readable as `$.billing_email`. `location` is plain `{ lat, lng }` — never GeoJSON or WKT. Attribute keys named after a fixed column (`name`, `status`, …) are rejected with `400`.
 
-```json
-{
-  "username": "alice",
-  "email": "alice@example.test",
-  "roles": ["ADMIN"],
-  "tenant_id": "1"
-}
-```
+OpenAPI/Swagger UI is enabled at `http://localhost:8080/swagger-ui.html`. Errors use a consistent RFC 7807 shape: `400` validation with an `errors` map, `404` not found, and `409` conflict.
 
-The request path is deliberately small:
-
-1. The browser redirects to Keycloak using authorization code flow with PKCE S256.
-2. Keycloak returns ID and access tokens; the frontend stores them in local storage and renews them silently.
-3. The frontend sends the access token to `GET /api/me`.
-4. Spring Security validates the JWT against the Keycloak issuer.
-5. `TenantFilter` copies `tenant_id` into a request-scoped `ThreadLocal` context.
-6. `MeController` returns the authenticated username, email, authorities, and tenant.
-
-<details>
-<summary>View the full flow diagram</summary>
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/roadtoarch/mono-blocks/HEAD/docs/architecture-flow.svg" alt="Detailed OIDC request flow between the browser, Keycloak, Spring Boot API, tenant context, and PostgreSQL." width="100%">
-</p>
-
-</details>
+Attribute uniqueness is enforced in the database: register a key in `pgcj.unique_attributes` (seeded with `customer.billing_email`, `equipment.serial_number`, and `technician.email`) and a trigger rejects duplicates with `409`.
 
 ## Operations
 
@@ -126,7 +137,7 @@ The backend exposes these unauthenticated observability endpoints:
 | `GET /actuator/health`  | Health check                  |
 | `GET /actuator/metrics` | Prometheus-compatible metrics |
 
-The development frontend origin is `http://localhost:5173`. The backend can be configured through environment variables, including `SERVER_PORT`, `KEYCLOAK_PORT`, `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DATABASE`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `FRONTEND_URL`.
+The development frontend origin is `http://localhost:5173`. The backend can be configured through environment variables, including `SERVER_PORT`, `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DATABASE`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `FRONTEND_URL`.
 
 For a containerized deployment profile, run the backend with:
 
@@ -134,52 +145,44 @@ For a containerized deployment profile, run the backend with:
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-## Generate Test Data
+## Seed Demo Data
 
-`sampler/` is a standalone `uv` script that turns a YAML specification into reproducible PostgreSQL SQL. The checked-in spec describes `10,000` users, `100,000` posts, and `500,000` comments, including weighted references and nested replies.
+`backend/src/main/resources/db/seed/demo_scenario.sql` loads a small, coherent fictional business scenario into the generic core: **Northline Facilities Group**, a Metro Vancouver commercial facilities operator, with 5 customers, 10 sites, 20 pieces of equipment, 5 technicians, 24 work orders, and ~60 events spread across the last 60 days. The scenario — entity types, attribute shapes, the `assigned_to` relationship, and event payloads — is documented in [`docs/demo-scenario.md`](docs/demo-scenario.md).
 
-```bash
-uv run sampler/generate_data.py \
-  --config sampler/data-generation.yml \
-  --output /tmp/mono-blocks.sql
-```
-
-Override the configured scale or seed when needed:
+Apply it once the schema exists (i.e. after the backend has booted once so Flyway has run):
 
 ```bash
-uv run sampler/generate_data.py \
-  --config sampler/data-generation.yml \
-  --output /tmp/mono-blocks-small.sql \
-  --users 100 \
-  --posts 500 \
-  --comments 2000 \
-  --seed 42
+psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DATABASE?currentSchema=pgcj" \
+  -v ON_ERROR_STOP=1 \
+  -f backend/src/main/resources/db/seed/demo_scenario.sql
 ```
+
+The file uses fixed UUIDs and conflict/no-op guards, so it is safe to re-apply — a second run inserts nothing. It is deliberately kept out of `db/migration/`: the integration test suite asserts exact row counts against a freshly migrated database.
 
 ## Project Shape
 
 ```text
 mono-blocks/
-├── backend/                 # Spring Boot API and security boundary
-├── frontend/                # React SPA and OIDC client
-├── keycloak/import/         # Auto-imported realm configuration
-├── sampler/                 # YAML-driven PostgreSQL data generator
+├── backend/                 # Spring Boot API over the generic schema
+│   └── src/main/resources/db/seed/   # Demo scenario seed (SQL)
+├── frontend/                # React SPA
+├── docs/demo-scenario.md    # The fictional business scenario
 ├── docs/architecture-flow.svg
-├── docker-compose.yml       # PostgreSQL/PostGIS + Keycloak
+├── docker-compose.yml       # PostgreSQL/PostGIS
 └── .env.example             # Local infrastructure defaults
 ```
 
 ## What You Add Next
 
-The scaffold stops at the integration boundary on purpose. It does not yet include domain entities, Flyway migrations, business routes, frontend tests, or a production deployment configuration. Those are extension points, not hidden features.
+The backend ships a working generic core: entities, relationships, events, filtering, search, geospatial queries, and attribute uniqueness. What it deliberately does not include is opinion — no domain-specific entities, DTOs, or authorization rules.
 
 Typical next steps are:
 
-- Add domain tables and migrations under the backend.
-- Replace the demo `/api/me` response with application resources.
-- Enforce `ADMIN` and `MEMBER` authorization where domain rules require it.
-- Add frontend component and end-to-end tests.
-- Replace local demo credentials and configure production issuer, origins, and secrets.
+- Seed the tables with the demo business scenario (`backend/src/main/resources/db/seed/demo_scenario.sql`, described in `docs/demo-scenario.md`).
+- Add your own `entity_type` / `relationship_type` conventions and attribute schemas.
+- Register additional unique attribute keys in `pgcj.unique_attributes`.
+- Add authentication and authorization if your use case requires it.
+- Add frontend tests and a production deployment configuration.
 
 ## Verify Changes
 
@@ -195,6 +198,8 @@ Backend checks run from `backend/`:
 ```bash
 ./mvnw test
 ```
+
+The backend integration tests start PostgreSQL with PostGIS via Testcontainers, so Docker must be running. Interactive API docs are available at `http://localhost:8080/swagger-ui.html` once the API is up.
 
 ## License
 
