@@ -25,7 +25,7 @@ spring:
       enabled: true
       force: true
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:postgres}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:postgres}?currentSchema=pgcj
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:default}
     hikari:
@@ -43,16 +43,24 @@ spring:
       maximumPoolSize: 3
       leakDetectionThreshold: 60000
       connection-test-query: SELECT 1
+      connection-init-sql: SET search_path TO pgcj, public
   flyway:
     schemas: pgcj
     default-schema: pgcj
     baseline-on-migrate: true
   jpa:
     show-sql: false
+    open-in-view: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         boot.allow_jdbc_metadata_access: false
+  data:
+    web:
+      pageable:
+        default-page-size: 10
+        max-page-size: 100
+        serialization-mode: direct
   mvc:
     problemdetails:
       enabled: true
