@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { Resource } from './resource.ts';
 
-import type { RequestContext, ResponseContext, Transport } from './types.ts';
+import type { ResponseContext, Transport } from './types.ts';
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -51,7 +51,6 @@ describe('Resource', () => {
         return makeRes('data');
       };
 
-      const r = new Resource('/api/users', t);
       // Access protected method via subclass
       class TestResource extends Resource {
         async doIt() {

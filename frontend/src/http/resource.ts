@@ -8,7 +8,9 @@
  * 204 No-Content responses resolve to `undefined` for `patch` / `del`.
  */
 
-import type { RequestConfig, RequestContext, ResponseContext, Transport } from './types';
+import { HttpError } from './types';
+
+import type { RequestConfig, RequestContext, Transport } from './types';
 
 export class Resource<T = unknown> {
   readonly basePath: string;
@@ -19,9 +21,10 @@ export class Resource<T = unknown> {
     this.transport = transport;
   }
 
-  // ─── Protected helpers ──────────────────────────────────────────────────
+  // ─── Helpers ────────────────────────────────────────────────────────────
 
-  protected async get<R = T>(path = '', config?: Partial<RequestConfig>): Promise<R> {
+  /** Fetch a representation. Public so resources can expose typed `get(id)`. */
+  async get<R = T>(path = '', config?: Partial<RequestConfig>): Promise<R> {
     return this.request<R>('GET', path, config);
   }
 
@@ -74,7 +77,12 @@ export class Resource<T = unknown> {
       meta: {},
     };
 
-    const res: ResponseContext<R> = await this.transport(ctx);
-    return res.data;
+    const res = await this.transport(ctx);
+    // The axios transport resolves for every status (`validateStatus: () => true`)
+    // so the body is always available; surface non-2xx as a typed HttpError here.
+    if (res.status < 200 || res.status >= 300) {
+      throw new HttpError(res.status, res.statusText, fullConfig.url, res.data);
+    }
+    return res.data as R;
   }
 }
