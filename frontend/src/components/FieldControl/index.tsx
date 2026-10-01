@@ -32,7 +32,7 @@ interface FieldRenderProps {
     meta: {
       isTouched: boolean;
       isValid: boolean;
-      errors: string[];
+      errors: (string | undefined)[];
     };
   };
   handleChange: (value: unknown) => void;
@@ -125,7 +125,7 @@ function renderControl(props: ControlProps) {
     return (
       <FormGroup legendText={label} invalid={isInvalid}>
         {f.helper ? <p className="mb-field-helper">{f.helper}</p> : null}
-        {f.options.map((o) => (
+        {(f.options ?? []).map((o) => (
           <Checkbox
             key={o.value}
             id={`${fieldId}-${o.value}`}
@@ -201,7 +201,7 @@ function renderControl(props: ControlProps) {
         }}
       >
         <SelectItem value="" text="Select…" />
-        {f.options.map((o) => (
+        {(f.options ?? []).map((o) => (
           <SelectItem key={o.value} value={o.value} text={o.label} />
         ))}
       </Select>
@@ -234,14 +234,9 @@ function renderControl(props: ControlProps) {
   }
 
   // Input types: text, email, tel, date
-  const extras: React.InputHTMLAttributes<HTMLInputElement> = {};
+  const extras: { autoComplete?: string } = {};
   if (f.type === 'email') extras.autoComplete = 'email';
   if (f.type === 'tel') extras.autoComplete = 'tel';
-  if (f.type === 'number') {
-    extras.min = 0;
-    extras.max = 10000000;
-    extras.inputMode = 'numeric';
-  }
 
   const displayValue = value === null || value === undefined ? '' : asString(value);
 

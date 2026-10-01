@@ -68,7 +68,7 @@ export const createApiClient = (config: ApiClientConfig): Transport => {
 
 // ─── Default client ──────────────────────────────────────────────────────────
 
-let defaultTokenProvider: TokenProvider = async () => null;
+let defaultTokenProvider: TokenProvider = () => Promise.resolve(null);
 
 /**
  * Set the token provider used by the default client.

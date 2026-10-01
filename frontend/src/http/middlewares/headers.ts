@@ -17,13 +17,12 @@ import type { Middleware } from '../types';
  */
 export const createHeadersMiddleware = (headerNames: readonly string[]): Middleware => {
   const lowerNames = headerNames.map((n) => n.toLowerCase());
-  return async (ctx, next) => {
+  return async (_ctx, next) => {
     const res = await next();
     const extracted: Record<string, string> = {};
     for (const name of lowerNames) {
-      const value = res.headers[name];
-      if (value !== undefined) {
-        extracted[name] = value;
+      if (Object.hasOwn(res.headers, name)) {
+        extracted[name] = res.headers[name];
       }
     }
     res.meta.headers = extracted;

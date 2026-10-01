@@ -32,10 +32,6 @@ function makeRes(overrides?: Partial<ResponseContext>): ResponseContext {
   };
 }
 
-function makeNext(response: ResponseContext) {
-  return vi.fn<() => Promise<ResponseContext>>().mockResolvedValue(response);
-}
-
 // ── Tests ───────────────────────────────────────────────────────────────────
 
 describe('compose', () => {

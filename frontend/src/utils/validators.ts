@@ -22,7 +22,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * Create a synchronous onChange validator for a schema field.
  * Checks: required, email format, number range, date parse.
  */
-export const syncValidator = (type: EntityType, f: FieldDef) => {
+export const syncValidator = (_type: EntityType, f: FieldDef) => {
   return ({ value }: { value: unknown }): string | undefined => {
     const label = f.label.charAt(0).toLowerCase() + f.label.slice(1);
     const empty =
@@ -57,7 +57,7 @@ export const syncValidator = (type: EntityType, f: FieldDef) => {
 // ── Async uniqueness validator ────────────────────────────────────────────
 
 /**
- * Create an async onBlur validator that checks uniqueness via mockDb.
+ * Create an async onBlur validator that checks uniqueness via the entity resource.
  * Only used for fields with `f.unique === true`.
  * The excludeId parameter is the record ID being edited (for edit forms).
  */

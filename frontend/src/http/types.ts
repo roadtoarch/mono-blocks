@@ -66,7 +66,7 @@ export class HttpError extends ApiError {
   readonly body: unknown;
 
   constructor(status: number, statusText: string, path: string, body?: unknown) {
-    super(`HTTP ${status} ${statusText} — ${path}`);
+    super(`HTTP ${String(status)} ${statusText} — ${path}`);
     this.name = 'HttpError';
     this.status = status;
     this.statusText = statusText;

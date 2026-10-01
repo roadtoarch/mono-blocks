@@ -83,7 +83,7 @@ const getValidatedAppEnv = (config: Record<string, string>): AppEnv => {
 };
 
 const viteEnv = getStringEnvEntries(import.meta.env);
-const runtimeEnv = getValidatedRuntimeConfig(globalThis.window?.config);
+const runtimeEnv = getValidatedRuntimeConfig(globalThis.window.config);
 
 export const env: AppEnv = getValidatedAppEnv({
   ...viteEnv,

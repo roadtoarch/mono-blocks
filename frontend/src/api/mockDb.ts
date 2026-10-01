@@ -250,7 +250,12 @@ export const update = (
     const idx = rows.findIndex((r) => r.id === id);
     if (idx === -1) throw new NotFoundError(type, id);
     const before = rows[idx];
-    const next = { ...before, ...clone(values), id: before.id, entity_type: type };
+    const next: EntityRecord = {
+      ...before,
+      ...clone(values),
+      id: before.id,
+      entity_type: type,
+    };
     rows[idx] = next;
     // Timeline-worthy transitions
     if (type === 'work_order') {

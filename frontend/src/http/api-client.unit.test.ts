@@ -45,8 +45,6 @@ describe('createApiClient', () => {
   });
 
   it('injects baseURL into request config', async () => {
-    let capturedBaseURL: string | undefined;
-
     const client = createApiClient({
       baseURL: 'http://localhost:3000',
       tokenProvider: async () => null,

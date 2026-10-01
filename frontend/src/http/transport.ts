@@ -12,16 +12,17 @@ import axios from 'axios';
 
 import { AbortError, HttpError, NetworkError } from './types';
 
-import type { RequestConfig, RequestContext, ResponseContext } from './types';
+import type { RequestContext, ResponseContext } from './types';
 
 // ─── Header normalisation ────────────────────────────────────────────────────
 
 /**
  * Normalise various header representations into a flat `Record<string, string>`.
- * Handles: `Headers` objects, plain records, or `undefined`.
+ * Handles `Headers` objects, plain records (including axios header maps),
+ * or `undefined`. Non-string values are stringified; nullish values dropped.
  */
 export const normalizeHeaders = (
-  headers: Record<string, string> | Headers | undefined,
+  headers: Record<string, unknown> | Headers | undefined,
 ): Record<string, string> => {
   if (headers == null) {
     return {};
@@ -33,35 +34,61 @@ export const normalizeHeaders = (
     });
     return out;
   }
-  return { ...headers };
+  const out: Record<string, string> = {};
+  for (const [key, value] of Object.entries(headers)) {
+    if (typeof value === 'string') {
+      out[key] = value;
+    } else if (typeof value === 'number' || typeof value === 'boolean') {
+      out[key] = String(value);
+    }
+  }
+  return out;
 };
 
 // ─── Error mapping ───────────────────────────────────────────────────────────
 
+/**
+ * Structural view of the axios error fields this transport reads. Declared
+ * locally so we narrow the `unknown` error without an `any` cast.
+ */
+interface TransportError {
+  code?: string;
+  message?: string;
+  config?: { url?: string; signal?: { aborted?: boolean } };
+  response?: { status: number; statusText?: string; data?: unknown };
+}
+
+function isTransportError(value: unknown): value is TransportError {
+  return typeof value === 'object' && value !== null;
+}
+
 function mapAxiosError(error: unknown): never {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const err = error as any;
+  if (!isTransportError(error)) {
+    throw new NetworkError();
+  }
 
   // Abort — cancelled via AbortSignal or axios timeout abort
-  if (err.code === 'ERR_CANCELED' || (err.code === 'ECONNABORTED' && err.config?.signal?.aborted)) {
+  if (
+    error.code === 'ERR_CANCELED' ||
+    (error.code === 'ECONNABORTED' && error.config?.signal?.aborted)
+  ) {
     throw new AbortError();
   }
 
   // HTTP error — server responded with a non-2xx status
-  if (err.response) {
-    const path = err.config?.url ?? '/';
-    const status: number = err.response.status;
-    const statusText: string = err.response.statusText ?? '';
+  if (error.response) {
+    const path = error.config?.url ?? '/';
+    const { status, statusText, data } = error.response;
 
     if (status === 401) {
       globalThis.dispatchEvent(new CustomEvent('auth:unauthorized'));
     }
 
-    throw new HttpError(status, statusText, path, err.response.data);
+    throw new HttpError(status, statusText ?? '', path, data);
   }
 
   // Network error — no response at all
-  throw new NetworkError(err.message);
+  throw new NetworkError(error.message);
 }
 
 // ─── Transport ───────────────────────────────────────────────────────────────

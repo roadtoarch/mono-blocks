@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { createOfflineMiddleware } from './offline.ts';
 
-import type { ResponseContext } from '../types.ts';
+import type { RequestContext, ResponseContext } from '../types.ts';
 
 function makeRes(overrides?: Partial<ResponseContext>): ResponseContext {
   return {
@@ -27,7 +27,7 @@ describe('createOfflineMiddleware', () => {
     const middleware = createOfflineMiddleware();
     const response = makeRes({ data: 'ok' });
     const next = vi.fn().mockResolvedValue(response);
-    const ctx = { config: { url: '/test', method: 'GET' }, meta: {} };
+    const ctx: RequestContext = { config: { url: '/test', method: 'GET' }, meta: {} };
 
     const result = await middleware(ctx, next);
 
