@@ -24,11 +24,6 @@ spring:
       charset: UTF-8
       enabled: true
       force: true
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${KEYCLOAK_URL:http://localhost:8081}/realms/forest
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:postgres}
     username: ${POSTGRES_USER:postgres}
@@ -145,12 +140,6 @@ io:
         cognito:
           userinfo-uri: https://${COGNITO_DOMAIN:pool-domain}.auth.${COGNITO_REGION:region}.amazoncognito.com/oauth2/userInfo
           identity-ttl: ${COGNITO_IDENTITY_TTL:24h}
-        keycloak:
-          admin:
-            realm: forest
-            client-id: backend-admin
-            client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:changeme}
-            auth-server-url: ${KEYCLOAK_URL:http://localhost:8081}
         frontend:
           url: ${FRONTEND_URL:http://localhost:5173}
           cors:
@@ -202,7 +191,7 @@ info:
 # Logging
 logging:
   level:
-    ca.bc.gov.nrs.waste: ${LOGGING_LEVEL:INFO}
+    io.github.paulushcgcj.roadtoarch.spat: ${LOGGING_LEVEL:INFO}
   pattern:
     correlation: "[${spring.application.name:},%X{${X-B3-TraceId:traceId}:-},%X{${X-B3-SpanId:spanId}:-}] "
 
