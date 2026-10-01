@@ -12,6 +12,7 @@ import * as React from 'react';
 
 import type { EntityType, RelationResult } from '@/schema/types';
 
+import { apiErrorMessage, isNotFoundError } from '@/api/errors';
 import { LinkButton } from '@/components/LinkButton';
 import { useDeleteEntity, useEntityDetail } from '@/hooks/useEntityDetail';
 import {
@@ -192,8 +193,7 @@ export const DeletePage = ({ type, id }: DeletePageProps) => {
         },
         onError: (err) => {
           setDeleting(false);
-          const message = err instanceof Error ? err.message : 'The request did not go through.';
-          toast('error', 'Delete failed', message);
+          toast('error', 'Delete failed', apiErrorMessage(err, 'The request did not go through.'));
         },
       },
     );
@@ -204,8 +204,8 @@ export const DeletePage = ({ type, id }: DeletePageProps) => {
   }
   // Error
   if (query.isError) {
-    const err = query.error instanceof Error ? query.error : new Error('Something went wrong.');
-    const isNotFound = err.message.includes('not found');
+    const err = new Error(apiErrorMessage(query.error, "Couldn't load this record."));
+    const isNotFound = isNotFoundError(query.error);
     return (
       <ErrorState error={err} onRetry={handleRetry} listHref={listHref} isNotFound={isNotFound} />
     );

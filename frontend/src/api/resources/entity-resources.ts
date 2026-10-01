@@ -2,20 +2,19 @@
  * MonoBlocks — Entity resource classes
  *
  * One Resource class per entity type. Each extends `CrudResource<T>` with
- * the correct base path. Domain-specific methods can be added here later
+ * the correct `entityType`. Domain-specific methods can be added here later
  * (e.g. work-order status transitions).
  */
 
 import { CrudResource } from './crud-resource';
 
 import type { Transport } from '@/http/types';
-import type { EntityRecord } from '@/schema/types';
 
 // ─── Customer ────────────────────────────────────────────────────────────────
 
 export class CustomerResource extends CrudResource {
   constructor(transport: Transport) {
-    super('customers', transport);
+    super('customer', transport);
   }
 }
 
@@ -23,7 +22,7 @@ export class CustomerResource extends CrudResource {
 
 export class SiteResource extends CrudResource {
   constructor(transport: Transport) {
-    super('sites', transport);
+    super('site', transport);
   }
 }
 
@@ -39,7 +38,7 @@ export class EquipmentResource extends CrudResource {
 
 export class TechnicianResource extends CrudResource {
   constructor(transport: Transport) {
-    super('technicians', transport);
+    super('technician', transport);
   }
 }
 
@@ -47,6 +46,6 @@ export class TechnicianResource extends CrudResource {
 
 export class WorkOrderResource extends CrudResource {
   constructor(transport: Transport) {
-    super('work-orders', transport);
+    super('work_order', transport);
   }
 }

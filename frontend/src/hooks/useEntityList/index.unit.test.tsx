@@ -2,14 +2,16 @@
  * MonoBlocks — hooks/useEntityList.unit.test.ts
  *
  * Unit tests for the useEntityList and useRefCaches hooks.
- * Uses @testing-library/react with real timers (mockDb latency is real).
+ * Runs against the mock transport (the default outside the app entry point),
+ * which mirrors the live Page<T> protocol.
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import * as React from 'react';
 
-import * as mockDb from '@/api/mockDb';
 import { useEntityList, useRefCaches } from './index';
+
+import * as mockDb from '@/api/mockDb';
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -32,7 +34,7 @@ beforeEach(async () => {
 // ── useEntityList ─────────────────────────────────────────────────────────
 
 describe('useEntityList', () => {
-  it('fetches seed data for customer', async () => {
+  it('fetches a Spring Page of seed data for customer', async () => {
     const { result } = renderHook(() => useEntityList('customer'), {
       wrapper: createWrapper(),
     });
@@ -41,8 +43,9 @@ describe('useEntityList', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(result.current.data).toHaveLength(8);
-    expect(result.current.data?.[0].entity_type).toBe('customer');
+    expect(result.current.data?.content).toHaveLength(8);
+    expect(result.current.data?.totalElements).toBe(8);
+    expect(result.current.data?.content[0].entity_type).toBe('customer');
   });
 
   it('applies default sort from schema', async () => {
@@ -54,15 +57,15 @@ describe('useEntityList', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    const records = result.current.data ?? [];
+    const records = result.current.data?.content ?? [];
     // customer defaultSort = name asc
     const names = records.map((r) => r.name as string);
     const sorted = [...names].sort((a, b) => a.localeCompare(b));
     expect(names).toEqual(sorted);
   });
 
-  it('filters by search query', async () => {
-    const { result } = renderHook(() => useEntityList('customer', { q: 'Harborview' }), {
+  it('filters by server-side search query', async () => {
+    const { result } = renderHook(() => useEntityList('customer', { search: 'Harborview' }), {
       wrapper: createWrapper(),
     });
 
@@ -70,23 +73,23 @@ describe('useEntityList', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(result.current.data?.length).toBeGreaterThanOrEqual(1);
-    expect(
-      result.current.data?.every((r) => (r.name as string).toLowerCase().includes('harborview')),
-    ).toBe(true);
+    const content = result.current.data?.content ?? [];
+    expect(content.length).toBeGreaterThanOrEqual(1);
+    expect(content.every((r) => (r.name as string).toLowerCase().includes('harborview'))).toBe(
+      true,
+    );
   });
 
-  it('filters by filter values', async () => {
-    const { result } = renderHook(
-      () => useEntityList('customer', { filters: { tier: 'premium' } }),
-      { wrapper: createWrapper() },
-    );
+  it('filters by status', async () => {
+    const { result } = renderHook(() => useEntityList('customer', { status: 'active' }), {
+      wrapper: createWrapper(),
+    });
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(result.current.data?.every((r) => r.tier === 'premium')).toBe(true);
+    expect(result.current.data?.content.every((r) => r.status === 'active')).toBe(true);
   });
 
   it('sorts by specified field descending', async () => {
@@ -99,7 +102,7 @@ describe('useEntityList', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    const records = result.current.data ?? [];
+    const records = result.current.data?.content ?? [];
     const names = records.map((r) => r.name as string);
     const sorted = [...names].sort((a, b) => b.localeCompare(a));
     expect(names).toEqual(sorted);

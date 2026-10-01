@@ -11,6 +11,7 @@ import * as React from 'react';
 
 import type { EntityType, EntityRecord, FieldDef, RelationResult } from '@/schema/types';
 
+import { apiErrorMessage, isNotFoundError } from '@/api/errors';
 import { LinkButton } from '@/components/LinkButton';
 import { useEntityDetail } from '@/hooks/useEntityDetail';
 import {
@@ -260,8 +261,8 @@ export const DetailPage = ({ type, id }: DetailPageProps) => {
   }
   // Error state
   if (query.isError) {
-    const err = query.error instanceof Error ? query.error : new Error('Something went wrong.');
-    const isNotFound = err.message.includes('not found');
+    const err = new Error(apiErrorMessage(query.error, "Couldn't load this record."));
+    const isNotFound = isNotFoundError(query.error);
     return (
       <ErrorState error={err} onRetry={handleRetry} listHref={listHref} isNotFound={isNotFound} />
     );

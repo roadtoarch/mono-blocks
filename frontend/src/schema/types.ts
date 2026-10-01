@@ -27,7 +27,10 @@ export interface FieldDef {
   mono?: boolean;
   location?: boolean;
   hiddenInList?: boolean;
+  /** Show as a server-backed filter control in the list toolbar. */
   filterable?: boolean;
+  /** Server-backed sortable column (the backend can only sort JPA columns). */
+  sortable?: boolean;
   helper?: string;
 }
 
@@ -89,6 +92,10 @@ export interface EntityEvent {
 
 // ── API types ──────────────────────────────────────────────────────────────
 
+/**
+ * Options for the in-memory mock backend (`api/mockDb`). The live API uses
+ * `EntityListQuery` from `api/types.ts` instead.
+ */
 export interface ListOptions {
   q?: string;
   filters?: Record<string, string>;

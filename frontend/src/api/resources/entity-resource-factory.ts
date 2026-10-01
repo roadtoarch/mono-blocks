@@ -1,8 +1,9 @@
 /**
  * MonoBlocks — Entity resource factory
  *
- * Creates and caches `CrudResource` instances per entity type.
- * Uses the transport from the transport resolver, so the same
+ * Creates and caches `CrudResource` instances per entity type. Every resource
+ * talks to the single `/api/entities` collection and is discriminated by its
+ * `entityType`. Uses the transport from the transport resolver, so the same
  * Resource pattern works against both mockDb and the real API.
  */
 
@@ -17,16 +18,6 @@ import { getTransport } from '@/api/transport-resolver';
 
 const resourceCache = new Map<EntityType, CrudResource>();
 
-// ─── Path mapping ────────────────────────────────────────────────────────────
-
-const BASE_PATHS: Record<EntityType, string> = {
-  customer: 'customers',
-  site: 'sites',
-  equipment: 'equipment',
-  technician: 'technicians',
-  work_order: 'work-orders',
-};
-
 // ─── Factory ─────────────────────────────────────────────────────────────────
 
 /**
@@ -40,7 +31,7 @@ export const getEntityResource = (type: EntityType, transport?: Transport): Crud
   const cached = resourceCache.get(type);
   if (cached && !transport) return cached;
   const t = transport ?? getTransport();
-  const resource = new CrudResource(BASE_PATHS[type], t);
+  const resource = new CrudResource(type, t);
   resourceCache.set(type, resource);
   return resource;
 };

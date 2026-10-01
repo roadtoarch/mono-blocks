@@ -7,7 +7,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { SCHEMA, STORE_KEYS, TAG_MAPS, navItems } from './config.tsx';
-import { ENTITY_TYPES } from './types.ts';
+import { ENTITY_TYPES, type TagColor } from './types.ts';
 
 // ── SCHEMA ──────────────────────────────────────────────────────────────────
 

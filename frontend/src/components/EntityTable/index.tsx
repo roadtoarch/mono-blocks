@@ -160,20 +160,25 @@ function EntityTableHeader({
 }) {
   const isActive = sort.key === field.key;
   const direction = isActive ? (sort.dir === 'asc' ? 'ASC' : 'DESC') : 'NONE';
+  const isSortable = field.sortable === true;
 
   return (
     <TableHeader
       key={field.key}
-      isSortable
-      isSortHeader={isActive}
-      sortDirection={direction}
-      onClick={() => {
-        if (isActive) {
-          onSort({ key: field.key, dir: sort.dir === 'asc' ? 'desc' : 'asc' });
-        } else {
-          onSort({ key: field.key, dir: 'asc' });
-        }
-      }}
+      isSortable={isSortable}
+      isSortHeader={isSortable && isActive}
+      sortDirection={isSortable && isActive ? direction : 'NONE'}
+      onClick={
+        isSortable
+          ? () => {
+              if (isActive) {
+                onSort({ key: field.key, dir: sort.dir === 'asc' ? 'desc' : 'asc' });
+              } else {
+                onSort({ key: field.key, dir: 'asc' });
+              }
+            }
+          : undefined
+      }
       className={field.numeric ? 'mb-table__th--numeric' : undefined}
     >
       {field.label}
@@ -308,7 +313,11 @@ function NarrowCards(props: EntityTableProps) {
           </div>
         </Tile>
       ))}
-      <SortButtonBar fields={fields} sort={sort} onSort={onSort} />
+      <SortButtonBar
+        fields={fields.filter((f) => f.sortable === true)}
+        sort={sort}
+        onSort={onSort}
+      />
     </div>
   );
 }

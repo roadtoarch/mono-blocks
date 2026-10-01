@@ -5,7 +5,7 @@
  * Theme-aware shell chrome that follows the active Carbon theme (white/g100).
  * Uses useTheme, useNav hooks for reactive state.
  */
-import { Close, ColorPalette, Menu, Moon, Reset, Sun } from '@carbon/icons-react';
+import { Close, ColorPalette, Menu, Moon, Sun } from '@carbon/icons-react';
 import {
   Button,
   Header,
@@ -18,16 +18,14 @@ import {
   SideNavLink,
   SkipToContent,
 } from '@carbon/react';
-import { Link, Outlet, useLocation, useRouter } from '@tanstack/react-router';
+import { Link, Outlet, useLocation } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { Skin } from '@/stores/theme';
 
-import * as mockDb from '@/api/mockDb'; // mock-only: reset() has no REST equivalent yet
 import { ToastRegion } from '@/components/ToastRegion';
 import { useNav, useTheme } from '@/hooks';
 import { navItems } from '@/schema/config';
-import { toast } from '@/stores/toast';
 
 /**
  * Monogram SVG used in the header. Matches the landing monogram:
@@ -95,7 +93,6 @@ function swallow(): void {
 export const AppShell = () => {
   const { theme, skin, toggleTheme, setSkin } = useTheme();
   const { isOpen, toggleNav } = useNav();
-  const router = useRouter();
   const location = useLocation();
   const appRef = useRef<HTMLDivElement>(null);
   const [skinMenuOpen, setSkinMenuOpen] = useState(false);
@@ -124,12 +121,6 @@ export const AppShell = () => {
       document.removeEventListener('click', handler);
     };
   }, [skinMenuOpen]);
-  const handleReset = useCallback(() => {
-    void mockDb.reset().then(() => {
-      toast('success', 'Data reset', 'Demo data has been restored to its original state.');
-      void router.invalidate();
-    });
-  }, [router]);
   const handleSkinSelect = useCallback(
     (s: Skin) => {
       setSkin(s);
@@ -206,15 +197,6 @@ export const AppShell = () => {
           >
             {theme === 'g100' ? <Sun size={20} /> : <Moon size={20} />}
           </HeaderGlobalAction>
-
-          {/* Reset demo */}
-          <HeaderGlobalAction
-            className="mb-header__action"
-            aria-label="Reset demo data"
-            onClick={handleReset}
-          >
-            <Reset size={20} />
-          </HeaderGlobalAction>
         </HeaderGlobalBar>
       </Header>
 
@@ -224,7 +206,7 @@ export const AppShell = () => {
           className="mb-sidenav"
           aria-label="Main navigation"
           expanded={isOpen}
-          onToggle={(_event, value) => {
+          onToggle={(_event: unknown, value?: boolean) => {
             if (value !== isOpen) {
               toggleNav();
             }

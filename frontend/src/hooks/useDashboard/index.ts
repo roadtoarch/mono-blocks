@@ -8,6 +8,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { getEntityResource } from '@/api/resources/entity-resource-factory';
+import { MAX_PAGE_SIZE } from '@/api/types';
 import { titleOf } from '@/schema/helpers';
 
 // ── Constants ────────────────────────────────────────────────────────────
@@ -64,13 +65,17 @@ export const useDashboard = () => {
   return useQuery({
     queryKey: ['dashboard'],
     queryFn: async (): Promise<DashboardData> => {
-      const [customers, sites, equipment, , workOrders] = await Promise.all([
-        getEntityResource('customer').list({}),
-        getEntityResource('site').list({}),
-        getEntityResource('equipment').list({}),
-        getEntityResource('technician').list({}),
-        getEntityResource('work_order').list({ sort: { key: 'scheduled_for', dir: 'desc' } }),
+      const [customerPage, sitePage, equipmentPage, , workOrderPage] = await Promise.all([
+        getEntityResource('customer').list({ size: MAX_PAGE_SIZE }),
+        getEntityResource('site').list({ size: MAX_PAGE_SIZE }),
+        getEntityResource('equipment').list({ size: MAX_PAGE_SIZE }),
+        getEntityResource('technician').list({ size: MAX_PAGE_SIZE }),
+        getEntityResource('work_order').list({ size: MAX_PAGE_SIZE }),
       ]);
+      const customers = customerPage.content;
+      const sites = sitePage.content;
+      const equipment = equipmentPage.content;
+      const workOrders = workOrderPage.content;
       // Ref cache for site titles (used in recent WOs table)
       const siteTitles: Record<string, string> = {};
       for (const s of sites) {

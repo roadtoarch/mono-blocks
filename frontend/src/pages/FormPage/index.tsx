@@ -3,8 +3,8 @@
  *
  * Generic create/edit form page. Port of prototype form.js.
  * Uses TanStack Form with schema-driven FieldControl components.
- * - Create: empty defaults, creates via mockDb.create()
- * - Edit:   pre-fills from record, updates via mockDb.update()
+ * - Create: empty defaults, creates via the entity resource
+ * - Edit:   pre-fills from record, updates via the entity resource
  *
  * Validation: sync on change (required/email/number/date), async on blur
  * (uniqueness). On submit: validates all → saves → toasts → navigates
@@ -17,6 +17,7 @@ import * as React from 'react';
 
 import type { EntityType, EntityRecord, FieldDef } from '@/schema/types';
 
+import { apiErrorMessage, isNotFoundError } from '@/api/errors';
 import { getEntityResource } from '@/api/resources/entity-resource-factory';
 import { FieldControl } from '@/components/FieldControl';
 import { LinkButton } from '@/components/LinkButton';
@@ -124,8 +125,7 @@ function FormContent({ type, editId, defaultValues, refOptions, cancelHref }: Fo
         );
         void navigate({ to: detailPath(type, saved.id) });
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'The request did not go through.';
-        toast('error', 'Save failed', message);
+        toast('error', 'Save failed', apiErrorMessage(err, 'The request did not go through.'));
       }
     },
   });
@@ -228,9 +228,8 @@ export const FormPage = ({ type, id }: FormPageProps) => {
     return <FormSkeleton />;
   }
   if (isError) {
-    const err =
-      detailQuery.error instanceof Error ? detailQuery.error : new Error('Something went wrong.');
-    const isNotFound = err.message.includes('not found');
+    const err = new Error(apiErrorMessage(detailQuery.error, "Couldn't load the form."));
+    const isNotFound = isNotFoundError(detailQuery.error);
     return (
       <ErrorState error={err} onRetry={handleRetry} listHref={listHref} isNotFound={isNotFound} />
     );

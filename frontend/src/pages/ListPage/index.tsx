@@ -9,11 +9,12 @@
  * Search is explicit-submit only (R9). Filters and sort are immediate.
  */
 import { Add, Search, WarningFilled } from '@carbon/icons-react';
-import { Button } from '@carbon/react';
+import { Button, Pagination } from '@carbon/react';
 import * as React from 'react';
 
 import type { EntityType, SortDef } from '@/schema/types';
 
+import { DEFAULT_PAGE_SIZE } from '@/api/types';
 import { EntityTable, SkeletonTable } from '@/components/EntityTable';
 import { LinkButton } from '@/components/LinkButton';
 import { ListToolbar, type ListToolbarState } from '@/components/ListToolbar';
@@ -108,33 +109,44 @@ export const ListPage = ({ type }: ListPageProps) => {
     filters: {},
     sort: schema.defaultSort,
   });
-  // Data
-  const {
-    data: records,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useEntityList(type, {
-    q: toolbarState.q,
-    filters: toolbarState.filters,
+  // Pagination state (0-based page, matching the API)
+  const [page, setPage] = React.useState(0);
+  const [size, setSize] = React.useState(DEFAULT_PAGE_SIZE);
+  // Data — a Spring Page<T>
+  const { data, isLoading, isError, error, refetch } = useEntityList(type, {
+    search: toolbarState.q,
+    status: toolbarState.filters.status,
+    page,
+    size,
     sort: toolbarState.sort,
   });
+  const records = data?.content ?? [];
+  const totalItems = data?.totalElements ?? 0;
   // Ref caches for foreign-key columns
   const refCaches = useRefCaches(type);
   // Set page title
   React.useEffect(() => {
     document.title = `${schema.plural} — Cornerstone Property Services`;
   }, [schema.plural]);
+  const handleToolbarChange = React.useCallback((next: ListToolbarState) => {
+    setToolbarState(next);
+    setPage(0);
+  }, []);
   const handleSort = React.useCallback((sort: SortDef) => {
     setToolbarState((prev) => ({ ...prev, sort }));
+    setPage(0);
   }, []);
   const handleClearSearch = React.useCallback(() => {
     setToolbarState((prev) => ({ ...prev, q: '', filters: {} }));
+    setPage(0);
   }, []);
   const handleRetry = React.useCallback(() => {
     void refetch();
   }, [refetch]);
+  const handlePageChange = React.useCallback((next: { page: number; pageSize: number }) => {
+    setPage(next.page - 1);
+    setSize(next.pageSize);
+  }, []);
   const fields = schema.fields.filter((f) => !f.hiddenInList);
   const colCount = fields.length + 1;
   // Determine which content to show
@@ -155,22 +167,22 @@ export const ListPage = ({ type }: ListPageProps) => {
       </div>
 
       {/* Toolbar */}
-      <ListToolbar schema={schema} state={toolbarState} onChange={setToolbarState} />
+      <ListToolbar schema={schema} state={toolbarState} onChange={handleToolbarChange} />
 
       {/* Content */}
       {isLoading && <SkeletonTable colCount={colCount} rowCount={5} />}
 
       {isError && <ErrorState message={errorMessage} onRetry={handleRetry} />}
 
-      {!isLoading && !isError && records?.length === 0 && !hasActiveSearch && (
+      {!isLoading && !isError && records.length === 0 && !hasActiveSearch && (
         <EmptyNoRecords type={type} />
       )}
 
-      {!isLoading && !isError && records?.length === 0 && hasActiveSearch && (
+      {!isLoading && !isError && records.length === 0 && hasActiveSearch && (
         <EmptyNoResults type={type} state={toolbarState} onClearSearch={handleClearSearch} />
       )}
 
-      {!isLoading && !isError && records && records.length > 0 && (
+      {!isLoading && !isError && records.length > 0 && (
         <EntityTable
           type={type}
           schema={schema}
@@ -178,6 +190,19 @@ export const ListPage = ({ type }: ListPageProps) => {
           refCaches={refCaches}
           sort={toolbarState.sort}
           onSort={handleSort}
+        />
+      )}
+
+      {!isLoading && !isError && totalItems > size && (
+        <Pagination
+          id="mb-pagination"
+          page={page + 1}
+          pageSize={size}
+          pageSizes={[10, 20, 50, 100]}
+          totalItems={totalItems}
+          onChange={handlePageChange}
+          backwardText="Previous page"
+          forwardText="Next page"
         />
       )}
     </div>

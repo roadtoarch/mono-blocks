@@ -150,7 +150,7 @@ function SearchBar({
  */
 export const ListToolbar = ({ schema, state, onChange }: ListToolbarProps) => {
   const filterableFields = schema.fields.filter((f) => f.filterable);
-  const listFlds = schema.fields.filter((f) => !f.hiddenInList);
+  const listFlds = schema.fields.filter((f) => !f.hiddenInList && f.sortable === true);
   const searchPlaceholder = schema.searchFields
     .map((key) => {
       const f = schema.fields.find((fld) => fld.key === key);

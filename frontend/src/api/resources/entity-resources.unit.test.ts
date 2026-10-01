@@ -31,29 +31,34 @@ const stubTransport: Transport = vi.fn().mockResolvedValue({
 // ── Tests ───────────────────────────────────────────────────────────────────
 
 describe('entity resource classes', () => {
-  it('CustomerResource extends CrudResource with basePath /api/customers', () => {
+  it('CustomerResource targets /api/entities for the customer type', () => {
     const r = new CustomerResource(stubTransport);
-    expect(r.basePath).toBe('/api/customers');
+    expect(r.basePath).toBe('/api/entities');
+    expect(r.entityType).toBe('customer');
   });
 
-  it('SiteResource extends CrudResource with basePath /api/sites', () => {
+  it('SiteResource targets /api/entities for the site type', () => {
     const r = new SiteResource(stubTransport);
-    expect(r.basePath).toBe('/api/sites');
+    expect(r.basePath).toBe('/api/entities');
+    expect(r.entityType).toBe('site');
   });
 
-  it('EquipmentResource extends CrudResource with basePath /api/equipment', () => {
+  it('EquipmentResource targets /api/entities for the equipment type', () => {
     const r = new EquipmentResource(stubTransport);
-    expect(r.basePath).toBe('/api/equipment');
+    expect(r.basePath).toBe('/api/entities');
+    expect(r.entityType).toBe('equipment');
   });
 
-  it('TechnicianResource extends CrudResource with basePath /api/technicians', () => {
+  it('TechnicianResource targets /api/entities for the technician type', () => {
     const r = new TechnicianResource(stubTransport);
-    expect(r.basePath).toBe('/api/technicians');
+    expect(r.basePath).toBe('/api/entities');
+    expect(r.entityType).toBe('technician');
   });
 
-  it('WorkOrderResource extends CrudResource with basePath /api/work-orders', () => {
+  it('WorkOrderResource targets /api/entities for the work_order type', () => {
     const r = new WorkOrderResource(stubTransport);
-    expect(r.basePath).toBe('/api/work-orders');
+    expect(r.basePath).toBe('/api/entities');
+    expect(r.entityType).toBe('work_order');
   });
 
   it('each resource class uses the provided transport', () => {

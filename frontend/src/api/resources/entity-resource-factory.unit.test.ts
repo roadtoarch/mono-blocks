@@ -8,6 +8,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 import { clearResourceCache, getEntityResource } from './entity-resource-factory.ts';
 
+import type { Transport } from '@/http/types';
 import type { EntityType } from '@/schema/types';
 
 // ── Tests ───────────────────────────────────────────────────────────────────
@@ -37,30 +38,31 @@ describe('getEntityResource', () => {
     const r1 = getEntityResource('customer');
     const r2 = getEntityResource('site');
     expect(r1).not.toBe(r2);
-    expect(r1.basePath).not.toBe(r2.basePath);
+    expect(r1.entityType).not.toBe(r2.entityType);
   });
 
   it('creates a new resource when transport is explicitly provided', () => {
     const r1 = getEntityResource('customer');
-    const customTransport = vi.fn();
-    const r2 = getEntityResource('customer', customTransport as any);
+    const customTransport = vi.fn<Transport>();
+    const r2 = getEntityResource('customer', customTransport);
 
     expect(r1).not.toBe(r2);
     expect(r2.transport).toBe(customTransport);
   });
 
-  it('uses correct base paths for each entity type', () => {
+  it('targets the single entities collection with the right entity type', () => {
     const expectations: Record<EntityType, string> = {
-      customer: '/api/customers',
-      site: '/api/sites',
-      equipment: '/api/equipment',
-      technician: '/api/technicians',
-      work_order: '/api/work-orders',
+      customer: 'customer',
+      site: 'site',
+      equipment: 'equipment',
+      technician: 'technician',
+      work_order: 'work_order',
     };
 
-    for (const [type, expectedPath] of Object.entries(expectations)) {
+    for (const [type, expected] of Object.entries(expectations)) {
       const resource = getEntityResource(type as EntityType);
-      expect(resource.basePath).toBe(expectedPath);
+      expect(resource.basePath).toBe('/api/entities');
+      expect(resource.entityType).toBe(expected);
     }
   });
 });

@@ -22,7 +22,7 @@ const customer: EntityConfig = {
   searchFields: ['name', 'billing_email', 'phone'],
   eventTypes: ['contract_renewed', 'tier_changed'],
   fields: [
-    { key: 'name', label: 'Name', type: 'text', required: true },
+    { key: 'name', label: 'Name', type: 'text', required: true, sortable: true },
     {
       key: 'billing_email',
       label: 'Billing email',
@@ -38,7 +38,6 @@ const customer: EntityConfig = {
       label: 'Tier',
       type: 'select',
       required: true,
-      filterable: true,
       options: [
         { value: 'standard', label: 'Standard' },
         { value: 'premium', label: 'Premium' },
@@ -51,6 +50,7 @@ const customer: EntityConfig = {
       type: 'select',
       required: true,
       filterable: true,
+      sortable: true,
       options: [
         { value: 'active', label: 'Active' },
         { value: 'inactive', label: 'Inactive' },
@@ -72,7 +72,7 @@ const site: EntityConfig = {
   eventTypes: ['inspection_completed'],
   relations: [{ rel: 'belongs_to', target: 'customer', field: 'customer_id' }],
   fields: [
-    { key: 'name', label: 'Name', type: 'text', required: true },
+    { key: 'name', label: 'Name', type: 'text', required: true, sortable: true },
     { key: 'customer_id', label: 'Customer', type: 'select', ref: 'customer', required: true },
     {
       key: 'address',
@@ -88,7 +88,6 @@ const site: EntityConfig = {
       label: 'Site type',
       type: 'select',
       required: true,
-      filterable: true,
       options: [
         { value: 'commercial', label: 'Commercial' },
         { value: 'residential', label: 'Residential' },
@@ -108,6 +107,7 @@ const site: EntityConfig = {
       type: 'select',
       required: true,
       filterable: true,
+      sortable: true,
       options: [
         { value: 'active', label: 'Active' },
         { value: 'inactive', label: 'Inactive' },
@@ -122,8 +122,8 @@ const equipment: EntityConfig = {
   icon: 'tools',
   titleField: 'serial_number',
   idPrefix: 'equip',
-  defaultSort: { key: 'serial_number', dir: 'asc' },
-  searchFields: ['serial_number', 'location'],
+  defaultSort: { key: 'status', dir: 'asc' },
+  searchFields: ['serial_number', 'location_note'],
   eventTypes: ['reading_recorded', 'service_completed', 'fault_reported'],
   relations: [{ rel: 'installed_at', target: 'site', field: 'site_id' }],
   fields: [
@@ -141,7 +141,6 @@ const equipment: EntityConfig = {
       label: 'Equipment type',
       type: 'select',
       required: true,
-      filterable: true,
       options: [
         { value: 'hvac', label: 'HVAC' },
         { value: 'elevator', label: 'Elevator' },
@@ -152,7 +151,7 @@ const equipment: EntityConfig = {
     },
     { key: 'site_id', label: 'Installed at', type: 'select', ref: 'site', required: true },
     {
-      key: 'location',
+      key: 'location_note',
       label: 'Location',
       type: 'text',
       location: true,
@@ -167,6 +166,7 @@ const equipment: EntityConfig = {
       type: 'select',
       required: true,
       filterable: true,
+      sortable: true,
       options: [
         { value: 'operational', label: 'Operational' },
         { value: 'maintenance', label: 'Under maintenance' },
@@ -186,7 +186,7 @@ const technician: EntityConfig = {
   searchFields: ['name', 'email', 'skills'],
   eventTypes: ['checked_in', 'certification_renewed'],
   fields: [
-    { key: 'name', label: 'Name', type: 'text', required: true },
+    { key: 'name', label: 'Name', type: 'text', required: true, sortable: true },
     {
       key: 'email',
       label: 'Email',
@@ -217,7 +217,6 @@ const technician: EntityConfig = {
       label: 'Certification level',
       type: 'select',
       required: true,
-      filterable: true,
       options: [
         { value: 'I', label: 'Level I' },
         { value: 'II', label: 'Level II' },
@@ -231,6 +230,7 @@ const technician: EntityConfig = {
       type: 'select',
       required: true,
       filterable: true,
+      sortable: true,
       options: [
         { value: 'available', label: 'Available' },
         { value: 'on_job', label: 'On job' },
@@ -246,8 +246,8 @@ const work_order: EntityConfig = {
   icon: 'document',
   titleField: 'title',
   idPrefix: 'wo',
-  defaultSort: { key: 'scheduled_for', dir: 'desc' },
-  searchFields: ['title', 'notes', 'location'],
+  defaultSort: { key: 'status', dir: 'asc' },
+  searchFields: ['title', 'notes', 'location_note'],
   eventTypes: ['status_changed', 'assigned', 'note_added'],
   relations: [
     { rel: 'assigned_to', target: 'technician', field: 'technician_id' },
@@ -268,7 +268,6 @@ const work_order: EntityConfig = {
       label: 'Priority',
       type: 'select',
       required: true,
-      filterable: true,
       options: [
         { value: 'low', label: 'Low' },
         { value: 'normal', label: 'Normal' },
@@ -282,6 +281,7 @@ const work_order: EntityConfig = {
       type: 'select',
       required: true,
       filterable: true,
+      sortable: true,
       options: [
         { value: 'open', label: 'Open' },
         { value: 'scheduled', label: 'Scheduled' },
@@ -292,7 +292,7 @@ const work_order: EntityConfig = {
     },
     { key: 'scheduled_for', label: 'Scheduled for', type: 'date', required: true, mono: true },
     {
-      key: 'location',
+      key: 'location_note',
       label: 'Location',
       type: 'text',
       location: true,

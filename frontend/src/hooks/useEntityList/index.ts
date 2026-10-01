@@ -2,26 +2,21 @@
  * MonoBlocks — hooks/useEntityList.ts
  *
  * TanStack Query hooks for the entity list page:
- * - useEntityList: fetches filtered/sorted entity records
+ * - useEntityList: fetches a filtered/sorted/paginated page of entity records
  * - useRefCaches: resolves foreign-key columns to display titles
  * - useInvalidateList: invalidation helper after mutations
  */
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-import type { EntityType, ListOptions, SortDef } from '@/schema/types';
+import type { EntityType, SortDef } from '@/schema/types';
 
 import { getEntityResource } from '@/api/resources/entity-resource-factory';
+import { MAX_PAGE_SIZE, type EntityListQuery } from '@/api/types';
 import { get, listFields, titleOf } from '@/schema/helpers';
 
 // ── Query key factory ─────────────────────────────────────────────────────
 
-const listKey = (type: EntityType, opts: ListOptions): unknown[] => [
-  'list',
-  type,
-  opts.q ?? '',
-  opts.filters ?? {},
-  opts.sort ?? {},
-];
+const listKey = (type: EntityType, query: EntityListQuery): unknown[] => ['list', type, query];
 
 const refKey = (type: EntityType): unknown[] => ['ref-cache', type];
 
@@ -34,9 +29,9 @@ function useRefCache(type: EntityType | undefined): Record<string, string> {
     queryFn: async () => {
       if (!type) return {};
       const resource = getEntityResource(type);
-      const rows = await resource.list({});
+      const page = await resource.list({ size: MAX_PAGE_SIZE });
       const map: Record<string, string> = {};
-      for (const r of rows) {
+      for (const r of page.content) {
         map[r.id] = titleOf(type, r);
       }
       return map;
@@ -79,24 +74,36 @@ export const useRefCaches = (type: EntityType): Record<string, Record<string, st
 // ── Entity list hook ──────────────────────────────────────────────────────
 
 export interface UseEntityListOptions {
-  q?: string;
-  filters?: Record<string, string>;
+  /** Server-side full-text search. */
+  search?: string;
+  /** Exact status filter. */
+  status?: string;
+  /** Tag containment filter. */
+  tag?: string;
+  /** 0-based page number. */
+  page?: number;
+  /** Page size (max 100). */
+  size?: number;
+  /** Sort definition; non-column keys are dropped by the resource. */
   sort?: SortDef;
 }
 
 /**
- * Fetch a filtered, sorted list of entity records.
- * Returns TanStack Query result (data, isLoading, error, refetch, isError).
+ * Fetch a filtered, sorted page of entity records.
+ * Returns a TanStack Query result whose `data` is a Spring `Page<T>`.
  */
 export const useEntityList = (type: EntityType, opts: UseEntityListOptions = {}) => {
-  const listOpts: ListOptions = {
-    q: opts.q,
-    filters: opts.filters,
+  const query: EntityListQuery = {
+    search: opts.search,
+    status: opts.status,
+    tag: opts.tag,
+    page: opts.page,
+    size: opts.size,
     sort: opts.sort ?? get(type).defaultSort,
   };
   return useQuery({
-    queryKey: listKey(type, listOpts),
-    queryFn: () => getEntityResource(type).list(listOpts),
+    queryKey: listKey(type, query),
+    queryFn: () => getEntityResource(type).list(query),
   });
 };
 

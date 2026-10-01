@@ -4,10 +4,8 @@
 
 export {
   CrudResource,
-  type DeleteResponse,
   type ListResponse,
   type RelatedResponse,
-  type ResetResponse,
   type UniqueCheckResponse,
 } from './crud-resource';
 export {

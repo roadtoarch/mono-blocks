@@ -1,163 +1,201 @@
 /**
  * MonoBlocks — Mock transport
  *
- * Adapts `mockDb` to the `Transport` interface so the Resource pattern
- * works identically whether the backend is the mock database or a real API.
+ * Adapts `mockDb` to the `Transport` interface so the Resource pattern works
+ * identically whether the backend is the mock database or the real API.
  *
- * This is the **development** transport. In production, use the axios
- * transport via `createApiClient()`.
+ * The mock is kept for unit tests only — the running app wires the real axios
+ * pipeline through `setTransport` in `main.tsx`. This module mirrors the live
+ * protocol: a single `/api/entities` collection discriminated by `entity_type`,
+ * Spring `Page<T>` envelopes on list, and 204/no-body deletes.
  *
  * URL routing convention:
- *   GET    /api/{collection}              → list(type, opts)
- *   GET    /api/{collection}/{id}         → getRecord(type, id)
- *   GET    /api/{collection}/{id}/related → related(type, id)
- *   GET    /api/{collection}/check-unique → checkUnique(type, key, value, exclId)
- *   POST   /api/{collection}             → create(type, data)
- *   PATCH  /api/{collection}/{id}        → update(type, id, data)
- *   DELETE /api/{collection}/{id}        → remove(type, id)
- *   POST   /api/reset                    → reset()
+ *   GET    /api/entities                    → list(type, opts) wrapped in a Page
+ *   GET    /api/entities/types              → distinct entity types
+ *   GET    /api/entities/check-unique       → checkUnique(type, key, value, exclId)
+ *   GET    /api/entities/{id}               → getRecord(type, id)
+ *   GET    /api/entities/{id}/relationships → empty Page (mock has no edges)
+ *   GET    /api/entities/{id}/events        → empty Page
+ *   POST   /api/entities                   → create(type, data)
+ *   PATCH  /api/entities/{id}              → update(type, id, data)
+ *   DELETE /api/entities/{id}              → remove(type, id)
  */
 
 import * as mockDb from './mockDb';
 
+import type { Page } from '@/api/types';
 import type { RequestContext, ResponseContext, Transport } from '@/http/types';
-import type { EntityType } from '@/schema/types';
+import type { EntityType, SortDef } from '@/schema/types';
 
-// ─── Route helpers ───────────────────────────────────────────────────────────
+import { has, types } from '@/schema/helpers';
 
-/**
- * Map a URL path segment to an EntityType.
- * e.g. "customers" → "customer", "work-orders" → "work_order"
- */
-const SEGMENT_TO_TYPE: Record<string, EntityType> = {
-  'customers': 'customer',
-  'sites': 'site',
-  'equipment': 'equipment',
-  'technicians': 'technician',
-  'work-orders': 'work_order',
-};
+// ─── Constants ───────────────────────────────────────────────────────────────
 
-interface ParsedRoute {
-  type: EntityType;
-  id: string | null;
-  action: string | null;
+const DEFAULT_PAGE_SIZE = 10;
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+/** Split `/api/entities/{id}/{action}` into its parts. */
+function parsePath(url: string): { resource: string; id: string | null; action: string | null } {
+  const path = url.replace(/^https?:\/\/[^/]+/, '').replace(/^\/api\/?/, '');
+  const segments = path.split('/').filter(Boolean);
+  return { resource: segments[0] ?? '', id: segments[1] ?? null, action: segments[2] ?? null };
 }
 
-/**
- * Parse a URL like `/api/customers/cust-001/related` into { type, id, action }.
- */
-function parseUrl(url: string): ParsedRoute {
-  // Strip baseURL prefix if present
-  const path = url.replace(/^https?:\/\/[^/]+/, '').replace(/^\/api\//, '');
-  const segments = path.split('/').filter(Boolean);
-
-  const collection = segments[0] ?? '';
-  const type = SEGMENT_TO_TYPE[collection];
-
-  if (!type) {
-    throw new Error(`MockTransport: unknown collection "${collection}"`);
+/** Find the entity type that owns a given id (mock ids are prefixed per type). */
+function resolveTypeById(id: string): EntityType | null {
+  for (const type of types()) {
+    if (mockDb.peek(type).some((record) => record.id === id)) return type;
   }
+  return null;
+}
 
-  const id = segments[1] ?? null;
-  const action = segments[2] ?? null;
+function requireType(value: unknown): EntityType {
+  const str = typeof value === 'string' ? value : '';
+  if (!has(str)) throw new Error(`MockTransport: unknown entity_type "${str}"`);
+  return str;
+}
 
-  return { type, id, action };
+function toInt(value: unknown, fallback: number): number {
+  const n = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function parseSort(value: unknown): SortDef | undefined {
+  if (typeof value !== 'string' || value === '') return undefined;
+  const [key, dir] = value.split(',');
+  if (!key) return undefined;
+  return { key, dir: dir === 'desc' ? 'desc' : 'asc' };
+}
+
+/** Build a Spring `PageImpl`-shaped envelope. */
+function pageEnvelope<T>(
+  content: T[],
+  number: number,
+  size: number,
+  totalElements: number,
+): Page<T> {
+  const sort = { empty: true, sorted: false, unsorted: true };
+  return {
+    content,
+    empty: content.length === 0,
+    first: number <= 0,
+    last: size <= 0 || (number + 1) * size >= totalElements,
+    number,
+    numberOfElements: content.length,
+    pageable: {
+      offset: number * size,
+      pageNumber: number,
+      pageSize: size,
+      paged: true,
+      unpaged: false,
+      sort,
+    },
+    size,
+    sort,
+    totalElements,
+    totalPages: size > 0 ? Math.ceil(totalElements / size) : 0,
+  };
+}
+
+function emptyPage(size = DEFAULT_PAGE_SIZE): Page<never> {
+  return pageEnvelope<never>([], 0, size, 0);
+}
+
+function respond(ctx: RequestContext, data: unknown, status = 200): ResponseContext {
+  return {
+    data,
+    status,
+    statusText: status === 201 ? 'Created' : status === 204 ? 'No Content' : 'OK',
+    headers: {},
+    meta: { ...ctx.meta },
+    config: ctx.config,
+  };
 }
 
 // ─── Mock transport ──────────────────────────────────────────────────────────
 
 /**
- * Transport that delegates to mockDb.
- * Use during development; swap to the real axios transport for production.
+ * Transport that delegates to mockDb, mirroring the live API protocol.
+ * Use during unit tests; the app wires the real axios transport at startup.
  */
 export const mockTransport: Transport = async (ctx: RequestContext): Promise<ResponseContext> => {
   const { config } = ctx;
-  let data: unknown;
+  const params = config.params ?? {};
+  const { resource, id, action } = parsePath(config.url);
 
-  // Special-case: POST /api/reset (no collection segment)
-  if (config.method === 'POST' && config.url.endsWith('/reset')) {
-    data = await mockDb.reset();
-    return {
-      data,
-      status: 200,
-      statusText: 'OK',
-      headers: {},
-      meta: { ...ctx.meta },
-      config,
-    };
+  if (resource !== 'entities') {
+    throw new Error(`MockTransport: unknown resource "${resource}"`);
   }
-
-  const route = parseUrl(config.url);
 
   switch (config.method) {
     case 'GET': {
-      if (route.action === 'related' && route.id) {
-        data = await mockDb.related(route.type, route.id);
-      } else if (route.action === 'check-unique' || route.id === 'check-unique') {
-        const params = (config.params ?? {}) as Record<string, string>;
-        data = await mockDb.checkUnique(
-          route.type,
-          params.key ?? '',
-          params.value ?? '',
-          params.excludeId,
-        );
-      } else if (route.id) {
-        data = await mockDb.getRecord(route.type, route.id);
-      } else {
-        // List with query params → ListOptions
-        const params = config.params ?? {};
-        const sortKey = params.sortKey as string | undefined;
-        const sortDir = params.sortDir as 'asc' | 'desc' | undefined;
-
-        // Collect filter.* params into a filters record
-        const filters: Record<string, string> = {};
-        for (const [key, value] of Object.entries(params)) {
-          if (key.startsWith('filter.')) {
-            const filterKey = key.slice('filter.'.length);
-            filters[filterKey] = String(value);
-          }
-        }
-
-        data = await mockDb.list(route.type, {
-          q: params.q as string | undefined,
-          filters: Object.keys(filters).length > 0 ? filters : undefined,
-          sort: sortKey ? { key: sortKey, dir: sortDir ?? 'asc' } : undefined,
-        });
+      if (id === 'types') {
+        const present = types().filter((type) => mockDb.peek(type).length > 0);
+        return respond(ctx, present);
       }
-      break;
+      if (id === 'check-unique') {
+        const type = requireType(params.entity_type);
+        const unique = await mockDb.checkUnique(
+          type,
+          typeof params.key === 'string' ? params.key : '',
+          typeof params.value === 'string' ? params.value : '',
+          typeof params.excludeId === 'string' ? params.excludeId : undefined,
+        );
+        return respond(ctx, { unique });
+      }
+      if (id && action === 'relationships') {
+        return respond(ctx, emptyPage());
+      }
+      if (id && action === 'events') {
+        return respond(ctx, emptyPage());
+      }
+      if (id) {
+        const type = resolveTypeById(id);
+        if (!type) throw new Error(`MockTransport: no record "${id}"`);
+        return respond(ctx, await mockDb.getRecord(type, id));
+      }
+      const type = requireType(params.entity_type);
+      const filters: Record<string, string> = {};
+      if (typeof params.status === 'string' && params.status !== '') {
+        filters.status = params.status;
+      }
+      const all = await mockDb.list(type, {
+        q: typeof params.search === 'string' ? params.search : undefined,
+        filters: Object.keys(filters).length > 0 ? filters : undefined,
+        sort: parseSort(params.sort),
+      });
+      const page = toInt(params.page, 0);
+      const size = toInt(params.size, DEFAULT_PAGE_SIZE);
+      const start = page * size;
+      return respond(ctx, pageEnvelope(all.slice(start, start + size), page, size, all.length));
     }
 
     case 'POST': {
-      data = await mockDb.create(route.type, (config.data ?? {}) as Record<string, unknown>);
-      break;
+      const data = (config.data ?? {}) as Record<string, unknown>;
+      const type = requireType(data.entity_type);
+      return respond(ctx, await mockDb.create(type, data), 201);
     }
 
     case 'PATCH': {
-      if (!route.id) throw new Error(`MockTransport: PATCH requires an ID in URL "${config.url}"`);
-      data = await mockDb.update(
-        route.type,
-        route.id,
-        (config.data ?? {}) as Record<string, unknown>,
+      if (!id) throw new Error(`MockTransport: PATCH requires an ID in "${config.url}"`);
+      const type = resolveTypeById(id);
+      if (!type) throw new Error(`MockTransport: no record "${id}"`);
+      return respond(
+        ctx,
+        await mockDb.update(type, id, (config.data ?? {}) as Record<string, unknown>),
       );
-      break;
     }
 
     case 'DELETE': {
-      if (!route.id) throw new Error(`MockTransport: DELETE requires an ID in URL "${config.url}"`);
-      data = await mockDb.remove(route.type, route.id);
-      break;
+      if (!id) throw new Error(`MockTransport: DELETE requires an ID in "${config.url}"`);
+      const type = resolveTypeById(id);
+      if (!type) throw new Error(`MockTransport: no record "${id}"`);
+      await mockDb.remove(type, id);
+      return respond(ctx, undefined, 204);
     }
 
     default:
       throw new Error(`MockTransport: unsupported method "${config.method}"`);
   }
-
-  return {
-    data,
-    status: config.method === 'POST' && !route.id ? 201 : 200,
-    statusText: 'OK',
-    headers: {},
-    meta: { ...ctx.meta },
-    config,
-  };
 };
