@@ -9,12 +9,24 @@
  * "View list." so screen readers announce a natural sentence and axe's
  * label-content-name-mismatch rule passes.
  */
-import { Button, Tag } from '@carbon/react';
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableHeader,
+  TableRow,
+  Tag,
+} from '@carbon/react';
 import { Link } from '@tanstack/react-router';
 
+import type { TableResourceColumn } from '@/components/TableResource';
 import type { KpiDelta, KpiTile, RecentWorkOrder } from '@/hooks/useDashboard';
 
 import { LinkButton } from '@/components/LinkButton';
+import { TableResource } from '@/components/TableResource';
 import { useDashboard } from '@/hooks/useDashboard';
 import { field, optionLabel, tagFamily } from '@/schema/helpers';
 import { date, number as fmtNum } from '@/utils/format';
@@ -42,8 +54,7 @@ function Delta({ delta }: { delta: KpiDelta }) {
   const mod = delta.trend === 'up' ? ' mb-tile__delta--up' : ' mb-tile__delta--down';
   return (
     <span className={`mb-tile__delta${mod}`}>
-      (<span className="mb-tile__delta-icon">{delta.trend === 'up' ? '↑' : '↓'}</span>{' '}
-      {delta.text})
+      (<span className="mb-tile__delta-icon">{delta.trend === 'up' ? '↑' : '↓'}</span> {delta.text})
     </span>
   );
 }
@@ -65,26 +76,48 @@ function KpiTileLink({ kpi }: { kpi: KpiTile }) {
 
 // ── Recent work orders table ─────────────────────────────────────────────
 
-function RecentRow({ wo }: { wo: RecentWorkOrder }) {
-  const statusField = field('work_order', 'status');
-  const prioField = field('work_order', 'priority');
-  const statusColor = tagFamily('work_order', 'status', wo.status);
-  const prioColor = tagFamily('work_order', 'priority', wo.priority);
-
-  return (
-    <tr>
-      <td>
-        <Link className="mb-table__entity-link" to="/work-orders/$id" params={{ id: wo.id }}>
-          {wo.title}
-        </Link>
-      </td>
-      <td>{wo.siteTitle}</td>
-      <td>{prioColor && <Tag type={prioColor}>{optionLabel(prioField, wo.priority)}</Tag>}</td>
-      <td>{statusColor && <Tag type={statusColor}>{optionLabel(statusField, wo.status)}</Tag>}</td>
-      <td className="cds--mono">{date(wo.scheduledFor)}</td>
-    </tr>
-  );
-}
+const recentColumns: TableResourceColumn<RecentWorkOrder>[] = [
+  {
+    key: 'workOrder',
+    header: 'Work order',
+    render: (wo) => (
+      <Link className="mb-table__entity-link" to="/work-orders/$id" params={{ id: wo.id }}>
+        {wo.title}
+      </Link>
+    ),
+  },
+  {
+    key: 'site',
+    header: 'Site',
+    render: (wo) => wo.siteTitle,
+  },
+  {
+    key: 'priority',
+    header: 'Priority',
+    render: (wo) => {
+      const prioField = field('work_order', 'priority');
+      const prioColor = tagFamily('work_order', 'priority', wo.priority);
+      return prioColor ? <Tag type={prioColor}>{optionLabel(prioField, wo.priority)}</Tag> : null;
+    },
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    render: (wo) => {
+      const statusField = field('work_order', 'status');
+      const statusColor = tagFamily('work_order', 'status', wo.status);
+      return statusColor ? (
+        <Tag type={statusColor}>{optionLabel(statusField, wo.status)}</Tag>
+      ) : null;
+    },
+  },
+  {
+    key: 'scheduledFor',
+    header: 'Scheduled for',
+    render: (wo) => date(wo.scheduledFor),
+    className: 'cds--mono',
+  },
+];
 
 // ── Skeleton ─────────────────────────────────────────────────────────────
 
@@ -105,30 +138,30 @@ function DashboardSkeleton() {
       </div>
       <section className="mb-section" aria-label="Recent work orders">
         <h2 className="mb-section__title">Recent work orders</h2>
-        <div className="mb-table-wrapper">
-          <table className="mb-table">
-            <thead>
-              <tr>
-                <th scope="col">Work order</th>
-                <th scope="col">Site</th>
-                <th scope="col">Priority</th>
-                <th scope="col">Status</th>
-                <th scope="col">Scheduled for</th>
-              </tr>
-            </thead>
-            <tbody>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableHeader>Work order</TableHeader>
+                <TableHeader>Site</TableHeader>
+                <TableHeader>Priority</TableHeader>
+                <TableHeader>Status</TableHeader>
+                <TableHeader>Scheduled for</TableHeader>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {SKELETON_ROWS.map((i) => (
-                <tr key={i}>
+                <TableRow key={i}>
                   {SKELETON_ROWS.slice(0, 5).map((j) => (
-                    <td key={j}>
+                    <TableCell key={j}>
                       <div className="mb-skeleton__line" />
-                    </td>
+                    </TableCell>
                   ))}
-                </tr>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </TableBody>
+          </Table>
+        </TableContainer>
       </section>
     </>
   );
@@ -178,24 +211,11 @@ export const DashboardPage = () => {
 
           <section className="mb-section" aria-label="Recent work orders">
             <h2 className="mb-section__title">Recent work orders</h2>
-            <div className="mb-table-wrapper">
-              <table className="mb-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Work order</th>
-                    <th scope="col">Site</th>
-                    <th scope="col">Priority</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Scheduled for</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.recent.map((wo) => (
-                    <RecentRow key={wo.id} wo={wo} />
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <TableResource
+              columns={recentColumns}
+              data={data.recent}
+              keyExtractor={(wo) => wo.id}
+            />
             <p>
               <Link to="/work-orders" className="mb-btn mb-btn--ghost">
                 View all work orders
