@@ -16,8 +16,8 @@
  *   checkUnique(...)   → GET    /api/entities/check-unique?entity_type=...
  *   listTypes()        → GET    /api/entities/types
  *
- * The API returns Spring's default `Page<T>` envelope; list and the detail
- * sub-resources are typed through it so deferred features can reuse the shape.
+ * The API returns Spring Data's VIA_DTO `PagedModel<T>` envelope; list and the
+ * detail sub-resources are normalized to the flat `Page<T>` the UI reads.
  */
 
 import type { Transport } from '@/http/types';
@@ -39,7 +39,9 @@ import {
   type EntityRef,
   type EventWire,
   type Page,
+  type PagedModel,
   type RelationshipWire,
+  type SpringSort,
   type UniqueCheckWire,
 } from '@/api/types';
 import { Resource } from '@/http/resource';
@@ -95,6 +97,40 @@ function buildListParams(type: EntityType, query: EntityListQuery): Record<strin
 function normalizeSort(sort?: SortDef): string | undefined {
   if (!sort?.key || !SORTABLE_COLUMNS.has(sort.key)) return undefined;
   return `${sort.key},${sort.dir === 'desc' ? 'desc' : 'asc'}`;
+}
+
+/** Placeholder sort metadata for the normalized flat envelope. */
+const EMPTY_SORT: SpringSort = { empty: true, sorted: false, unsorted: true };
+
+/**
+ * Normalize the VIA_DTO `PagedModel` wire envelope (`{ content, page }`) into
+ * the flat `Page` the UI consumes. Envelopes that are already flat — e.g. the
+ * in-memory mock transport — pass through untouched.
+ */
+export function normalizePage<T>(wire: PagedModel<T> | Page<T>): Page<T> {
+  if (!('page' in wire)) return wire;
+  const { content, page } = wire;
+  const numberOfElements = content.length;
+  return {
+    content,
+    empty: numberOfElements === 0,
+    first: page.number <= 0,
+    last: page.size <= 0 || (page.number + 1) * page.size >= page.totalElements,
+    number: page.number,
+    numberOfElements,
+    pageable: {
+      offset: page.number * page.size,
+      pageNumber: page.number,
+      pageSize: page.size,
+      paged: true,
+      unpaged: false,
+      sort: EMPTY_SORT,
+    },
+    size: page.size,
+    sort: EMPTY_SORT,
+    totalElements: page.totalElements,
+    totalPages: page.totalPages,
+  };
 }
 
 // ─── Detail composition helpers ──────────────────────────────────────────────
@@ -209,7 +245,10 @@ export class CrudResource<T extends EntityRecord = EntityRecord> extends Resourc
    * Maps to `GET /api/entities`.
    */
   async list(query: EntityListQuery = {}): Promise<Page<T>> {
-    return this.request<Page<T>>('GET', '', { params: buildListParams(this.entityType, query) });
+    const wire = await this.request<PagedModel<T>>('GET', '', {
+      params: buildListParams(this.entityType, query),
+    });
+    return normalizePage(wire);
   }
 
   /**
@@ -265,7 +304,10 @@ export class CrudResource<T extends EntityRecord = EntityRecord> extends Resourc
     if (relationshipType) params.relationship_type = relationshipType;
     if (pageParams?.page !== undefined) params.page = pageParams.page;
     if (pageParams?.size !== undefined) params.size = pageParams.size;
-    return this.request<Page<RelationshipWire>>('GET', `${id}/relationships`, { params });
+    const wire = await this.request<PagedModel<RelationshipWire>>('GET', `${id}/relationships`, {
+      params,
+    });
+    return normalizePage(wire);
   }
 
   /**
@@ -280,7 +322,8 @@ export class CrudResource<T extends EntityRecord = EntityRecord> extends Resourc
     if (pageParams?.page !== undefined) params.page = pageParams.page;
     if (pageParams?.size !== undefined) params.size = pageParams.size;
     const config = Object.keys(params).length > 0 ? { params } : undefined;
-    return this.request<Page<EventWire>>('GET', `${id}/events`, config);
+    const wire = await this.request<PagedModel<EventWire>>('GET', `${id}/events`, config);
+    return normalizePage(wire);
   }
 
   /**

@@ -6,10 +6,11 @@
  * so the pagination envelope and relationship/event payloads can be reused by
  * deferred features without pulling in schema config.
  *
- * The API uses Spring's default raw `PageImpl` serialization (a "direct"
- * envelope), so the summary fields (`content`, `number`, `size`,
- * `totalElements`, `totalPages`, `first`, `last`, `empty`, `numberOfElements`)
- * live at the top level — there is no `PagedModel` wrapper.
+ * The API serializes Spring Data pages with
+ * `@EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)`, so every paged
+ * endpoint returns a `PagedModel<T>` — `content` plus a `page` metadata block —
+ * rather than a flat `PageImpl`. `CrudResource` normalizes that wire shape into
+ * the flat {@link Page} the UI reads.
  */
 
 import type { EntityRecord, SortDef } from '@/schema/types';
@@ -33,8 +34,30 @@ export interface Pageable {
   sort: SpringSort;
 }
 
+/** Page summary block returned by Spring Data's `PagedModel` (VIA_DTO mode). */
+export interface PageMetadata {
+  size: number;
+  number: number;
+  totalElements: number;
+  totalPages: number;
+}
+
 /**
- * Spring Data `Page<T>` wire envelope.
+ * Spring Data `PagedModel<T>` wire envelope, produced by
+ * `@EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)`. Every paged
+ * endpoint (`/api/entities`, `/{id}/relationships`, `/{id}/events`, and the
+ * detail `children`) returns this shape.
+ */
+export interface PagedModel<T> {
+  content: T[];
+  page: PageMetadata;
+}
+
+/**
+ * Canonical app-facing page envelope. `CrudResource` normalizes the VIA_DTO
+ * `PagedModel` wire shape into this flat form so the UI reads
+ * `page.number` / `page.size` / `page.totalElements` / `page.totalPages`
+ * directly.
  *
  * Only the summary fields are part of the app's contract; `pageable` and
  * `sort` are modelled for completeness but never read by the UI.
@@ -148,5 +171,5 @@ export interface UniqueCheckWire {
 
 /** `GET /api/entities/{id}` — the flattened entity plus its direct children. */
 export type EntityDetailWire = EntityRecord & {
-  children?: Page<EntityRef>;
+  children?: PagedModel<EntityRef>;
 };

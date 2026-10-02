@@ -6,7 +6,7 @@
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { CrudResource } from './crud-resource.ts';
+import { CrudResource, normalizePage } from './crud-resource.ts';
 
 import type { RequestContext, ResponseContext, Transport } from '@/http/types';
 
@@ -427,5 +427,42 @@ describe('CrudResource', () => {
       expect(capturedParams).toMatchObject({ excludeId: '1' });
       expect(result).toBe(false);
     });
+  });
+});
+
+describe('normalizePage', () => {
+  it('flattens the VIA_DTO PagedModel envelope', () => {
+    const flat = normalizePage({
+      content: [{ id: 'a' }],
+      page: { size: 10, number: 1, totalElements: 12, totalPages: 2 },
+    });
+
+    expect(flat).toMatchObject({
+      content: [{ id: 'a' }],
+      number: 1,
+      size: 10,
+      totalElements: 12,
+      totalPages: 2,
+      numberOfElements: 1,
+      empty: false,
+      first: false,
+      last: true,
+    });
+  });
+
+  it('passes an already-flat envelope through unchanged', () => {
+    expect(normalizePage(EMPTY_PAGE)).toBe(EMPTY_PAGE);
+  });
+
+  it('normalizes the envelope returned by list()', async () => {
+    const t = capturingTransport({
+      content: [{ id: '1', name: 'Alice' }],
+      page: { size: 10, number: 0, totalElements: 1, totalPages: 1 },
+    });
+    const page = await new CrudResource('customer', t).list();
+
+    expect(page.content).toHaveLength(1);
+    expect(page.number).toBe(0);
+    expect(page.totalElements).toBe(1);
   });
 });

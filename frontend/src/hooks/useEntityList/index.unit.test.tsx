@@ -140,8 +140,12 @@ describe('useRefCaches', () => {
       wrapper: createWrapper(),
     });
 
+    // The ref-type key must exist even before its query resolves, so table
+    // cells resolving a foreign key never dereference a missing cache map.
+    expect(result.current).toHaveProperty('customer');
+
     await waitFor(() => {
-      expect(Object.keys(result.current)).toContain('customer');
+      expect(Object.keys(result.current.customer).length).toBeGreaterThan(0);
     });
 
     const customerCache = result.current.customer;

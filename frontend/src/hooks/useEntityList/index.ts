@@ -66,8 +66,8 @@ export const useRefCaches = (type: EntityType): Record<string, Record<string, st
   const cache0 = useRefCache(refTypes[0]);
   const cache1 = useRefCache(refTypes[1]);
   const caches: Record<string, Record<string, string>> = {};
-  if (refTypes[0] && Object.keys(cache0).length > 0) caches[refTypes[0]] = cache0;
-  if (refTypes[1] && Object.keys(cache1).length > 0) caches[refTypes[1]] = cache1;
+  if (refTypes[0]) caches[refTypes[0]] = cache0;
+  if (refTypes[1]) caches[refTypes[1]] = cache1;
   return caches;
 };
 
