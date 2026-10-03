@@ -27,6 +27,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     clearMocks: true,
+    pool: 'vmThreads',
     include: ['src/**/*.unit.test.{ts,tsx}'],
     coverage: {
       provider: 'v8',
