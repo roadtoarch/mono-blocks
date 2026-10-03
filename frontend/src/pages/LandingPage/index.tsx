@@ -1,33 +1,11 @@
-/**
- * MonoBlocks — pages/LandingPage/index.tsx
- *
- * Landing page — outside the _app layout (no chrome).
- * Shows brand monogram, tagline, enter CTA, and skin switcher.
- * Port of prototype index.html landing page.
- */
 import { Column, Grid } from '@carbon/react';
 
 import { LinkButton } from '@/components/LinkButton';
 import { useTheme } from '@/hooks';
 
 import './index.scss';
+import Monogram from '@/components/LogoMonogram';
 
-/**
- * Landing monogram SVG — 3 stacked rects (2 currentColor, 1 brand accent).
- * Matches the favicon and header monogram.
- * Prototype layout: bottom 2 rects (currentColor) + top 1 rect (accent).
- */
-function LandingMonogram() {
-  return (
-    <div className="mb-landing__logo" aria-hidden="true">
-      <svg viewBox="0 0 48 48" width="64" height="64" focusable="false">
-        <rect x="4" y="28" width="17" height="16" fill="currentColor" />
-        <rect x="27" y="28" width="17" height="16" fill="currentColor" />
-        <rect x="15.5" y="6" width="17" height="16" fill="var(--cds-button-primary)" />
-      </svg>
-    </div>
-  );
-}
 
 /**
  * Landing page component.
@@ -40,7 +18,9 @@ export const LandingPage = () => {
       <Column className="landing-content-col" sm={4} md={4} lg={8}>
         <div className="landing-content-wrapper">
           <header className="landing-logo">
-            <LandingMonogram />
+            <div className="mb-landing__logo">
+              <Monogram size={64}  title="Cornerstone Property Services" />
+            </div>
           </header>
 
           <main>

@@ -26,27 +26,7 @@ import type { Skin } from '@/stores/theme';
 import { ToastRegion } from '@/components/ToastRegion';
 import { useNav, useTheme } from '@/hooks';
 import { navItems } from '@/schema/config';
-
-/**
- * Monogram SVG used in the header. Matches the landing monogram:
- * 3 stacked rects — 2 currentColor, 1 brand accent.
- */
-function Monogram({ size = 20 }: { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 20 20"
-      fill="none"
-      aria-hidden="true"
-      className="mb-icon"
-    >
-      <rect x="2" y="2" width="16" height="4" fill="currentColor" />
-      <rect x="2" y="8" width="16" height="4" fill="var(--cds-button-primary)" />
-      <rect x="2" y="14" width="16" height="4" fill="currentColor" />
-    </svg>
-  );
-}
+import Monogram from '@/components/LogoMonogram';
 
 /**
  * Skin chip for the header dropdown.
