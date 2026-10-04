@@ -6,10 +6,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 
+import { useDashboard } from './index';
+
 import type { ReactNode } from 'react';
 
 import * as mockDb from '@/api/mockDb';
-import { useDashboard } from './index';
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 

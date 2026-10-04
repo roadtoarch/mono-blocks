@@ -6,7 +6,7 @@
  * - useRefCaches: resolves foreign-key columns to display titles
  * - useInvalidateList: invalidation helper after mutations
  */
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { EntityType, SortDef } from '@/schema/types';
 
@@ -104,6 +104,9 @@ export const useEntityList = (type: EntityType, opts: UseEntityListOptions = {})
   return useQuery({
     queryKey: listKey(type, query),
     queryFn: () => getEntityResource(type).list(query),
+    // Keep the previous page visible while a new key fetches so the list
+    // never collapses to a skeleton mid-interaction (soft page transitions).
+    placeholderData: keepPreviousData,
   });
 };
 

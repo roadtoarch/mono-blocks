@@ -106,7 +106,7 @@ export const ListPage = ({ type }: ListPageProps) => {
   const [page, setPage] = React.useState(0);
   const [size, setSize] = React.useState(DEFAULT_PAGE_SIZE);
   // Data — a Spring Page<T>
-  const { data, isLoading, isError, error, refetch } = useEntityList(type, {
+  const { data, isLoading, isRefetching, isError, error, refetch } = useEntityList(type, {
     search: toolbarState.q,
     status: toolbarState.filters.status,
     page,
@@ -164,6 +164,7 @@ export const ListPage = ({ type }: ListPageProps) => {
         rows={records}
         getRowId={(record) => record.id}
         status={isLoading ? 'loading' : isError ? 'error' : 'success'}
+        isRefetching={isRefetching}
         error={errorMessage}
         onRetry={handleRetry}
         persistKey={`list.${type}`}

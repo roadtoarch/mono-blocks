@@ -404,6 +404,26 @@ describe('TableResourceView (chunk 3)', () => {
     });
   });
 
+  describe('refetch affordance (batch A3)', () => {
+    it('marks the table busy and shows the sweep rule while refetching', () => {
+      renderView({ isRefetching: true });
+      expect(screen.getByRole('table').getAttribute('aria-busy')).toBe('true');
+      expect(document.querySelector('.mb-table-resource__fetching-rule')).not.toBeNull();
+    });
+
+    it('stays idle with no rule after a completed refetch', () => {
+      renderView({ isRefetching: false });
+      expect(screen.getByRole('table').getAttribute('aria-busy')).not.toBe('true');
+      expect(document.querySelector('.mb-table-resource__fetching-rule')).toBeNull();
+    });
+
+    it('lets the loading skeleton win over the rule', () => {
+      renderView({ status: 'loading', isRefetching: true });
+      expect(screen.getByRole('table').getAttribute('aria-busy')).toBe('true');
+      expect(document.querySelector('.mb-table-resource__fetching-rule')).toBeNull();
+    });
+  });
+
   describe('column visibility & ordering (chunk 6)', () => {
     beforeEach(() => {
       globalThis.localStorage.clear();
@@ -422,6 +442,27 @@ describe('TableResourceView (chunk 3)', () => {
     it('unlocks the menu from a controlled config prop', () => {
       renderView({ columnVisibility: {} });
       expect(screen.getByRole('button', { name: 'Edit columns' })).toBeTruthy();
+    });
+
+    it('leads each row with the reorder group before the checkbox (batch A3)', async () => {
+      const user = userEvent.setup();
+      renderView({ persistKey: 'order-a3' });
+      await user.click(screen.getByRole('button', { name: 'Edit columns' }));
+      const group = screen.getByRole('group', { name: 'Reorder Qty', hidden: true });
+      expect(group.parentElement?.firstElementChild).toBe(group);
+    });
+
+    it('renders a labelled text trigger for columnMenu display icon+text (batch A3)', () => {
+      renderView({ persistKey: 'menu-text', columnMenu: { display: 'icon+text' } });
+      const trigger = screen.getByRole('button', { name: 'Edit columns' });
+      expect(trigger.textContent).toContain('Edit columns');
+    });
+
+    it('marks the text-only trigger for chevron removal (batch A3)', () => {
+      renderView({ persistKey: 'menu-text-only', columnMenu: { display: 'text-only' } });
+      const trigger = screen.getByRole('button', { name: 'Edit columns' });
+      // MenuButton spreads className onto its wrapper div, not the button.
+      expect(trigger.closest('.mb-table-resource__menu-trigger--text-only')).not.toBeNull();
     });
 
     it('unlocks the menu from initialState and applies the saved order', () => {

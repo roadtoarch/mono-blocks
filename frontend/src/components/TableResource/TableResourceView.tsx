@@ -121,6 +121,7 @@ export function TableResourceView<TRow extends RowData>({
   rows,
   getRowId,
   status,
+  isRefetching,
   className,
   toolbar,
   hasActiveFilters,
@@ -135,6 +136,7 @@ export function TableResourceView<TRow extends RowData>({
   actions,
   initialState,
   persistKey,
+  columnMenu,
   columnVisibility,
   columnOrder,
 }: TableResourceProps<TRow>): ReactElement {
@@ -353,8 +355,16 @@ export function TableResourceView<TRow extends RowData>({
       body = assertNever(view);
   }
 
+  // Busy = whole-body skeleton (first load) or a keep-previous-data refetch.
+  const isBusy = status === 'loading' || isRefetching === true;
+
   return (
-    <TableContainer className={className}>
+    <TableContainer
+      className={`mb-table-resource${className === undefined ? '' : ` ${className}`}`}
+    >
+      {isRefetching === true && status !== 'loading' ? (
+        <div className="mb-table-resource__fetching-rule" aria-hidden="true" />
+      ) : null}
       {toolbar || columnMenuEnabled ? (
         <TableToolbar>
           <TableToolbarContent>
@@ -365,12 +375,20 @@ export function TableResourceView<TRow extends RowData>({
                 visibility={visibility}
                 onToggle={handleToggleColumn}
                 onMove={handleMoveColumn}
+                config={columnMenu}
               />
             ) : null}
           </TableToolbarContent>
         </TableToolbar>
       ) : null}
-      <Table useZebraStyles>
+      <span className="cds--visually-hidden" role="status">
+        {isBusy
+          ? pagination?.page === undefined
+            ? 'Loading…'
+            : `Loading page ${String(pagination.page)}…`
+          : ''}
+      </span>
+      <Table useZebraStyles aria-busy={isBusy}>
         <TableHead>
           <TableRow>
             {expansion !== undefined ? <TableExpandHeader /> : null}

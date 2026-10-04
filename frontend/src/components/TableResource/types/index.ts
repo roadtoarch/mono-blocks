@@ -25,6 +25,8 @@ export type {
 export type {
   TableResourceAction,
   TableResourceActionsConfig,
+  TableResourceButtonDisplay,
+  TableResourceColumnMenuConfig,
   TableResourceColumnOrder,
   TableResourceColumnVisibility,
   TableResourceEditingConfig,

@@ -1148,3 +1148,83 @@ button.mb-skin-chip.cds--btn.is-selected {
     display: none;
   }
 }
+
+// ── TableResource fetch affordance (batch A3) ─────────────────────────────
+// Keep-previous-data refetches never swap to a skeleton; a 2px rule sweeps
+// the container's top edge while the table is aria-busy. The anchored class
+// also gives consumers a stable mount point for position-relative layers.
+.mb-table-resource {
+  position: relative;
+}
+
+.mb-table-resource__fetching-rule {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 2px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mb-table-resource__fetching-rule::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inline-size: 40%;
+  background-color: var(--cds-border-interactive);
+  animation: mb-table-fetching-sweep 1.1s var(--cds-easing-standard-productive) infinite;
+}
+
+@keyframes mb-table-fetching-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(350%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  // tokens.scss collapses durations to 0.01ms; !important keeps a static bar.
+  .mb-table-resource__fetching-rule::after {
+    animation: none !important;
+    inline-size: 100%;
+  }
+}
+
+// ── Edit-columns menu rows (batch A3) ─────────────────────────────────────
+// The reorder group leads each row (a stable control gutter), then the
+// checkbox label with ellipsis for long column names.
+.table-action-menu-option-item {
+  display: flex;
+  align-items: center;
+  gap: var(--cds-spacing-03);
+  min-block-size: 32px;
+}
+
+.table-action-menu-option-item__moves {
+  display: flex;
+  align-items: center;
+  gap: var(--cds-spacing-01);
+}
+
+.table-action-menu-option-item__moves .cds--btn {
+  min-block-size: 24px;
+  min-inline-size: 24px;
+}
+
+.table-action-menu-option-item__label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.table-action-menu-option-item__label .cds--checkbox-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mb-table-resource__menu-trigger--text-only svg {
+  display: none;
+}
