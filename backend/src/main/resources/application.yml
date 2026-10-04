@@ -104,6 +104,16 @@ management:
     export:
       prometheus:
         enabled: true
+    distribution:
+      percentiles-histogram:
+        all: true
+      percentiles: 0.5, 0.95, 0.99
+      sla:
+        all: 100ms, 250ms, 500ms, 1s, 2s, 5s, 15s, 30s, 1m
+    tags:
+      version: ${info.app.version}
+      app: ${spring.application.name}
+      zone: ${APP_ZONE:local}
   observations:
     annotations:
       enabled: true
