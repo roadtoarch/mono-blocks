@@ -32,6 +32,9 @@
 		<datasource-micrometer.version>2.2.1</datasource-micrometer.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+		<oci.revision>${project.version}</oci.revision>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -272,6 +275,21 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<delimiters>
+						<delimiter>@</delimiter>
+					</delimiters>
+					<resources>
+						<resource>
+							<directory>${project.basedir}/src/main/resources</directory>
+							<filtering>true</filtering>
+						</resource>
+					</resources>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

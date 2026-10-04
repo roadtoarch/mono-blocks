@@ -205,7 +205,6 @@ info:
   app:
     name: ${spring.application.name}
     zone: ${APP_ZONE:local}
-    version: ${APP_VERSION:0.0.1-SNAPSHOT}
 # Logging
 logging:
   level:
