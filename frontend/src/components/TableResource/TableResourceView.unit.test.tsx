@@ -74,7 +74,13 @@ function renderView(overrides: Partial<TableResourceProps<Row>> = {}) {
     status: 'success',
     ...overrides,
   };
-  return render(<TableResourceView<Row> {...props} />);
+  const view = render(<TableResourceView<Row> {...props} />);
+  return {
+    ...view,
+    rerenderWith: (next: Partial<TableResourceProps<Row>> = {}) => {
+      view.rerender(<TableResourceView<Row> {...props} {...next} />);
+    },
+  };
 }
 
 describe('TableResourceView (chunk 3)', () => {
@@ -245,6 +251,55 @@ describe('TableResourceView (chunk 3)', () => {
       expect(within(qtyHeader).queryByRole('button')).toBeNull();
       await user.click(qtyHeader);
       expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('mirrors a controlled sort onto header arrows at first render', () => {
+      renderView({
+        columns: sortableColumns,
+        sorting: { enabled: true, sort: { key: 'full_name', direction: 'ASC' } },
+      });
+      const [nameHeader] = screen.getAllByRole('columnheader');
+      expect(nameHeader.getAttribute('aria-sort')).toBe('ascending');
+    });
+
+    it('treats a null controlled sort as cleared', () => {
+      renderView({ columns: sortableColumns, sorting: { enabled: true, sort: null } });
+      const [nameHeader] = screen.getAllByRole('columnheader');
+      expect(nameHeader.getAttribute('aria-sort')).toBe('none');
+    });
+
+    it('lights no header when the controlled key matches no column', () => {
+      renderView({
+        columns: sortableColumns,
+        sorting: { enabled: true, sort: { key: 'unknown_field', direction: 'DESC' } },
+      });
+      for (const header of screen.getAllByRole('columnheader')) {
+        expect(header.getAttribute('aria-sort')).toBe('none');
+      }
+    });
+
+    it('follows a parent echo through rerenderWith', () => {
+      const { rerenderWith } = renderView({
+        columns: sortableColumns,
+        sorting: { enabled: true, sort: { key: 'full_name', direction: 'ASC' } },
+      });
+      expect(screen.getAllByRole('columnheader')[0].getAttribute('aria-sort')).toBe('ascending');
+      rerenderWith({ sorting: { enabled: true, sort: { key: 'full_name', direction: 'DESC' } } });
+      expect(screen.getAllByRole('columnheader')[0].getAttribute('aria-sort')).toBe('descending');
+    });
+
+    it('derives controlled clicks from the echoed value', async () => {
+      const user = userEvent.setup();
+      const onChange = vi.fn();
+      renderView({
+        columns: sortableColumns,
+        sorting: { enabled: true, sort: { key: 'full_name', direction: 'ASC' }, onChange },
+      });
+      const [nameHeader] = screen.getAllByRole('columnheader');
+      await user.click(within(nameHeader).getByRole('button'));
+      expect(onChange).toHaveBeenNthCalledWith(1, { key: 'full_name', direction: 'DESC' });
+      // The arrow stays where the parent left it until it echoes back.
+      expect(nameHeader.getAttribute('aria-sort')).toBe('ascending');
     });
 
     it('keeps sorting to a single column: sorting another resets the first', async () => {

@@ -6,7 +6,8 @@
  * data rows and the four state rows via `deriveViewState`. Toolbar and
  * headers render in ALL states; cell content follows the render → type →
  * text precedence. Chunks 4–9 wire single-column sorting (asc → desc →
- * cleared, reported via `sorting.onChange`), the Carbon pager below the
+ * cleared, reported via `sorting.onChange`, with `sorting.sort` mirroring an
+ * external control back onto the header state), the Carbon pager below the
  * table (reported via `pagination.onChange`), config-gated column
  * visibility/order (the "Edit columns" menu, persisted under `persistKey`),
  * config-gated row expansion (a leading spacer column plus one
@@ -62,7 +63,7 @@ import type {
   TableResourceProps,
   TableResourceSortChange,
 } from './types';
-import type { RowData } from '@tanstack/react-table';
+import type { RowData, SortingState } from '@tanstack/react-table';
 import type { ReactElement } from 'react';
 
 /** Carbon's sort-state vocabulary for a column header. */
@@ -89,6 +90,21 @@ function toSortChange<TRow extends RowData>(
     key: column.sortKey ?? String(column.key),
     direction: sorted === 'desc' ? 'DESC' : 'ASC',
   };
+}
+
+/**
+ * Controlled mode: maps the consumer's current sort back onto TanStack's
+ * sorting slice so header arrows track an external control. The reported key
+ * is `sortKey ?? key`, so the inverse match walks the same expression; a key
+ * no column claims yields an empty slice (no header lit).
+ */
+function toControlledSorting<TRow extends RowData>(
+  columns: readonly TableResourceColumn<TRow>[],
+  sort: TableResourceSortChange | null,
+): SortingState {
+  if (sort === null) return [];
+  const match = columns.find((column) => (column.sortKey ?? String(column.key)) === sort.key);
+  return match === undefined ? [] : [{ id: String(match.key), desc: sort.direction === 'DESC' }];
 }
 
 /**
@@ -196,8 +212,16 @@ export function TableResourceView<TRow extends RowData>({
     sortDescFirst: false,
     // Visibility/order are externally owned: the state option syncs each
     // slice into the table (so getVisibleLeafColumns matches our filter),
-    // and the change handlers write back into our React state.
-    state: { columnVisibility: visibility, columnOrder: columnOrderList },
+    // and the change handlers write back into our React state. Controlled
+    // sorting joins the same object: when `sorting.sort` is present (even
+    // null) TanStack mirrors it into header state; absent → internal toggles.
+    state: {
+      columnVisibility: visibility,
+      columnOrder: columnOrderList,
+      ...(sorting?.sort !== undefined
+        ? { sorting: toControlledSorting(columns, sorting.sort) }
+        : {}),
+    },
     onColumnVisibilityChange: (updater) => {
       setInternalVisibility((previous) => functionalUpdate(updater, previous));
     },
@@ -365,6 +389,23 @@ export function TableResourceView<TRow extends RowData>({
                   onClick={
                     canSort
                       ? () => {
+                          if (sorting?.sort !== undefined) {
+                            // Controlled: cycle from the echoed value (asc →
+                            // desc → cleared → asc) and report; the arrow
+                            // moves once the parent writes it back through
+                            // `sorting.sort`.
+                            const sort = sorting.sort;
+                            const current: false | 'asc' | 'desc' =
+                              sort !== null && sort.key === (column.sortKey ?? columnId)
+                                ? sort.direction === 'DESC'
+                                  ? 'desc'
+                                  : 'asc'
+                                : false;
+                            const next =
+                              current === 'asc' ? 'desc' : current === 'desc' ? false : 'asc';
+                            sorting.onChange?.(toSortChange(column, next));
+                            return;
+                          }
                           tanColumn.toggleSorting();
                           sorting?.onChange?.(toSortChange(column, tanColumn.getIsSorted()));
                         }

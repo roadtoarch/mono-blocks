@@ -64,7 +64,11 @@ drive the error row.
 
 ```tsx
 // Sorting — single column, ASC → DESC → cleared; reported only.
-sorting={{ enabled: true, onChange: (sort /* {key, direction} | null */) => … }}
+sorting={{
+  enabled: true,
+  sort, // optional controlled echo: {key, direction} | null drives header arrows
+  onChange: (sort /* {key, direction} | null */) => …,
+}}
 
 // Pagination — Carbon pager below the table, 1-based.
 pagination={{ page, pageSize, totalItems, onChange: (page, pageSize) => … }}

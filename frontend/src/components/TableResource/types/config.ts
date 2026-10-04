@@ -31,6 +31,14 @@ export interface TableResourceSortChange {
 export interface TableResourceSortingConfig {
   /** Enables sortable headers when true (default false). */
   enabled?: boolean;
+  /**
+   * Current sort mirrored onto the header arrows (controlled mode). When
+   * present — including `null` for "cleared" — the header state follows this
+   * value instead of the table's internal toggles, so echo changes from
+   * `onChange` back through `sort` to keep an external control (toolbar
+   * select, URL, …) and the headers in sync. Omit it for internal state.
+   */
+  sort?: TableResourceSortChange | null;
   /** Reports sort intent; pass `null` when sorting is cleared. */
   onChange?: (sort: TableResourceSortChange | null) => void;
 }
