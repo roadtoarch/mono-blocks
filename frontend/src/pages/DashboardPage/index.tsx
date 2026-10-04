@@ -112,8 +112,9 @@ export const DashboardPage = () => {
             <h2 className="mb-section__title">Recent work orders</h2>
             <TableResource
               columns={recentColumns}
-              data={data.recent}
-              keyExtractor={(wo) => wo.id}
+              rows={data.recent}
+              getRowId={(wo) => wo.id}
+              status="success"
             />
             <p>
               <Link to="/work-orders" className="mb-btn mb-btn--ghost">

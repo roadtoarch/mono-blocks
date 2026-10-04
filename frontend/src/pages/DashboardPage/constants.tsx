@@ -16,7 +16,7 @@ import { date } from '@/utils/format';
 /** Column defs for the recent work-orders table, with links and status tags. */
 export const recentColumns: TableResourceColumn<RecentWorkOrder>[] = [
   {
-    key: 'workOrder',
+    key: 'title',
     header: 'Work order',
     render: (wo) => (
       <Link className="mb-table__entity-link" to="/work-orders/$id" params={{ id: wo.id }}>
@@ -25,7 +25,7 @@ export const recentColumns: TableResourceColumn<RecentWorkOrder>[] = [
     ),
   },
   {
-    key: 'site',
+    key: 'siteTitle',
     header: 'Site',
     render: (wo) => wo.siteTitle,
   },
