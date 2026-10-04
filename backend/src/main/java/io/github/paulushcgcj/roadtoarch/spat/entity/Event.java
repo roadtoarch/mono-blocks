@@ -1,4 +1,4 @@
-package io.github.paulushcgcj.roadtoarch.spat.domain;
+package io.github.paulushcgcj.roadtoarch.spat.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,8 +10,8 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
-import lombok.Getter;
-import lombok.Setter;
+
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -22,8 +22,9 @@ import org.hibernate.type.SqlTypes;
  */
 @Entity
 @Table(name = "events", schema = "pgcj")
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Event {
 
   @Id

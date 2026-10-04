@@ -1,16 +1,20 @@
-package io.github.paulushcgcj.roadtoarch.spat.web;
+package io.github.paulushcgcj.roadtoarch.spat.controller;
 
+import io.github.paulushcgcj.roadtoarch.spat.exception.ApiException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -38,7 +42,7 @@ public class ApiExceptionHandler {
 
 	@ExceptionHandler(ApiException.class)
 	public ProblemDetail handleApi(ApiException ex, HttpServletRequest request) {
-		return problem(ex.status(), ex.getMessage(), ex.details(), request);
+		return problem(ex.getStatusCode(), ex.getMessage(), ex.details(), request);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -126,9 +130,9 @@ public class ApiExceptionHandler {
 	}
 
 	private ProblemDetail problem(
-			HttpStatus status, String detail, Map<String, Object> details, HttpServletRequest request) {
+			HttpStatusCode status, String detail, Map<String, Object> details, HttpServletRequest request) {
 		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, detail);
-		problemDetail.setTitle(status.getReasonPhrase());
+		problemDetail.setTitle(Objects.requireNonNull(HttpStatus.resolve(status.value())).getReasonPhrase());
 		problemDetail.setInstance(URI.create(request.getRequestURI()));
 		if (!details.isEmpty()) {
 			problemDetail.setProperty("errors", details);
