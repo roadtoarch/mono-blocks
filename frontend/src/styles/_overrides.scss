@@ -38,6 +38,15 @@
   }
 }
 
+/// Sorted column header: keep the standard header background. Carbon paints
+/// `.cds--table-sort--active` with $data-table-column-hover, which reads as
+/// "the sorted column is a different color". Product decision: sort state is
+/// conveyed by the header arrow + aria-sort only. `:not(:hover)` steps aside
+/// for Carbon's native hover highlight (and keeps focus styles untouched).
+.#{variables.$mb-prefix}--table-sort.#{variables.$mb-prefix}--table-sort--active:not(:hover) {
+  background-color: var(--cds-layer-accent);
+}
+
 /// Carbon content band: remove default padding so our own .mb-main governs
 /// the page gutter. Only relevant when using Carbon UI shell components.
 .#{variables.$mb-prefix}--content {
