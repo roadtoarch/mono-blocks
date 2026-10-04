@@ -1,6 +1,6 @@
 package io.github.paulushcgcj.roadtoarch.spat.repository;
 
-import io.github.paulushcgcj.roadtoarch.spat.domain.Relationship;
+import io.github.paulushcgcj.roadtoarch.spat.entity.Relationship;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

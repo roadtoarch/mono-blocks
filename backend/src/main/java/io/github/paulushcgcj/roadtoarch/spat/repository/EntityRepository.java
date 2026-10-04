@@ -1,6 +1,6 @@
 package io.github.paulushcgcj.roadtoarch.spat.repository;
 
-import io.github.paulushcgcj.roadtoarch.spat.domain.EntityRecord;
+import io.github.paulushcgcj.roadtoarch.spat.entity.EntityRecord;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;

@@ -1,6 +1,6 @@
 package io.github.paulushcgcj.roadtoarch.spat.repository;
 
-import io.github.paulushcgcj.roadtoarch.spat.domain.Event;
+import io.github.paulushcgcj.roadtoarch.spat.entity.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
