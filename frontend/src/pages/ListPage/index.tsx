@@ -1,23 +1,32 @@
 /**
- * MonoBlocks — components/ListPage.tsx
+ * MonoBlocks — pages/ListPage/index.tsx
  *
- * Generic entity list page. Renders the page header with "Add" CTA,
- * the toolbar (filters, sort, search), and the data table with 4 states:
- * loading (skeleton), empty (no records → "Add first" CTA),
- * no-results (search/filters yielded nothing → "Clear search"), and error.
+ * Generic entity list page. Renders the page header with an "Add" CTA and a
+ * TableResource that owns every state: loading skeleton, error + retry, and
+ * both empty flavors via `emptyState` (no records → "Add first" CTA;
+ * no results → "Clear search"). Sorting is controlled through
+ * `sorting.sort`, so the header arrows track the schema default and every
+ * header click round-trips through `onChange` → `handleSort`. Pagination is
+ * 1-based at the component edge and 0-based for `useEntityList`.
  *
- * Search is explicit-submit only (R9). Filters and sort are immediate.
+ * The page-level ListToolbar (search, filters, sort select) was removed by
+ * the product owner (the component is kept for later): its JSX is gone, but
+ * the `ListToolbarState` wiring stays, so re-mounting is a one-line restore.
+ * With no search UI mounted, `hasActiveSearch` stays false and the
+ * no-results empty state is currently unreachable.
  */
-import { Add, Search, WarningFilled } from '@carbon/icons-react';
-import { Button, Pagination } from '@carbon/react';
+import { Add, Search } from '@carbon/icons-react';
+import { Button } from '@carbon/react';
 import * as React from 'react';
 
-import type { EntityType, SortDef } from '@/schema/types';
+import { buildListColumns } from './columns';
+
+import type { EntityRecord, EntityType, SortDef } from '@/schema/types';
 
 import { DEFAULT_PAGE_SIZE } from '@/api/types';
-import { EntityTable, SkeletonTable } from '@/components/EntityTable';
 import { LinkButton } from '@/components/LinkButton';
-import { ListToolbar, type ListToolbarState } from '@/components/ListToolbar';
+import { type ListToolbarState } from '@/components/ListToolbar';
+import { TableResource } from '@/components/TableResource';
 import { useEntityList, useRefCaches } from '@/hooks/useEntityList';
 import { get, newPath } from '@/schema/helpers';
 
@@ -79,23 +88,6 @@ function EmptyNoResults({
   );
 }
 
-function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
-  return (
-    <div className="mb-error-state">
-      <WarningFilled
-        size={32}
-        className="mb-icon mb-icon--lg mb-error-state__icon"
-        aria-hidden="true"
-      />
-      <h2 className="mb-error-state__title">Couldn&apos;t load records</h2>
-      <p className="mb-error-state__text">{message}</p>
-      <Button kind="secondary" type="button" onClick={onRetry}>
-        Retry
-      </Button>
-    </div>
-  );
-}
-
 // ── Main component ────────────────────────────────────────────────────────
 
 /**
@@ -103,7 +95,8 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
  */
 export const ListPage = ({ type }: ListPageProps) => {
   const schema = get(type);
-  // Toolbar state
+  // Toolbar state — sort lives here; q/filters stay wired for the toolbar's
+  // eventual return (and keep `useEntityList`'s params stable).
   const [toolbarState, setToolbarState] = React.useState<ListToolbarState>({
     q: '',
     filters: {},
@@ -128,28 +121,27 @@ export const ListPage = ({ type }: ListPageProps) => {
   React.useEffect(() => {
     document.title = `${schema.plural} — Cornerstone Property Services`;
   }, [schema.plural]);
-  const handleToolbarChange = React.useCallback((next: ListToolbarState) => {
-    setToolbarState(next);
-    setPage(0);
-  }, []);
-  const handleSort = React.useCallback((sort: SortDef) => {
-    setToolbarState((prev) => ({ ...prev, sort }));
-    setPage(0);
-  }, []);
+  const handleSort = React.useCallback(
+    (sort: SortDef) => {
+      setToolbarState((prev) => ({ ...prev, sort }));
+      setPage(0);
+    },
+    [setPage, setToolbarState],
+  );
   const handleClearSearch = React.useCallback(() => {
     setToolbarState((prev) => ({ ...prev, q: '', filters: {} }));
     setPage(0);
-  }, []);
+  }, [setPage, setToolbarState]);
   const handleRetry = React.useCallback(() => {
     void refetch();
   }, [refetch]);
-  const handlePageChange = React.useCallback((next: { page: number; pageSize: number }) => {
-    setPage(next.page - 1);
-    setSize(next.pageSize);
-  }, []);
-  const fields = schema.fields.filter((f) => !f.hiddenInList);
-  const colCount = fields.length + 1;
-  // Determine which content to show
+  const handlePageChange = React.useCallback(
+    (nextPage: number, nextSize: number) => {
+      setPage(nextPage - 1);
+      setSize(nextSize);
+    },
+    [setPage, setSize],
+  );
   const hasActiveSearch =
     toolbarState.q.trim() !== '' || Object.values(toolbarState.filters).some((v) => v !== '');
   // Extract error message safely
@@ -166,45 +158,45 @@ export const ListPage = ({ type }: ListPageProps) => {
         </div>
       </div>
 
-      {/* Toolbar */}
-      <ListToolbar schema={schema} state={toolbarState} onChange={handleToolbarChange} />
-
-      {/* Content */}
-      {isLoading && <SkeletonTable colCount={colCount} rowCount={5} />}
-
-      {isError && <ErrorState message={errorMessage} onRetry={handleRetry} />}
-
-      {!isLoading && !isError && records.length === 0 && !hasActiveSearch && (
-        <EmptyNoRecords type={type} />
-      )}
-
-      {!isLoading && !isError && records.length === 0 && hasActiveSearch && (
-        <EmptyNoResults type={type} state={toolbarState} onClearSearch={handleClearSearch} />
-      )}
-
-      {!isLoading && !isError && records.length > 0 && (
-        <EntityTable
-          type={type}
-          schema={schema}
-          records={records}
-          refCaches={refCaches}
-          sort={toolbarState.sort}
-          onSort={handleSort}
-        />
-      )}
-
-      {!isLoading && !isError && totalItems > size && (
-        <Pagination
-          id="mb-pagination"
-          page={page + 1}
-          pageSize={size}
-          pageSizes={[10, 20, 50, 100]}
-          totalItems={totalItems}
-          onChange={handlePageChange}
-          backwardText="Previous page"
-          forwardText="Next page"
-        />
-      )}
+      {/* Content — TableResource owns loading / error / empty / success */}
+      <TableResource<EntityRecord>
+        columns={buildListColumns(type, schema, refCaches)}
+        rows={records}
+        getRowId={(record) => record.id}
+        status={isLoading ? 'loading' : isError ? 'error' : 'success'}
+        error={errorMessage}
+        onRetry={handleRetry}
+        persistKey={`list.${type}`}
+        emptyState={
+          records.length === 0 ? (
+            hasActiveSearch ? (
+              <EmptyNoResults type={type} state={toolbarState} onClearSearch={handleClearSearch} />
+            ) : (
+              <EmptyNoRecords type={type} />
+            )
+          ) : undefined
+        }
+        sorting={{
+          enabled: true,
+          sort: {
+            key: toolbarState.sort.key,
+            direction: toolbarState.sort.dir === 'asc' ? 'ASC' : 'DESC',
+          },
+          onChange: (next) => {
+            handleSort(
+              next === null
+                ? schema.defaultSort
+                : { key: next.key, dir: next.direction === 'ASC' ? 'asc' : 'desc' },
+            );
+          },
+        }}
+        pagination={{
+          page: page + 1,
+          pageSize: size,
+          totalItems,
+          onChange: handlePageChange,
+        }}
+      />
     </div>
   );
 };
