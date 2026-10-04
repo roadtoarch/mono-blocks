@@ -1,6 +1,6 @@
 package io.github.paulushcgcj.roadtoarch.spat.service;
 
-import io.github.paulushcgcj.roadtoarch.spat.domain.EntityRecord;
+import io.github.paulushcgcj.roadtoarch.spat.entity.EntityRecord;
 import io.github.paulushcgcj.roadtoarch.spat.dto.EntityDetailView;
 import io.github.paulushcgcj.roadtoarch.spat.dto.EntityQuery;
 import io.github.paulushcgcj.roadtoarch.spat.dto.EntitySummary;
@@ -8,7 +8,7 @@ import io.github.paulushcgcj.roadtoarch.spat.dto.EntityView;
 import io.github.paulushcgcj.roadtoarch.spat.dto.EntityWriteRequest;
 import io.github.paulushcgcj.roadtoarch.spat.repository.EntityRepository;
 import io.github.paulushcgcj.roadtoarch.spat.spec.EntitySpecifications;
-import io.github.paulushcgcj.roadtoarch.spat.web.ApiException;
+import io.github.paulushcgcj.roadtoarch.spat.exception.ApiException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

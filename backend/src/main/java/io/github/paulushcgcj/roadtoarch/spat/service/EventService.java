@@ -1,12 +1,12 @@
 package io.github.paulushcgcj.roadtoarch.spat.service;
 
-import io.github.paulushcgcj.roadtoarch.spat.domain.EntityRecord;
-import io.github.paulushcgcj.roadtoarch.spat.domain.Event;
+import io.github.paulushcgcj.roadtoarch.spat.entity.EntityRecord;
+import io.github.paulushcgcj.roadtoarch.spat.entity.Event;
 import io.github.paulushcgcj.roadtoarch.spat.dto.EventView;
 import io.github.paulushcgcj.roadtoarch.spat.dto.EventWriteRequest;
 import io.github.paulushcgcj.roadtoarch.spat.repository.EntityRepository;
 import io.github.paulushcgcj.roadtoarch.spat.repository.EventRepository;
-import io.github.paulushcgcj.roadtoarch.spat.web.ApiException;
+import io.github.paulushcgcj.roadtoarch.spat.exception.ApiException;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;

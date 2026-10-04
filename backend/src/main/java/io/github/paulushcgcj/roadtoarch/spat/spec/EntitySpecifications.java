@@ -1,6 +1,8 @@
 package io.github.paulushcgcj.roadtoarch.spat.spec;
 
-import io.github.paulushcgcj.roadtoarch.spat.domain.EntityRecord;
+import io.github.paulushcgcj.roadtoarch.spat.entity.EntityRecord;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -12,10 +14,8 @@ import org.springframework.data.jpa.domain.Specification;
  * instead of {@code LIKE} scans. Every predicate is domain-agnostic: it only ever refers to
  * {@code entity_type} / {@code status} / {@code tag} strings supplied by the caller.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EntitySpecifications {
-
-	private EntitySpecifications() {
-	}
 
 	/**
 	 * Filters on the exact {@code entity_type} value.

@@ -1,13 +1,13 @@
 package io.github.paulushcgcj.roadtoarch.spat.service;
 
-import io.github.paulushcgcj.roadtoarch.spat.domain.Relationship;
+import io.github.paulushcgcj.roadtoarch.spat.entity.Relationship;
 import io.github.paulushcgcj.roadtoarch.spat.dto.EntityRelationshipView;
 import io.github.paulushcgcj.roadtoarch.spat.dto.EntitySummary;
 import io.github.paulushcgcj.roadtoarch.spat.dto.RelationshipView;
 import io.github.paulushcgcj.roadtoarch.spat.dto.RelationshipWriteRequest;
 import io.github.paulushcgcj.roadtoarch.spat.repository.EntityRepository;
 import io.github.paulushcgcj.roadtoarch.spat.repository.RelationshipRepository;
-import io.github.paulushcgcj.roadtoarch.spat.web.ApiException;
+import io.github.paulushcgcj.roadtoarch.spat.exception.ApiException;
 import jakarta.persistence.criteria.Predicate;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
