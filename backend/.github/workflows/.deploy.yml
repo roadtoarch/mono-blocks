@@ -1,0 +1,82 @@
+name: Deploy Stub
+
+on:
+  workflow_call:
+    inputs:
+      component:
+        description: Component name (backend, frontend, etc.)
+        type: string
+        required: true
+      image_tag:
+        description: Full image tag (e.g., 1.0.0.42 or 1.2.9.42)
+        type: string
+        required: true
+      zone:
+        description: Deployment environment identifier
+        type: string
+        default: dev
+      namespace:
+        description: Kubernetes/OpenShift namespace
+        type: string
+        default: app-dev
+
+permissions: {}
+
+jobs:
+  deploy:
+    name: Deploy (${{ inputs.component }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Authenticate with Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull Image
+        run: |
+          echo "Pulling ${{ github.repository }}/${{ inputs.component }}:${{ inputs.image_tag }}"
+          docker pull ghcr.io/${{ github.repository }}/${{ inputs.component }}:${{ inputs.image_tag }}
+
+      - name: Validate Image Metadata
+        run: |
+          VERSION=$(docker inspect --format='{{ index .Config.Labels "APP_VERSION"}}' \
+            ghcr.io/${{ github.repository }}/${{ inputs.component }}:${{ inputs.image_tag }} 2>/dev/null || echo "unknown")
+          echo "Deployed image metadata:"
+          docker inspect --format='{{json .Config.Env}}' \
+            ghcr.io/${{ github.repository }}/${{ inputs.component }}:${{ inputs.image_tag }}
+
+      # TODO: Replace this step with actual platform deployment
+      # Examples:
+      #   OpenShift → oc process -f openshift.deploy.yml -p TAG=${} | oc apply -f-
+      #   ECS       → aws ecs update-service with new task definition revision
+      #   K8s       → kubectl set image deployment/${} ${}=${}:{}
+      #
+      # When the real deployment logic is wired up, replace the placeholder below.
+
+      - name: Platform Deployment (placeholder)
+        run: |
+          echo "=== Placeholder Step ==="
+          echo "Component : ${{ inputs.component }}"
+          echo "Image Tag : ${{ inputs.image_tag }}"
+          echo "Zone      : ${{ inputs.zone }}"
+          echo "Namespace : ${{ inputs.namespace }}"
+          echo ""
+          echo "Wire your platform-specific deployment logic here."
+          echo "OpenShift example:"
+          echo '  oc process -f openshift.deploy.yml \\
+              -p TAG=${{ inputs.image_tag }} \\
+              -p ZONE=${{ inputs.zone }} \\
+              | oc apply -f-'
+          echo ""
+          echo "Skipping real deployment (learning mode)."
+
+      - name: Health Check (local)
+        if: inputs.zone == 'test'
+        run: |
+          echo "Running smoke test against deployed service..."
+          # In real deployments, use:
+          #   curl -sf http://${ENDPOINT}/actuator/health | grep UP
+          echo "Smoke tests skipped (no endpoint available in learning mode)."

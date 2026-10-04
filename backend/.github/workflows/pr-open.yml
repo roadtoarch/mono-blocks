@@ -1,0 +1,89 @@
+name: PR Open Build
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: pr-${{ github.event.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  metadata:
+    name: Resolve Version
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.set.outputs.image_tag }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Extract project version from pom.xml
+        id: version
+        run: |
+          VERSION=$(grep -m1 '<version>' backend/pom.xml | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check for Git Tag
+        id: tag
+        run: |
+          TAG=$(git describe --tags --exact-match HEAD 2>/dev/null || echo "")
+          if [ -n "$TAG" ]; then
+            echo "found=$TAG" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set Image Tag
+        id: set
+        run: |
+          if [ -n "${{ steps.tag.outputs.found }}" ]; then
+            # Tagged release being validated in parallel PRs → {tag}.{pr}
+            IMAGE_TAG="${{ steps.tag.outputs.found }}.${{ github.event.number }}"
+          else
+            # Feature work tracked by PR → {pom-version}.{pr}
+            IMAGE_TAG="${{ steps.version.outputs.version }}.${{ github.event.number }}"
+          fi
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Verify
+        run: echo "Building image with tag: ${{ steps.set.outputs.image_tag }}"
+
+  build:
+    name: Native Build & Push
+    runs-on: ubuntu-latest
+    needs: [metadata]
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ runner.os }}-${{ hashFiles('backend/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-
+
+      - name: GraalVM Native Build
+        working-directory: backend
+        env:
+          _JAVA_OPTIONS: "-Xmx4g -XX:+UseParallelGC"
+        run: |
+          ./mvnw -Pnative package \
+            -DskipTests \
+            -Dskip.unit.tests=true \
+            -Dspring-boot.run.profiles=prod
+
+      - name: Push to GHCR
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/spat:${{ needs.metadata.outputs.image_tag }}
+          build-args: |
+            APP_VERSION=${{ needs.metadata.outputs.image_tag }}
