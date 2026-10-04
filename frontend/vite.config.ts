@@ -4,12 +4,36 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 
+// Carbon alias for test runs only — see resolve.alias below.
+const testOnly = process.env.VITEST === 'true';
+
 // https://vite.dev/config/
 export default defineConfig({
   resolve: {
-    alias: {
-      '@': path.resolve(import.meta.dirname, 'src'),
-    },
+    alias: [
+      { find: '@', replacement: path.resolve(import.meta.dirname, 'src') },
+      // @carbon/react ships no `exports` map (only legacy main/module fields).
+      // Vitest's node-style resolution otherwise picks `main` (CJS lib/), and
+      // the CJS chain require()s ESM-only temporal-polyfill, which throws
+      // "Cannot use import statement outside a module" inside the vmThreads
+      // pool. Pin the ESM entry (the same file the bundler picks via
+      // `module`) — but only for test runs: the production build and dev
+      // server must keep resolving the package root, because styles.scss
+      // does `@use '@carbon/react'` and needs the package's index.scss.
+      // Anchored so subpath imports (@carbon/react/icons, …) resolve
+      // normally.
+      ...(testOnly
+        ? [
+            {
+              find: /^@carbon\/react$/,
+              replacement: path.resolve(
+                import.meta.dirname,
+                'node_modules/@carbon/react/es/index.js',
+              ),
+            },
+          ]
+        : []),
+    ],
   },
   plugins: [
     // TanStack Router — file-based route tree generation.
