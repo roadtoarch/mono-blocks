@@ -33,6 +33,9 @@ logs/
 native-image/
 META-INF/native-image/
 
+# Git — sent by every context, inflates BuildKit cache key, wastes ~30 MB per build
+.git/
+
 # GraalVM build artifacts
 graalvm-cache/
 native-build/
