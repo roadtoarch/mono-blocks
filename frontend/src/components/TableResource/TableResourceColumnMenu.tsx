@@ -8,9 +8,11 @@
  * row (a stable control gutter before the label). Batch A4 replicates
  * nr-waste-plus's labelled trigger: `renderIcon` swaps the bare icon for a
  * text + Column-icon flex node (the default), with `config.display` offering
- * icon-only or text-only variants — all on the same TableToolbarMenu. The
- * legacy class hooks are kept so the copied artifact picks up nr-waste-plus
- * styles.
+ * icon-only or text-only variants — all on the same TableToolbarMenu. Batch
+ * A5 suppresses the trigger tooltip (the bubble just duplicated the visible
+ * label; `iconDescription` stays as the icon-only accessible name) and lets
+ * `wrapperClasses` target it via CSS. The legacy class hooks are kept so the
+ * copied artifact picks up nr-waste-plus styles.
  */
 import { Checkbox, IconButton, TableToolbarMenu } from '@carbon/react';
 import { ArrowDown, ArrowUp, Column } from '@carbon/react/icons';
@@ -145,8 +147,7 @@ export function TableResourceColumnMenu<TRow extends RowData>({
         display === 'text-only' ? ' mb-table-resource__menu-trigger--text-only' : ''
       }`}
       menuOptionsClass="table-search-action-menu-option"
-      autoAlign
-      highContrast
+      wrapperClasses="mb-table-resource__menu-trigger-tooltip"
       renderIcon={triggerContent === undefined ? undefined : () => triggerContent}
     >
       {body}

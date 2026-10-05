@@ -1297,11 +1297,88 @@ button.mb-skin-chip.cds--btn.is-selected {
 }
 
 // Narrow main: drop the 10rem floor so the trigger shrinks with the toolbar
-// (label ellipsises, full text stays on the button's accessible name and in
-// Carbon's tooltip) instead of pushing the toolbar into horizontal overflow.
+// (label ellipsises; the full text stays in the button's accessible name).
 @container main (max-width: 480px) {
   .cds--table-toolbar .mb-table-resource__menu-trigger {
     min-inline-size: 0;
     padding-inline: var(--cds-spacing-04);
   }
+}
+
+// ── Edit-columns menu panel (batch A5) ──────────────────────────────────────
+// Carbon shrinks the abs-positioned panel to fit (= trigger width) and pins its
+// rows with align-items: flex-start, so rows overflow the panel background
+// instead of ever engaging the A3 ellipsis. Override the shrink-fit with an
+// explicit content-driven box: a floor (16rem, reference-app taste), max-content
+// sizing so the longest label gets a FULL line (no ellipsis at realistic
+// column-name lengths), and a cap that only long names hit — where the label
+// then truncates gracefully (title attr on the row already exposes full text).
+// align-items: stretch makes rows panel-wide so hover/focus bands read correctly.
+.cds--overflow-menu-options.table-search-action-menu-option {
+  inline-size: max-content;
+  min-inline-size: 16rem;
+  max-inline-size: min(22rem, 100vw - 2rem);
+  align-items: stretch;
+  padding-block: var(--cds-spacing-03);
+
+  // Many columns: scroll inside the panel (max ~9 rows) instead of growing past
+  // the viewport. scrollbar-color inherits the app's g100/light convention.
+  max-block-size: 25rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  .helper-text {
+    padding: var(--cds-spacing-03) var(--cds-spacing-05);
+    border-block-end: 1px solid var(--cds-border-subtle);
+    color: var(--cds-text-helper);
+
+    // label-01 (12px/16) via emitted type tokens — same pattern as base.scss
+    font-size: var(--cds-label-01-font-size);
+    line-height: var(--cds-label-01-line-height);
+    letter-spacing: var(--cds-label-01-letter-spacing);
+  }
+
+  .table-action-menu-option-item {
+    // A3 set gap 8 / min 32; A5 gives the row breath so the 24px arrow gutter,
+    // 16px checkbox box and label centre on a 40px rhythm.
+    padding-block: var(--cds-spacing-02);
+    padding-inline: var(--cds-spacing-05);
+    min-block-size: 2.5rem;
+    gap: var(--cds-spacing-04);
+
+    &:hover {
+      background-color: var(--cds-layer-hover);
+    }
+
+    .table-action-menu-option-item__moves {
+      flex-shrink: 0; // under the cap, the LABEL shrinks — never the control gutter
+    }
+
+    .table-action-menu-option-item__label {
+      // Stretch + shrink chain at the cap: Carbon's .cds--checkbox-label is a
+      // flex container sized fit-content, and the text span is a flex item whose
+      // auto min-size = full nowrap text, so A3's ellipsis could never engage.
+      // Constrain both links (verified live: "Assigned senior field tech…" at cap).
+      .cds--checkbox-label {
+        inline-size: 100%;
+        min-inline-size: 0;
+      }
+
+      .cds--checkbox-label-text {
+        min-inline-size: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+// A5 companion: suppress the trigger tooltip (label is now visible on the
+// button). Compound .cds--icon-tooltip ties Carbon's open-state display rule
+// at (0,3,0) and wins on source order; hides bubble + caret in one stroke.
+// The wrapperClasses hook lands on the Tooltip container (IconButton forwards
+// it); verified live: hover+focus on trigger, .cds--popover computes
+// display:none.
+.cds--icon-tooltip.mb-table-resource__menu-trigger-tooltip .cds--popover {
+  display: none;
 }
