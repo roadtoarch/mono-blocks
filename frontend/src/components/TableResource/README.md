@@ -91,9 +91,9 @@ editing={{ onSave: (rowId, patch) => void | Promise<void> }}
   toolbar's **Edit columns** menu (move up/down buttons).
 - Controlled `columnVisibility` / `columnOrder` pin the matching aspect
   (controlled > persisted > `initialState` > default).
-- `columnMenu={{ display: 'icon+text' }}` renders the trigger as a labelled
-  text button (`'text-only'` also hides the chevron); the default stays
-  icon-only. The `toolbar` slot accepts Carbon text buttons as-is.
+- `columnMenu={{ display: 'icon+text' }}` is the default: a labelled text +
+  icon trigger (nr-waste-plus parity); `'icon-only'` keeps the bare icon and
+  `'text-only'` drops it. The `toolbar` slot accepts Carbon text buttons as-is.
 
 ## Column types & registry
 

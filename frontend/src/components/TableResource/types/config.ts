@@ -109,14 +109,14 @@ export type TableResourceButtonDisplay = 'icon-only' | 'icon+text' | 'text-only'
 
 /** Presentation of the "Edit columns" trigger (enablement stays config-driven). */
 export interface TableResourceColumnMenuConfig {
-  /** Trigger presentation (default `'icon-only'`). */
+  /**
+   * Trigger presentation (default `'icon+text'` — a labelled text + icon
+   * button, nr-waste-plus parity). `'icon-only'` shows the bare Carbon
+   * icon; `'text-only'` drops the icon.
+   */
   display?: TableResourceButtonDisplay;
   /** Trigger label and accessible name in every mode (default `'Edit columns'`). */
   label?: string;
-  /** Carbon button kind for the text modes (default `'ghost'`). */
-  kind?: 'ghost' | 'tertiary' | 'primary';
-  /** Carbon button size for the text modes (default `'sm'`). */
-  size?: 'xs' | 'sm' | 'md';
 }
 
 export interface TableResourceProps<TRow extends RowData> {

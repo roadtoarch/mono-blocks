@@ -5,13 +5,15 @@
  * nr-waste-plus's ColumnCustomizationMenu). One checkbox per column toggles
  * visibility; move up/down buttons reorder — the user's chosen stand-in for
  * drag and drop (no new dependency). Batch A3: the reorder group leads each
- * row (a stable control gutter before the label) and `config.display` swaps
- * the icon-only TableToolbarMenu for a labelled Carbon MenuButton. The
+ * row (a stable control gutter before the label). Batch A4 replicates
+ * nr-waste-plus's labelled trigger: `renderIcon` swaps the bare icon for a
+ * text + Column-icon flex node (the default), with `config.display` offering
+ * icon-only or text-only variants — all on the same TableToolbarMenu. The
  * legacy class hooks are kept so the copied artifact picks up nr-waste-plus
  * styles.
  */
-import { Checkbox, IconButton, MenuButton, TableToolbarMenu } from '@carbon/react';
-import { ArrowDown, ArrowUp } from '@carbon/react/icons';
+import { Checkbox, IconButton, TableToolbarMenu } from '@carbon/react';
+import { ArrowDown, ArrowUp, Column } from '@carbon/react/icons';
 
 import { isColumnVisible } from './columnPreferences';
 
@@ -121,28 +123,31 @@ export function TableResourceColumnMenu<TRow extends RowData>({
     }),
   ];
 
-  if (config?.display !== undefined && config.display !== 'icon-only') {
-    const triggerLabel = config.label ?? 'Edit columns';
-    return (
-      <MenuButton
-        label={triggerLabel}
-        kind={config.kind ?? 'ghost'}
-        size={config.size ?? 'sm'}
-        menuAlignment="bottom-start"
-        className={`mb-table-resource__menu-trigger${
-          config.display === 'text-only' ? ' mb-table-resource__menu-trigger--text-only' : ''
-        }`}
-      >
-        {body}
-      </MenuButton>
+  const triggerLabel = config?.label ?? 'Edit columns';
+  const display = config?.display ?? 'icon+text';
+  // nr-waste-plus parity: the default trigger carries its label as a text +
+  // icon flex node instead of the bare Carbon icon; `icon-only` opts out.
+  const triggerContent: ReactNode | undefined =
+    display === 'icon-only' ? undefined : display === 'text-only' ? (
+      <div className="toolbar-menu-columns-display">
+        <span className="toolbar-menu-columns-display-text">{triggerLabel}</span>
+      </div>
+    ) : (
+      <div className="toolbar-menu-columns-display">
+        <span className="toolbar-menu-columns-display-text">{triggerLabel}</span>
+        <Column className="toolbar-menu-columns-display-icon" />
+      </div>
     );
-  }
-
   return (
     <TableToolbarMenu
-      iconDescription={config?.label ?? 'Edit columns'}
-      className="table-action-menu-button column-menu-button"
+      iconDescription={triggerLabel}
+      className={`table-action-menu-button column-menu-button mb-table-resource__menu-trigger${
+        display === 'text-only' ? ' mb-table-resource__menu-trigger--text-only' : ''
+      }`}
       menuOptionsClass="table-search-action-menu-option"
+      autoAlign
+      highContrast
+      renderIcon={triggerContent === undefined ? undefined : () => triggerContent}
     >
       {body}
     </TableToolbarMenu>

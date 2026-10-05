@@ -461,8 +461,20 @@ describe('TableResourceView (chunk 3)', () => {
     it('marks the text-only trigger for chevron removal (batch A3)', () => {
       renderView({ persistKey: 'menu-text-only', columnMenu: { display: 'text-only' } });
       const trigger = screen.getByRole('button', { name: 'Edit columns' });
-      // MenuButton spreads className onto its wrapper div, not the button.
+      // The modifier class rides on the trigger button itself.
       expect(trigger.closest('.mb-table-resource__menu-trigger--text-only')).not.toBeNull();
+    });
+
+    it('shows the labelled text+icon trigger by default (batch A4)', () => {
+      renderView({ persistKey: 'menu-default-label' });
+      const trigger = screen.getByRole('button', { name: 'Edit columns' });
+      expect(trigger.textContent).toContain('Edit columns');
+    });
+
+    it('keeps the bare icon trigger when display is icon-only (batch A4)', () => {
+      renderView({ persistKey: 'menu-icon-only', columnMenu: { display: 'icon-only' } });
+      const trigger = screen.getByRole('button', { name: 'Edit columns' });
+      expect(trigger.textContent).not.toContain('Edit columns');
     });
 
     it('unlocks the menu from initialState and applies the saved order', () => {

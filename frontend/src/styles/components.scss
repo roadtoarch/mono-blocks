@@ -1225,6 +1225,83 @@ button.mb-skin-chip.cds--btn.is-selected {
   text-overflow: ellipsis;
 }
 
-.mb-table-resource__menu-trigger--text-only svg {
-  display: none;
+// ── Edit-columns toolbar trigger (batch A4) ───────────────────────────────
+// nr-waste-plus parity: the trigger carries its label ("Edit columns") as a
+// text row with the carbon Column glyph trailing, instead of the bare
+// overflow-menu icon. `renderIcon` swaps the node per `columnMenu.display`,
+// so text-only renders the row without the glyph (the old
+// `--text-only svg { display: none }` guard was dead code and is gone).
+//
+// `.cds--table-toolbar` must stay on these selectors: Carbon pins the
+// toolbar action to a 48px square with `padding: 0.5rem 0` via
+// `.cds--table-toolbar .cds--toolbar-action` (0,2,0). Same specificity, this
+// file loads last, so the pair wins on source order — no `!important`.
+.cds--table-toolbar .mb-table-resource__menu-trigger {
+  // Reference pins 10rem; kept as a floor rather than a fixed width so a
+  // longer `config.label` grows the button instead of clipping, and
+  // flex-shrink lets it yield to the toolbar on narrow mains.
+  inline-size: auto;
+  min-inline-size: 10rem;
+  flex-shrink: 1;
+  gap: var(--cds-spacing-03);
+  padding-inline: var(--cds-spacing-05);
+  justify-content: flex-start;
+
+  .toolbar-menu-columns-display {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--cds-spacing-03);
+    min-inline-size: 0;
+    // Carbon transitions only outline/background on this button; colour gets
+    // the app's motion tokens so label + glyph recolour in sync on hover.
+    transition: color var(--cds-duration-fast-01) var(--cds-easing-standard-productive);
+  }
+
+  .toolbar-menu-columns-display-text {
+    // Grows so the glyph trails at the button's end (reference layout), and
+    // truncates instead of forcing the toolbar wider than it can go.
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  // Carbon pins ghost-button svg fills to --cds-icon-primary, which would
+  // strand a near-black glyph beside the link-coloured label and keep it
+  // black while the label shifts to --cds-link-primary-hover. currentColor
+  // lets one SVG track label/hover/disabled colour per state.
+  &:not([disabled]) .toolbar-menu-columns-display-icon {
+    fill: currentColor;
+  }
+
+  .toolbar-menu-columns-display-icon {
+    // 20px is Carbon's second icon grid size (repo tokens only cover 16/32)
+    // and matches the reference implementation's 1.25rem.
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  // text-only has no trailing glyph, so centre the label instead of pinning
+  // it to the start of a 10rem button.
+  &--text-only {
+    justify-content: center;
+
+    .toolbar-menu-columns-display-text {
+      flex: 0 1 auto;
+      text-align: center;
+    }
+  }
+}
+
+// Narrow main: drop the 10rem floor so the trigger shrinks with the toolbar
+// (label ellipsises, full text stays on the button's accessible name and in
+// Carbon's tooltip) instead of pushing the toolbar into horizontal overflow.
+@container main (max-width: 480px) {
+  .cds--table-toolbar .mb-table-resource__menu-trigger {
+    min-inline-size: 0;
+    padding-inline: var(--cds-spacing-04);
+  }
 }
