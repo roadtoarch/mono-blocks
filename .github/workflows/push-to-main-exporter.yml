@@ -1,0 +1,70 @@
+# push-to-main-exporter.yml — Main Branch Cache Writer
+#
+# This workflow MUST remain the sole writer of the registry build cache.
+# PR workflows (pr-open.yml) ONLY read from it. This prevents the common
+# "cancel-in-progress starves BuildKit cache export" failure mode: if PRs
+# are pushed rapidly, the 8-minute native build keeps getting cancelled
+# before BuildKit finishes exporting, and the next PR starts cold again.
+# By designating main as exclusive cache-writer, every merge warms the
+# cache once, and all subsequent PRs benefit immediately.
+#
+# Usage in bcgov/nr-waste-plus (monorepo with matrix [database, frontend,
+# backend, legacy]): run ONE job per package (or duplicate this workflow
+# per package). Each package must use a unique cache ref, e.g.:
+#   type=registry,ref=ghcr.io/bcgov/nr-waste-plus/database:buildcache
+# Otherwise jobs overwrite each other's layers.
+
+name: Push to Main — Export Native Build Cache
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/*.yml'
+
+concurrency:
+  # One push at a time; earlier pending builds are skipped.
+  group: push-to-main-backend
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-export:
+    name: Native Build & Cache Export
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      # Lowercase for GHCR compliance.
+      - name: Resolve image name
+        id: image
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}/spat" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push (read + write cache)
+        uses: docker/build-push-action@v7
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.image.outputs.name }}:${{ github.sha }}
+            ${{ steps.image.outputs.name }}:latest
+          build-args: APP_VERSION=${{ github.event.head_commit.id }}
+          # Read warm layers, then EXPORT — this is the ONLY write point.
+          cache-from: |
+            type=registry,ref=ghcr.io/${{ github.repository }}/spat:buildcache
+            type=gha,scope=spat-pr
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/spat:buildcache,mode=max,ignore-error=true
